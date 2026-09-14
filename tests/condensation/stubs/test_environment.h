@@ -41,7 +41,7 @@ inline std::unordered_map<uint64_t, time_t> g_PBC_LastHistoryTime;
 inline std::unordered_map<uint64_t, std::vector<PBC_MemoryEntry>> g_PBC_Memories;
 inline std::unordered_map<uint64_t, std::unordered_map<std::string, PBC_RelationshipEntry>> g_PBC_Relationships;
 inline std::string g_PBC_RelationshipUpdateSystemPrompt, g_PBC_RelationshipUpdateUserPrompt;
-inline PBC_APIConfig connection;
+inline PBC_APIConfig g_TestConnection;
 inline bool connectionAvailable = true;
 inline PBC_LLMResult response{true, "[7] You helped Norka."};
 inline std::function<void()> duringRequest, duringDelete;
@@ -57,7 +57,7 @@ inline void DB_RemoveHistoryOwnership(uint64_t, uint64_t id, bool) {
     deletedIds.push_back(id);
     if (duringDelete) { auto callback = std::move(duringDelete); duringDelete = {}; callback(); }
 }
-inline const PBC_APIConfig* PBC_GetConnection(const std::string&) { return connectionAvailable ? &connection : nullptr; }
+inline const PBC_APIConfig* PBC_GetConnection(const std::string&) { return connectionAvailable ? &g_TestConnection : nullptr; }
 inline std::string PBC_BuildCondensationPromptFromSnapshot(const PBC_CharacterSnapshot&, const std::string&) { return "prompt"; }
 inline PBC_LLMResult PBC_CallLLMWithConfig(const PBC_APIConfig&, const std::string&, const std::string&, bool) {
     ++calls;
