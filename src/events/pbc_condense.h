@@ -16,8 +16,8 @@ bool PBC_CondenseInline(PBC_CharacterSnapshot& snap,
                         const std::string& userPromptTmpl);
 
 // ---------------------------------------------------------------------------
-// Parse LLM output lines matching [N] text and insert as memories.
-// Returns the number of memories extracted.
+// Validate the entire [N] text batch before inserting any memories.
+// Returns zero without writes for empty or malformed responses.
 // ---------------------------------------------------------------------------
 int PBC_ParseMemoryLines(const std::string& text, uint64_t botGuid);
 
