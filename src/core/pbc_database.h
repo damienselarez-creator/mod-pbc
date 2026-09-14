@@ -18,7 +18,8 @@ bool DB_CommitCondensation(uint64_t botGuid, const std::vector<PBC_ParsedMemory>
 // ---------------------------------------------------------------------------
 
 // Insert one message into mod_pbc_history and link it to one or more owners.
-// Returns the new history_id (auto-increment).
+// Message and unique ownership rows commit together. Returns the first insert's
+// generated id only after confirmation on that same connection; zero otherwise.
 uint64_t DB_InsertHistoryMessage(uint64_t authorGuid, uint8_t type,
                                  const std::string& message,
                                  const std::vector<uint64_t>& ownerGuids);

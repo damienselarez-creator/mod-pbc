@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <ctime>
 #include <exception>
+#include <algorithm>
 
 bool DB_CommitCondensation(uint64_t botGuid, const std::vector<PBC_ParsedMemory>& memories,
                            const std::deque<uint64_t>& sourceIds)
@@ -62,29 +63,31 @@ uint64_t DB_InsertHistoryMessage(uint64_t authorGuid, uint8_t type,
     std::string escaped = message;
     CharacterDatabase.EscapeString(escaped);
 
-    // Insert the message row (synchronous, single-connection)
-    CharacterDatabase.DirectExecute(
+    std::vector<uint64_t> owners = ownerGuids;
+    std::sort(owners.begin(), owners.end());
+    owners.erase(std::unique(owners.begin(), owners.end()), owners.end());
+
+    auto transaction = CharacterDatabase.BeginTransaction();
+    transaction->Append(
         "INSERT INTO mod_pbc_history (author_guid, type, message) VALUES ({}, {}, '{}')",
         authorGuid,
         static_cast<uint32_t>(type),
         escaped);
 
-    // Get the auto-increment ID (connection-safe: DirectExecute+Query on same pool)
-    QueryResult idResult = CharacterDatabase.Query("SELECT LAST_INSERT_ID()");
-    uint64_t historyId = idResult ? (*idResult)[0].Get<uint64_t>() : 0;
-    if (historyId == 0)
-        return 0;
-
-    // Insert ownership rows
-    for (uint64_t ownerGuid : ownerGuids)
+    // LAST_INSERT_ID is evaluated by the same connection inside the transaction.
+    // The ownership table has no auto-increment column. The core captures the
+    // generated message id immediately after the FIRST statement, before these
+    // ownership inserts can overwrite the client library's insert-id metadata.
+    for (uint64_t ownerGuid : owners)
     {
-        CharacterDatabase.DirectExecute(
-            "INSERT INTO mod_pbc_history_owners (guid, history_id) VALUES ({}, {})",
-            ownerGuid,
-            historyId
-        );
+        transaction->Append(
+            "INSERT INTO mod_pbc_history_owners (guid, history_id) VALUES ({}, LAST_INSERT_ID())", ownerGuid);
     }
 
+    uint64_t historyId = CharacterDatabase.DirectCommitTransactionWithInsertId(transaction);
+    if (!historyId)
+        PBC_Log(PBC_LogLevel::PBC_WARNING,
+            "History insert unconfirmed: no id published to the cache; no automatic retry");
     return historyId;
 }
 

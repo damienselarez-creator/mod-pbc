@@ -378,30 +378,9 @@ bool PBC_MaybeInsertTimeGap(uint64_t botGuid, bool incomingIsWhisper)
         shouldInsert = PBC_TimeGapNeeded_Locked(botGuid, incomingIsWhisper);
     }
 
-    if (shouldInsert)
-    {
-        std::vector<uint64_t> owners = {botGuid};
-        uint64_t newId = DB_InsertHistoryMessage(0, 0, PBC_Localize("some time passes"), owners);
-
-        if (newId != 0)
-        {
-            PBC_HistoryEntry entry;
-            entry.id         = newId;
-            entry.timestamp  = time(nullptr);
-            entry.authorGuid = 0;
-            entry.type       = 0;
-            entry.message    = PBC_Localize("some time passes");
-
-            std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
-            g_PBC_History[newId] = std::move(entry);
-            g_PBC_HistoryOwners[botGuid].push_back(newId);
-            g_PBC_LastHistoryTime[botGuid] = time(nullptr);
-
-            PBC_WsNotifyHistory(botGuid, g_PBC_History[newId]);
-        }
-    }
-
-    return shouldInsert;
+    if (!shouldInsert)
+        return false;
+    return PBC_AppendHistoryMessage(0, 0, PBC_Localize("some time passes"), {botGuid}) != 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -452,11 +431,16 @@ uint64_t PBC_AppendHistoryMessage(uint64_t authorGuid, uint8_t type,
     if (ownerGuids.empty())
         return 0;
 
-    // Dedup check under lock
+    std::vector<uint64_t> owners = ownerGuids;
+    std::sort(owners.begin(), owners.end());
+    owners.erase(std::unique(owners.begin(), owners.end()), owners.end());
+
+    // Serialize deduplication, persistence and cache publication. Otherwise two
+    // appenders may both pass deduplication or publish messages in reverse order.
+    std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
     {
-        std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
         bool allDedup = true;
-        for (uint64_t ownerGuid : ownerGuids)
+        for (uint64_t ownerGuid : owners)
         {
             auto ownersIt = g_PBC_HistoryOwners.find(ownerGuid);
             if (ownersIt == g_PBC_HistoryOwners.end() || ownersIt->second.empty())
@@ -480,7 +464,7 @@ uint64_t PBC_AppendHistoryMessage(uint64_t authorGuid, uint8_t type,
     }
 
     // DB write
-    uint64_t newId = DB_InsertHistoryMessage(authorGuid, type, message, ownerGuids);
+    uint64_t newId = DB_InsertHistoryMessage(authorGuid, type, message, owners);
     if (newId == 0)
         return 0;
 
@@ -492,9 +476,8 @@ uint64_t PBC_AppendHistoryMessage(uint64_t authorGuid, uint8_t type,
     entry.type       = type;
     entry.message    = message;
 
-    std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
     g_PBC_History[newId] = entry;
-    for (uint64_t ownerGuid : ownerGuids)
+    for (uint64_t ownerGuid : owners)
     {
         g_PBC_HistoryOwners[ownerGuid].push_back(newId);
         g_PBC_LastHistoryTime[ownerGuid] = entry.timestamp;

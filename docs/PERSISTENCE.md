@@ -1,6 +1,6 @@
-# Condensation persistence contract
+# Memory persistence contract
 
-This change requires the companion AzerothCore MySQLConnection patch. It must
+This change requires the companion AzerothCore MySQLConnection and DatabaseWorkerPool patches. It must
 not be deployed by updating mod-pbc alone on an unpatched core.
 
 The core checks START TRANSACTION and COMMIT, reports their errors, and refuses
@@ -24,7 +24,19 @@ This preserves ordering with the existing cache mutation APIs, but slow database
 operations can delay users of those locks. Moving this work fully off shared
 locks requires a separate versioned persistence protocol; it is not solved here.
 
-Remaining separate work includes history insertion IDs (LAST_INSERT_ID on a
-pooled connection), migration of legacy card additions, edit/reset persistence,
+Ordinary history insertion reserves one synchronous database connection for the
+message and all deduplicated owners. The first generated ID is captured on that
+connection and returned only after a successful COMMIT. Any statement failure
+rolls back the whole transaction. Cache publication and notifications follow
+confirmation, under the history lock, which also serializes duplicate checks.
+Time-gap insertion uses this same path and reports unconfirmed insertion as false.
+
+An unconfirmed ordinary insertion returns zero and logs a warning. There is no
+durable retry journal yet: a rejected write can lose the incoming exchange, and
+an uncertain COMMIT can leave a stored message absent from RAM until reload.
+Automatic retries require an idempotency mechanism to avoid duplicates.
+
+Remaining separate work includes durable recovery of incoming exchanges,
+migration of legacy card additions, edit/reset persistence,
 LLM truncation detection, and bounded event processing. This patch does not
 establish a lossless guarantee for every module operation.
