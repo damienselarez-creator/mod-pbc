@@ -15,6 +15,9 @@ PBC_CharacterSnapshot Reset()
     g_PBC_HistoryOwners = {{1, {11, 12}}, {2, {11, 12}}};
     g_PBC_LastHistoryTime = {{1, 123}};
     g_PBC_Memories.clear();
+    g_PBC_Relationships.clear();
+    g_PBC_RelationshipUpdateSystemPrompt.clear();
+    g_PBC_RelationshipUpdateUserPrompt.clear();
     deletedIds.clear(); queued.clear();
     calls = writes = 0;
     duringRequest = {}; duringDelete = {};
@@ -40,6 +43,14 @@ int main()
         Check(writes == 0 && deletedIds.empty() && snap.history.size() == 2
             && g_PBC_HistoryOwners.at(1).size() == 2, "invalid batch has no side effects");
     }
+    for (const std::string invalid : {"[] Missing score", "[01] Leading zero",
+        "[-1] Negative", "[+1] Signed", "[1.0] Decimal", "[1]No separator", "[1"})
+        Check(PBC_ValidateMemoryLines(invalid).empty(), "invalid score or separator");
+    Check(PBC_ValidateMemoryLines("[5] " + std::string(65535, 'x')).size() == 1,
+        "SQL TEXT exact byte boundary accepted");
+    std::string unicodeText;
+    for (int i = 0; i < 32768; ++i) unicodeText += u8"é";
+    Check(PBC_ValidateMemoryLines("[5] " + unicodeText).empty(), "UTF-8 byte limit");
     std::string thirty;
     for (int i = 0; i < 30; ++i) thirty += "[5] Memory.\n";
     Check(PBC_ValidateMemoryLines(thirty).size() == 30, "thirty accepted");
@@ -55,6 +66,9 @@ int main()
     snap = Reset();
     Check(!PBC_CondenseInline(snap, "", "user") && calls == 0, "missing prompt");
 
+    snap = Reset();
+    snap.history.clear();
+    Check(!PBC_CondenseInline(snap, "system", "user") && calls == 0, "empty snapshot");
     snap = Reset();
     snap.history.pop_back();
     Check(!PBC_CondenseInline(snap, "system", "user") && calls == 0, "stale queued snapshot");
@@ -81,6 +95,15 @@ int main()
         Check(!PBC_CondenseInline(snap, "system", "user"), "concurrent mutation rejected");
         Check(writes == 0 && deletedIds.empty() && snap.history.size() == 2, "concurrent mutation has no condensation writes");
     }
+
+    snap = Reset();
+    Check(PBC_CondenseInline(snap, "system", "user"), "unchanged history succeeds");
+    Check(g_PBC_Memories.at(1).at(0).text == "You helped Norka."
+        && g_PBC_Memories.at(1).at(0).importance == 7, "memory content preserved");
+    Check(!g_PBC_HistoryOwners.count(1) && !g_PBC_LastHistoryTime.count(1),
+        "completed owner history removed");
+    Check(!PBC_CondenseInline(snap, "system", "user") && writes == 1,
+        "same snapshot cannot be condensed twice");
 
     snap = Reset();
     response.text = "[7] First memory.\n[8] Second memory.";

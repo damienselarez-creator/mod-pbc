@@ -9,14 +9,13 @@
 
 #include "pbc_memory_parser.h"
 
-#include <algorithm>
-#include <sstream>
+#include <ctime>
 #include <mutex>
+#include <utility>
+#include <vector>
 
 // ---------------------------------------------------------------------------
-// PBC_ParseMemoryLines
-//
-// Parse LLM output lines matching [N] text and insert as memories.
+// Internal helpers for validated persistence and snapshot checks.
 // ---------------------------------------------------------------------------
 namespace
 {

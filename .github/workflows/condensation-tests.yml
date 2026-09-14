@@ -1,0 +1,43 @@
+name: Condensation tests
+
+on:
+  push:
+    branches: [main, "fix/condensation-history-guards"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: condensation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regression:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux GCC with sanitizers
+            os: ubuntu-24.04
+            args: "-DCMAKE_CXX_COMPILER=g++ -DPBC_TEST_SANITIZERS=ON"
+          - name: Linux Clang with sanitizers
+            os: ubuntu-24.04
+            args: "-DCMAKE_CXX_COMPILER=clang++ -DPBC_TEST_SANITIZERS=ON"
+          - name: Windows MSVC
+            os: windows-2022
+            args: ""
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Configure
+        run: cmake -S tests/condensation -B build/condensation -DCMAKE_BUILD_TYPE=Debug ${{ matrix.args }}
+      - name: Build
+        run: cmake --build build/condensation --config Debug --parallel 2
+      - name: Test
+        run: ctest --test-dir build/condensation -C Debug --output-on-failure
