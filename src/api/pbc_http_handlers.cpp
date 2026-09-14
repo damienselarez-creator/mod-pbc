@@ -1131,12 +1131,16 @@ void HandlePostCharData(const httplib::Request& req, httplib::Response& res,
 
             {
                 std::lock_guard<std::mutex> lock(g_PBC_DataMutex);
+                if (!DB_UpsertRollChanceModifier(charGuid, value))
+                {
+                    RespondMutationResult(res, PBC_HistoryResult::PersistenceFailed, "data");
+                    return;
+                }
                 if (value == 0)
                     g_PBC_RollChanceModifiers.erase(charGuid);
                 else
                     g_PBC_RollChanceModifiers[charGuid] = value;
             }
-            DB_UpsertRollChanceModifier(charGuid, value);
 
             PBC_Log(PBC_LogLevel::PBC_DEBUG, "API data update: character GUID={} roll_modifier={}", charGuid, value);
         }

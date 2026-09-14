@@ -24,17 +24,37 @@ This preserves ordering with the existing cache mutation APIs, but slow database
 operations can delay users of those locks. Moving this work fully off shared
 locks requires a separate versioned persistence protocol; it is not solved here.
 
-Ordinary history insertion reserves one synchronous database connection for the
-message and all deduplicated owners. The first generated ID is captured on that
-connection and returned only after a successful COMMIT. Any statement failure
-rolls back the whole transaction. Cache publication and notifications follow
-confirmation, under the history lock, which also serializes duplicate checks.
-Time-gap insertion uses this same path and reports unconfirmed insertion as false.
+Ordinary history insertion now writes an immutable local journal record before
+attempting SQL. The record contains its token, timestamp, message and owners; a
+checksum detects damage. File contents are flushed before atomic publication.
+The journal directory is exclusively locked for the process lifetime.
 
-An unconfirmed ordinary insertion returns zero and logs a warning. There is no
-durable retry journal yet: a rejected write can lose the incoming exchange, and
-an uncertain COMMIT can leave a stored message absent from RAM until reload.
-Automatic retries require an idempotency mechanism to avoid duplicates.
+SQL stores the token receipt, message and owners in one transaction. A replay of
+an existing receipt performs no message or ownership writes. Receipts outlive
+history deletion and condensation, including global reset, so an old journal
+cannot resurrect intentionally removed exchanges. Do not purge receipts without
+an explicit retention protocol covering all journal copies and backups.
+
+A journal record is removed only after confirmed SQL persistence. An interrupted
+or uncertain write stays queued. Later exchanges are also journaled and deferred
+until recovery, preserving arrival order. Recovery runs at startup and during
+`.chars reload`; it is not a timer-based retry worker. The monotonic journal order
+also tolerates a wall-clock rollback. No success or history notification is
+published for a merely queued exchange.
+
+A complete reload holds all four cache locks, replays pending records, then reads
+history/ownership, memories, relationships and roll modifiers in one statement.
+A sentinel distinguishes empty tables from read failure. Caches are prepared
+separately and swapped only after complete validation; dangling ownership is
+rejected. An unsuccessful read or recovery retains the previous caches.
+Roll modifier writes now confirm persistence under their cache lock too.
+
+The administrative reload reports its actual synchronous result. Startup stops
+module initialization if recovery or loading fails. Receipt-table absence is
+checked without querying the missing table directly. Apply the SQL migration
+before deployment; the core can abort on other incompatible/missing schema.
+
+See RECOVERY.md for migration, journal configuration and recovery operation.
 
 History, memory and relationship edits/deletions now wait for a confirmed
 transaction before changing their caches. Hard history deletion and ownership
@@ -45,6 +65,7 @@ Character reset and global reset delete history ownerships, orphan history,
 memories and relationships in one transaction while holding all three cache
 locks. Individual reset preserves shared messages owned by another character.
 The command reports failure and retains caches if persistence is unconfirmed.
+Reset is refused while journal recovery remains pending; reload first.
 The obsolete independent reset helpers have been removed.
 
 Generated relationships also publish only after confirmation. A process-local
@@ -55,12 +76,13 @@ unrelated queued relationship update. It is not a general event cancellation
 system: other queued dialogue and legacy migration work are not covered.
 
 An uncertain mutation COMMIT can leave the database ahead of the retained cache.
-HTTP 503 must not be interpreted as proof of rollback. Reconciliation after an
-uncertain acknowledgement, loader failures and durable incoming-write recovery
-remain separate work. Synchronous waits can delay the world thread during reset.
-These operations assume module-owned rows are not independently edited in SQL.
+HTTP 503 must not be interpreted as proof of rollback. A successful complete
+reload reconciles the caches with the committed state. Edit/delete intentions
+are not themselves stored in the incoming-history journal.
 
-Remaining separate work includes durable recovery of incoming exchanges,
-migration of legacy card additions, safe cache reloading,
-LLM truncation detection, and bounded event processing. This patch does not
-establish a lossless guarantee for every module operation.
+Remaining work includes legacy card-addition migration, bounded event processing,
+LLM truncation detection, and reducing synchronous waits under shared locks.
+The journal cannot guarantee an exchange that never reached a successful local
+flush, or recover storage that was physically lost. Windows process-crash tests
+are covered; physical power loss and the POSIX implementation were not exercised.
+This patch does not establish a lossless guarantee for every module operation.

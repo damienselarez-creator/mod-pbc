@@ -150,9 +150,8 @@ namespace {
 
 void ProcessHistoryReload()
 {
-    PBC_LoadHistoryFromDB();
-    PBC_LoadRelationshipsFromDB();
-    PBC_Log(PBC_LogLevel::PBC_DEFAULT, "HistoryReload: chat history and relationships reloaded from DB.");
+    if (!PBC_ReloadMemoryCaches())
+        PBC_Log(PBC_LogLevel::PBC_ERROR, "HistoryReload failed; previous caches retained");
     g_PBC_EventThreadDone.store(true);
 }
 

@@ -33,17 +33,12 @@ void PBC_WorldScript::OnStartup()
 
     PBC_LoadWMOAreaNames();
     PBC_LoadCharacterCards();
-    PBC_LoadMemoriesFromDB();
-    PBC_LoadHistoryFromDB();
-    PBC_LoadRelationshipsFromDB();
-
-    // Clean orphaned messages (those with zero owners — can result from
-    // condensation between the ownership delete and the orphan cleanup,
-    // or from a server crash).
-    CharacterDatabase.Execute(
-        "DELETE FROM mod_pbc_history "
-        "WHERE NOT EXISTS (SELECT 1 FROM mod_pbc_history_owners WHERE history_id = mod_pbc_history.id)");
-    PBC_LoadCharacterDataFromDB();
+    if (!PBC_ReloadMemoryCaches())
+    {
+        PBC_Log(PBC_LogLevel::PBC_ERROR, "PBC memory initialization failed; module disabled until restart");
+        g_PBC_Enable = false;
+        return;
+    }
 
     g_PBC_EventThreadDone.store(true);
 

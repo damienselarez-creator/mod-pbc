@@ -38,22 +38,16 @@ static Player* FindTarget(ChatHandler* handler, std::optional<std::string_view> 
 // ---------------------------------------------------------------------------
 static bool HandleCharsReload(ChatHandler* handler, Optional<std::string_view>)
 {
+    if (!PBC_ReloadMemoryCaches())
+    {
+        handler->PSendSysMessage("[PBC] Memory recovery/reload failed. Previous caches retained; see server log.");
+        return false;
+    }
     sConfigMgr->Reload();
     PBC_LoadConfig();
     PBC_LoadPrompts();
     PBC_LoadCharacterCards();
-    PBC_LoadMemoriesFromDB();
-    PBC_LoadCharacterDataFromDB();
-
-    // Reload history (and relationships) from DB safely by posting a
-    // HistoryReload event onto the queue.  It will be processed after all
-    // currently queued events finish, so no in-flight history writes are lost.
-    // PBC_ProcessEventItem handles the relationship reload inside HistoryReload.
-    PBC_EventItem ev;
-    ev.type = PBC_EventType::HistoryReload;
-    PBC_PushEvent(std::move(ev));
-
-    handler->PSendSysMessage("[PBC] Config, prompts, character cards, memories and character data reloaded. History/relationship reload queued (runs after pending events).");
+    handler->PSendSysMessage("[PBC] Config, prompts, cards and complete memory snapshot reloaded; journal recovered.");
     return true;
 }
 
@@ -416,17 +410,19 @@ static bool HandleCharsRollModifier(ChatHandler* handler,
         return false;
     }
 
-    // Update in-memory map
+    // Confirm before publication; serialize with complete cache reload.
     {
         std::lock_guard<std::mutex> lock(g_PBC_DataMutex);
+        if (!DB_UpsertRollChanceModifier(botGuid, modifier))
+        {
+            handler->PSendSysMessage("[PBC] Roll modifier persistence unconfirmed; cached value retained.");
+            return false;
+        }
         if (modifier == 0)
             g_PBC_RollChanceModifiers.erase(botGuid);
         else
             g_PBC_RollChanceModifiers[botGuid] = modifier;
     }
-
-    // Persist to database
-    DB_UpsertRollChanceModifier(botGuid, modifier);
 
     handler->PSendSysMessage("[PBC] {}'s roll chance modifier set to {:+d}.", target->GetName(), modifier);
     return true;

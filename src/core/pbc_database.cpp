@@ -5,6 +5,10 @@
 
 #include "DatabaseEnv.h"
 #include "pbc_memory_parser.h"
+#include "pbc_history_journal.h"
+#include "Config.h"
+#include <memory>
+#include <mutex>
 
 #include <string>
 #include <vector>
@@ -42,6 +46,12 @@ bool DB_DeleteHistoryMessage(uint64_t historyId)
 
 bool DB_ResetCharacterMemory(uint64_t botGuid, bool allCharacters)
 {
+    // Reload/recover first; never reset while older exchanges remain queued on disk.
+    if (DB_HistoryRecoveryPending())
+    {
+        PBC_Log(PBC_LogLevel::PBC_WARNING, "Reset refused: recover the history journal with .chars reload first");
+        return false;
+    }
     auto transaction = CharacterDatabase.BeginTransaction();
     if (allCharacters)
     {
@@ -101,42 +111,118 @@ bool DB_CommitCondensation(uint64_t botGuid, const std::vector<PBC_ParsedMemory>
 // Chat history — normalized schema (mod_pbc_history + mod_pbc_history_owners)
 // ---------------------------------------------------------------------------
 
+namespace
+{
+std::mutex journalMutex;
+PBC_HistoryJournal& HistoryJournal()
+{
+    // Fixed for the process lifetime; changing the directory requires a restart.
+    static PBC_HistoryJournal journal(sConfigMgr->GetOption<std::string>("PBC.HistoryJournalPath", "./pbc-journal"));
+    return journal;
+}
+
+bool ReceiptSchemaAvailable()
+{
+    auto result = CharacterDatabase.Query("SELECT COUNT(*) FROM information_schema.tables "
+        "WHERE table_schema = DATABASE() AND table_name = 'mod_pbc_history_receipts' AND engine = 'InnoDB'");
+    if (result && (*result)[0].Get<uint64_t>() == 1)
+        return true;
+    PBC_Log(PBC_LogLevel::PBC_ERROR, "History receipt schema unavailable; apply the PBC receipt migration first");
+    return false;
+}
+
+uint64_t CommitPendingHistory(PBC_PendingHistory const& record)
+{
+    if (!ReceiptSchemaAvailable())
+        return 0;
+    std::string escaped = record.message;
+    CharacterDatabase.EscapeString(escaped);
+    auto transaction = CharacterDatabase.BeginTransaction();
+    transaction->Append("INSERT IGNORE INTO mod_pbc_history_receipts (token) VALUES ('{}')", record.token);
+    transaction->Append("SET @pbc_journal_new = ROW_COUNT()");
+    transaction->Append("INSERT INTO mod_pbc_history (timestamp, author_guid, type, message) "
+        "SELECT FROM_UNIXTIME({}), {}, {}, '{}' WHERE @pbc_journal_new = 1",
+        record.timestamp, record.author, static_cast<uint32_t>(record.type), escaped);
+    transaction->Append("SET @pbc_journal_id = LAST_INSERT_ID()");
+    for (auto owner : record.owners)
+        transaction->Append("INSERT IGNORE INTO mod_pbc_history_owners (guid, history_id) "
+            "SELECT {}, @pbc_journal_id WHERE @pbc_journal_new = 1", owner);
+    transaction->Append("UPDATE mod_pbc_history_receipts SET history_id = @pbc_journal_id "
+        "WHERE token = '{}' AND @pbc_journal_new = 1", record.token);
+    if (!DB_ConfirmMutation(transaction))
+        return 0;
+    auto result = CharacterDatabase.Query("SELECT history_id FROM mod_pbc_history_receipts WHERE token = '{}'",
+        record.token);
+    return result ? (*result)[0].Get<uint64_t>() : 0;
+}
+}
+
+bool DB_RecoverPendingHistory()
+{
+    std::lock_guard<std::mutex> lock(journalMutex);
+    try
+    {
+        auto& journal = HistoryJournal();
+        if (!ReceiptSchemaAvailable())
+            return false;
+        // Parse every record before replay: corruption does not silently skip exchanges.
+        for (auto const& record : journal.Pending())
+        {
+            if (!CommitPendingHistory(record))
+                return false;
+            journal.Acknowledge(record);
+        }
+        return true;
+    }
+    catch (std::exception const& error)
+    {
+        PBC_Log(PBC_LogLevel::PBC_ERROR, "History recovery stopped: {}", error.what());
+        return false;
+    }
+}
+
+bool DB_HistoryRecoveryPending()
+{
+    std::lock_guard<std::mutex> lock(journalMutex);
+    try
+    {
+        return !HistoryJournal().Pending().empty();
+    }
+    catch (std::exception const&)
+    {
+        return true;
+    }
+}
+
 uint64_t DB_InsertHistoryMessage(uint64_t authorGuid, uint8_t type,
-                                 const std::string& message,
-                                 const std::vector<uint64_t>& ownerGuids)
+    std::string const& message, std::vector<uint64_t> const& ownerGuids)
 {
     if (ownerGuids.empty())
         return 0;
-
-    std::string escaped = message;
-    CharacterDatabase.EscapeString(escaped);
-
-    std::vector<uint64_t> owners = ownerGuids;
-    std::sort(owners.begin(), owners.end());
-    owners.erase(std::unique(owners.begin(), owners.end()), owners.end());
-
-    auto transaction = CharacterDatabase.BeginTransaction();
-    transaction->Append(
-        "INSERT INTO mod_pbc_history (author_guid, type, message) VALUES ({}, {}, '{}')",
-        authorGuid,
-        static_cast<uint32_t>(type),
-        escaped);
-
-    // LAST_INSERT_ID is evaluated by the same connection inside the transaction.
-    // The ownership table has no auto-increment column. The core captures the
-    // generated message id immediately after the FIRST statement, before these
-    // ownership inserts can overwrite the client library's insert-id metadata.
-    for (uint64_t ownerGuid : owners)
+    std::lock_guard<std::mutex> lock(journalMutex);
+    try
     {
-        transaction->Append(
-            "INSERT INTO mod_pbc_history_owners (guid, history_id) VALUES ({}, LAST_INSERT_ID())", ownerGuid);
+        auto owners = ownerGuids;
+        std::sort(owners.begin(), owners.end());
+        owners.erase(std::unique(owners.begin(), owners.end()), owners.end());
+        auto& journal = HistoryJournal();
+        auto record = journal.Append(authorGuid, type, message, owners);
+        if (journal.Pending().size() != 1)
+        {
+            PBC_Log(PBC_LogLevel::PBC_WARNING,
+                "History exchange journaled; earlier writes await restart or .chars reload recovery");
+            return 0;
+        }
+        auto id = CommitPendingHistory(record);
+        if (id)
+            journal.Acknowledge(record);
+        return id;
     }
-
-    uint64_t historyId = CharacterDatabase.DirectCommitTransactionWithInsertId(transaction);
-    if (!historyId)
-        PBC_Log(PBC_LogLevel::PBC_WARNING,
-            "History insert unconfirmed: no id published to the cache; no automatic retry");
-    return historyId;
+    catch (std::exception const& error)
+    {
+        PBC_Log(PBC_LogLevel::PBC_ERROR, "History persistence unconfirmed: {}", error.what());
+        return 0;
+    }
 }
 
 bool DB_UpdateHistoryMessage(uint64_t historyId, const std::string& newMessage)
@@ -220,15 +306,17 @@ bool DB_DeleteMemoryById(uint64_t memoryId)
 // Character data (roll chance modifier)
 // ---------------------------------------------------------------------------
 
-void DB_UpsertRollChanceModifier(uint64_t botGuid, int32_t modifier)
+bool DB_UpsertRollChanceModifier(uint64_t botGuid, int32_t modifier)
 {
-    CharacterDatabase.Execute(
+    auto transaction = CharacterDatabase.BeginTransaction();
+    transaction->Append(
         "INSERT INTO mod_pbc_data (bot_guid, roll_chance_modifier) VALUES ({}, {}) "
         "ON DUPLICATE KEY UPDATE roll_chance_modifier = {}",
         botGuid,
         modifier,
         modifier
     );
+    return DB_ConfirmMutation(transaction);
 }
 
 // ---------------------------------------------------------------------------
@@ -316,140 +404,104 @@ bool DB_CardAdditionsTableNotEmpty()
 // DB Loader functions (moved from pbc_config.cpp)
 // ---------------------------------------------------------------------------
 
-void PBC_LoadHistoryFromDB()
+bool PBC_ReloadMemoryCaches()
+try
 {
-    std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
-    g_PBC_History.clear();
-    g_PBC_HistoryOwners.clear();
-    g_PBC_LastHistoryTime.clear();
-
-    // 1. Load all messages from mod_pbc_history
-    QueryResult msgResult = CharacterDatabase.Query(
-        "SELECT id, UNIX_TIMESTAMP(timestamp), author_guid, type, message "
-        "FROM mod_pbc_history ORDER BY id ASC");
-
-    if (msgResult)
+    std::scoped_lock lock(g_PBC_HistoryMutex, g_PBC_MemoriesMutex,
+        g_PBC_RelationshipsMutex, g_PBC_DataMutex);
+    if (!DB_RecoverPendingHistory())
+        return false;
+    // A sentinel guarantees a row even when every table is empty. A null result
+    // therefore means failure. One InnoDB statement supplies a coherent snapshot.
+    auto result = CharacterDatabase.Query(
+        "SELECT 0 AS kind, CAST(0 AS UNSIGNED) AS id, CAST(0 AS UNSIGNED) AS owner, "
+        "CAST(0 AS UNSIGNED) AS author, 0 AS stamp, 0 AS value, '' AS text, '' AS target "
+        "UNION ALL SELECT 1,h.id,COALESCE(o.guid,0),h.author_guid,UNIX_TIMESTAMP(h.timestamp),h.type,h.message,'' "
+        "FROM mod_pbc_history h LEFT JOIN mod_pbc_history_owners o ON o.history_id=h.id "
+        "UNION ALL SELECT 2,id,bot_guid,0,UNIX_TIMESTAMP(created_at),importance,memory_text,'' FROM mod_pbc_memories "
+        "UNION ALL SELECT 3,0,bot_guid,0,UNIX_TIMESTAMP(updated_at),0,relationship_text,target_name "
+        "FROM mod_pbc_relationships "
+        "UNION ALL SELECT 4,0,bot_guid,0,0,roll_chance_modifier,'','' FROM mod_pbc_data "
+        "UNION ALL SELECT 5,o.history_id,o.guid,0,0,0,'','' FROM mod_pbc_history_owners o "
+        "LEFT JOIN mod_pbc_history h ON h.id=o.history_id WHERE h.id IS NULL "
+        "ORDER BY kind,id,owner");
+    if (!result)
     {
-        do {
+        PBC_Log(PBC_LogLevel::PBC_ERROR, "Memory reload failed; all caches retained");
+        return false;
+    }
+    decltype(g_PBC_History) history;
+    decltype(g_PBC_HistoryOwners) owners;
+    decltype(g_PBC_LastHistoryTime) lastTime;
+    decltype(g_PBC_Memories) memories;
+    decltype(g_PBC_Relationships) relationships;
+    decltype(g_PBC_RollChanceModifiers) modifiers;
+    do
+    {
+        auto* row = result->Fetch();
+        auto kind = row[0].Get<uint32_t>();
+        auto id = row[1].Get<uint64_t>();
+        auto owner = row[2].Get<uint64_t>();
+        auto stamp = static_cast<time_t>(row[4].Get<uint64_t>());
+        if (kind == 1)
+        {
             PBC_HistoryEntry entry;
-            entry.id         = (*msgResult)[0].Get<uint64_t>();
-            entry.timestamp  = static_cast<time_t>((*msgResult)[1].Get<uint64_t>());
-            entry.authorGuid = (*msgResult)[2].Get<uint64_t>();
-            entry.type       = static_cast<uint8_t>((*msgResult)[3].Get<uint32_t>());
-            entry.message    = (*msgResult)[4].Get<std::string>();
-            g_PBC_History[entry.id] = std::move(entry);
-        } while (msgResult->NextRow());
-    }
-
-    // 2. Load ownership (ordered by history_id = chronological)
-    QueryResult ownResult = CharacterDatabase.Query(
-        "SELECT guid, history_id FROM mod_pbc_history_owners ORDER BY history_id ASC");
-
-    if (ownResult)
-    {
-        do {
-            uint64_t guid      = (*ownResult)[0].Get<uint64_t>();
-            uint64_t historyId = (*ownResult)[1].Get<uint64_t>();
-            g_PBC_HistoryOwners[guid].push_back(historyId);
-
-            // Track last timestamp per character
-            auto hit = g_PBC_History.find(historyId);
-            if (hit != g_PBC_History.end() && hit->second.timestamp > 0)
-                g_PBC_LastHistoryTime[guid] = hit->second.timestamp;
-        } while (ownResult->NextRow());
-    }
-
-    PBC_Log(PBC_LogLevel::PBC_DEFAULT, "Chat history loaded from DB ({} messages, {} characters).",
-             g_PBC_History.size(), g_PBC_LastHistoryTime.size());
-}
-
-void PBC_LoadMemoriesFromDB()
-{
-    QueryResult result = CharacterDatabase.Query(
-        "SELECT id, bot_guid, memory_text, importance, UNIX_TIMESTAMP(created_at) FROM mod_pbc_memories ORDER BY bot_guid ASC, id ASC"
-    );
-
-    std::lock_guard<std::mutex> lock(g_PBC_MemoriesMutex);
-    g_PBC_Memories.clear();
-
-    if (!result) return;
-
-    size_t count = 0;
-    do {
-        uint64_t    dbId       = (*result)[0].Get<uint64_t>();
-        uint64_t    botGuid    = (*result)[1].Get<uint64_t>();
-        std::string memText    = (*result)[2].Get<std::string>();
-        uint8_t     importance = static_cast<uint8_t>((*result)[3].Get<uint32_t>());
-        time_t      createdAt  = static_cast<time_t>((*result)[4].Get<uint64_t>());
-
-        PBC_MemoryEntry entry;
-        entry.dbId       = dbId;
-        entry.text       = std::move(memText);
-        entry.importance = importance;
-        entry.createdAt  = PBC_FormatDate(createdAt);
-        g_PBC_Memories[botGuid].push_back(std::move(entry));
-        ++count;
+            entry.id = id;
+            entry.authorGuid = row[3].Get<uint64_t>();
+            entry.timestamp = stamp;
+            entry.type = static_cast<uint8_t>(row[5].Get<uint32_t>());
+            entry.message = row[6].Get<std::string>();
+            history[id] = std::move(entry);
+            if (owner)
+            {
+                owners[owner].push_back(id);
+                lastTime[owner] = std::max(lastTime[owner], stamp);
+            }
+        }
+        else if (kind == 2)
+        {
+            PBC_MemoryEntry entry;
+            entry.dbId = id;
+            entry.text = row[6].Get<std::string>();
+            entry.importance = static_cast<uint8_t>(row[5].Get<uint32_t>());
+            entry.createdAt = PBC_FormatDate(stamp);
+            memories[owner].push_back(std::move(entry));
+        }
+        else if (kind == 3)
+        {
+            auto& entry = relationships[owner][row[7].Get<std::string>()];
+            entry.text = row[6].Get<std::string>();
+            entry.updatedAt = PBC_FormatDateTime(stamp);
+        }
+        else if (kind == 4)
+        {
+            auto modifier = row[5].Get<int32_t>();
+            if (modifier)
+                modifiers[owner] = modifier;
+        }
+        else if (kind != 0)
+        {
+            PBC_Log(PBC_LogLevel::PBC_ERROR, "Memory reload found orphan ownership; all caches retained");
+            return false;
+        }
     } while (result->NextRow());
-
-    PBC_Log(PBC_LogLevel::PBC_DEFAULT, "Character memories loaded from DB ({} entries).", count);
+    g_PBC_History.swap(history);
+    g_PBC_HistoryOwners.swap(owners);
+    g_PBC_LastHistoryTime.swap(lastTime);
+    g_PBC_Memories.swap(memories);
+    g_PBC_Relationships.swap(relationships);
+    g_PBC_RollChanceModifiers.swap(modifiers);
+    PBC_Log(PBC_LogLevel::PBC_DEFAULT, "Memory caches reloaded from a complete database snapshot");
+    return true;
 }
 
-void PBC_LoadCharacterDataFromDB()
+catch (std::exception const& error)
 {
-    QueryResult result = CharacterDatabase.Query(
-        "SELECT bot_guid, roll_chance_modifier FROM mod_pbc_data"
-    );
-
-    std::lock_guard<std::mutex> lock(g_PBC_DataMutex);
-    g_PBC_RollChanceModifiers.clear();
-
-    if (!result)
-    {
-        PBC_Log(PBC_LogLevel::PBC_DEFAULT, "Characters data loaded from DB (0 entries).");
-        return;
-    }
-
-    size_t count = 0;
-    do {
-        uint64_t botGuid = (*result)[0].Get<uint64_t>();
-        int32_t  rollMod = (*result)[1].Get<int32_t>();
-        if (rollMod != 0)
-            g_PBC_RollChanceModifiers[botGuid] = rollMod;
-        ++count;
-    } while (result->NextRow());
-
-    PBC_Log(PBC_LogLevel::PBC_DEFAULT, "Characters data loaded from DB ({} entries, {} with roll modifier).",
-             count, g_PBC_RollChanceModifiers.size());
+    PBC_Log(PBC_LogLevel::PBC_ERROR, "Memory reload failed; caches retained: {}", error.what());
+    return false;
 }
 
-void PBC_LoadRelationshipsFromDB()
-{
-    QueryResult result = CharacterDatabase.Query(
-        "SELECT bot_guid, target_name, relationship_text, "
-        "UNIX_TIMESTAMP(updated_at) FROM mod_pbc_relationships"
-    );
-
-    std::lock_guard<std::mutex> lock(g_PBC_RelationshipsMutex);
-    g_PBC_Relationships.clear();
-
-    if (!result)
-    {
-        PBC_Log(PBC_LogLevel::PBC_DEFAULT, "Relationships loaded from DB (0 entries).");
-        return;
-    }
-
-    size_t count = 0;
-    do {
-        uint64_t    botGuid    = (*result)[0].Get<uint64_t>();
-        std::string targetName = (*result)[1].Get<std::string>();
-        std::string relText    = (*result)[2].Get<std::string>();
-        time_t      updatedAt  = static_cast<time_t>((*result)[3].Get<uint64_t>());
-
-        auto& entry = g_PBC_Relationships[botGuid][targetName];
-        entry.text      = std::move(relText);
-        entry.updatedAt = PBC_FormatDateTime(updatedAt);
-        ++count;
-    } while (result->NextRow());
-
-    PBC_Log(PBC_LogLevel::PBC_DEFAULT, "Relationships loaded from DB ({} entries).", count);
-}
+bool PBC_LoadHistoryFromDB() { return PBC_ReloadMemoryCaches(); }
+bool PBC_LoadMemoriesFromDB() { return PBC_ReloadMemoryCaches(); }
+bool PBC_LoadCharacterDataFromDB() { return PBC_ReloadMemoryCaches(); }
+bool PBC_LoadRelationshipsFromDB() { return PBC_ReloadMemoryCaches(); }

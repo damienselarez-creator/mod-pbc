@@ -8,6 +8,10 @@
 
 struct PBC_ParsedMemory;
 
+bool DB_RecoverPendingHistory();
+bool DB_HistoryRecoveryPending();
+bool PBC_ReloadMemoryCaches();
+
 // Confirmed mutations: false includes uncertain transaction outcomes.
 bool DB_DeleteHistoryMessage(uint64_t historyId);
 bool DB_ResetCharacterMemory(uint64_t botGuid, bool allCharacters);
@@ -55,7 +59,7 @@ bool DB_DeleteMemoryById(uint64_t memoryId);
 
 // Upsert the roll chance modifier for a character.
 // modifier must be in range [-100, 100].
-void DB_UpsertRollChanceModifier(uint64_t botGuid, int32_t modifier);
+bool DB_UpsertRollChanceModifier(uint64_t botGuid, int32_t modifier);
 
 // ---------------------------------------------------------------------------
 // Character relationships
@@ -86,17 +90,19 @@ bool DB_CardAdditionsTableNotEmpty();
 // ---------------------------------------------------------------------------
 // DB Loader functions (implementations in pbc_database.cpp)
 // ---------------------------------------------------------------------------
+// Compatibility entry points: each now recovers pending history and refreshes
+// the complete cache bundle. False retains previous caches. Call without locks.
 
 // Load all chat history from DB into g_PBC_History + g_PBC_HistoryOwners.
-void PBC_LoadHistoryFromDB();
+bool PBC_LoadHistoryFromDB();
 
 // Load all memories from DB into g_PBC_Memories.
-void PBC_LoadMemoriesFromDB();
+bool PBC_LoadMemoriesFromDB();
 
 // Load all character data (roll chance modifiers) from DB into g_PBC_RollChanceModifiers.
-void PBC_LoadCharacterDataFromDB();
+bool PBC_LoadCharacterDataFromDB();
 
 // Load all relationships from DB into g_PBC_Relationships.
-void PBC_LoadRelationshipsFromDB();
+bool PBC_LoadRelationshipsFromDB();
 
 #endif // MOD_PBC_DATABASE_H
