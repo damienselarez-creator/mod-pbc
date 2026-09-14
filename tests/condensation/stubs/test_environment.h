@@ -23,7 +23,7 @@ struct PBC_MemoryEntry {
     std::string createdAt;
 };
 struct PBC_RelationshipEntry { std::string text; };
-struct PBC_APIConfig {};
+struct PBC_APIConfig { int requestTimeoutSec = 120; };
 struct PBC_LLMResult { bool success; std::string text; int tokensUsed = 0; };
 enum class PBC_LogLevel { PBC_DEBUG, PBC_WARNING };
 enum class PBC_EventType { RelationshipUpdate };

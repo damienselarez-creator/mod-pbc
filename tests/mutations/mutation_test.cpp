@@ -19,7 +19,7 @@ std::unordered_map<uint64_t, std::vector<Memory>> g_PBC_Memories;
 std::unordered_map<uint64_t, std::unordered_map<std::string, Relationship>> g_PBC_Relationships;
 std::mutex g_PBC_HistoryMutex, g_PBC_MemoriesMutex, g_PBC_RelationshipsMutex;
 std::atomic<uint64_t> relationshipGeneration{0};
-enum class PBC_HistoryResult { Ok, NotFound, Desync, PersistenceFailed };
+enum class PBC_HistoryResult { Ok, NotFound, Desync, PersistenceFailed, Forbidden };
 bool failWrite = false;
 int writes = 0;
 bool Write() { ++writes; return !failWrite; }
@@ -33,6 +33,13 @@ bool DB_DeleteRelationship(uint64_t, const std::string&) { return Write(); }
 bool DB_UpdateMemoryById(uint64_t, const std::string&, uint8_t) { return Write(); }
 bool DB_DeleteMemoryById(uint64_t) { return Write(); }
 std::string PBC_FormatDateTime(time_t) { return "now"; }
+using ObjectGuid = uint64_t;
+struct CharacterCache {
+    uint32_t GetCharacterAccountIdByGuid(uint64_t guid) { return guid == 10 ? 1 : 2; }
+} characterCache;
+auto* sCharacterCache = &characterCache;
+PBC_HistoryResult PBC_UpdateHistoryMessage(uint64_t, const std::string&, uint64_t = 0, uint32_t = 0);
+PBC_HistoryResult PBC_DeleteHistoryMessage(uint64_t, uint64_t = 0, uint32_t = 0);
 #include "production_mutations.inc"
 namespace httplib {
 struct Response {
@@ -58,6 +65,13 @@ int main() {
     Check(!RespondMutationResult(response,R::Desync,"memory") && response.status==409);
     Check(!RespondMutationResult(response,R::NotFound,"memory") && response.status==404);
     Check(RespondMutationResult(response,R::Ok,"memory"));
+    Seed();
+    Check(!RespondMutationResult(response,R::Forbidden,"history") && response.status==403);
+    Check(PBC_UpdateHistoryMessage(2,"foreign",20,2)==R::Forbidden);
+    Check(PBC_DeleteHistoryMessage(1,10,1)==R::Forbidden);
+    Check(PBC_UpdateHistoryMessage(1,"shared",10,1)==R::Forbidden);
+    Check(writes==0);
+    Check(PBC_UpdateHistoryMessage(2,"allowed",10,1)==R::Ok);
     Seed(); failWrite=true;
     Check(PBC_UpdateHistoryMessage(1,"new")==R::PersistenceFailed);
     Check(PBC_DeleteHistoryMessage(1)==R::PersistenceFailed);

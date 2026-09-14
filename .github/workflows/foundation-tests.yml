@@ -1,0 +1,31 @@
+name: Technical foundation tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: foundation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  foundation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PBC_REQUIRE_TLS_FIXTURE: "1"
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - name: Configure
+        run: cmake -S tests/foundation -B build/foundation -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: cmake --build build/foundation --parallel 2
+      - name: Test
+        run: ctest --test-dir build/foundation --output-on-failure

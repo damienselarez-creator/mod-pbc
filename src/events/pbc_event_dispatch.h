@@ -157,4 +157,6 @@ bool PBC_CanRegenLastEvent();
 bool PBC_IsPlayerInLastEventGroup(Player* player);
 bool PBC_DispatchRegenEvent(uint64_t requesterGuid);
 
+bool PBC_EventExpired(PBC_EventItem const& item);
+
 #endif // MOD_PBC_EVENT_DISPATCH_H

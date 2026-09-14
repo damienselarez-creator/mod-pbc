@@ -73,15 +73,17 @@ generation captured in character snapshots rejects results queued before a reset
 attempt or manual relationship mutation; current relationship text must match too.
 The generation is intentionally global, so such an action may also discard an
 unrelated queued relationship update. It is not a general event cancellation
-system: other queued dialogue and legacy migration work are not covered.
+system. Dialogue history/deadline checks and atomic legacy migration are described
+in TECHNICAL_FOUNDATION.md.
 
 An uncertain mutation COMMIT can leave the database ahead of the retained cache.
 HTTP 503 must not be interpreted as proof of rollback. A successful complete
 reload reconciles the caches with the committed state. Edit/delete intentions
 are not themselves stored in the incoming-history journal.
 
-Remaining work includes legacy card-addition migration, bounded event processing,
-LLM truncation detection, and reducing synchronous waits under shared locks.
+Legacy migration, bounded reactions and LLM completion checks are now covered
+in TECHNICAL_FOUNDATION.md. Reducing synchronous waits under shared locks remains
+a performance improvement outside these transaction guarantees.
 The journal cannot guarantee an exchange that never reached a successful local
 flush, or recover storage that was physically lost. Windows process-crash tests
 are covered; physical power loss and the POSIX implementation were not exercised.

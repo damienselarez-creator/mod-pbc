@@ -1,6 +1,7 @@
 #include "pbc_event_dispatch.h"
 #include "pbc_config.h"
 #include "pbc_character.h"
+#include "pbc_database.h"
 #include "pbc_utils.h"
 #include "pbc_locales.h"
 #include "pbc_group_helpers.h"
@@ -64,9 +65,44 @@ void PBC_NotifyRealPlayersInGroup(Player* anchor, const std::string& eventLine)
 // ---------------------------------------------------------------------------
 // PBC_PushEvent
 // ---------------------------------------------------------------------------
+bool PBC_EventExpired(PBC_EventItem const& item)
+{
+    if (g_PBC_Stopping.load())
+        return true;
+    if (item.type == PBC_EventType::Normal || item.type == PBC_EventType::Regen ||
+        item.type == PBC_EventType::QuestSummarization || item.type == PBC_EventType::CombatSummarization)
+        return std::chrono::steady_clock::now() - item.createdAt >= std::chrono::seconds(60);
+    return false;
+}
+
 void PBC_PushEvent(PBC_EventItem item)
 {
+    if (g_PBC_Stopping.load())
+        return;
+    if (item.source.IsChat() || item.source.IsNarrator())
+    {
+        std::vector<uint64_t> owners;
+        for (auto const& snap : item.respondingChars) owners.push_back(snap.charGuidRaw);
+        owners.insert(owners.end(), item.silentCharGuids.begin(), item.silentCharGuids.end());
+        owners.insert(owners.end(), item.replyOnlyCharGuids.begin(), item.replyOnlyCharGuids.end());
+        owners.insert(owners.end(), item.playerCharGuids.begin(), item.playerCharGuids.end());
+        PBC_MaybeInsertSharedTimeGap(owners, item.chatType == CHAT_MSG_WHISPER);
+        bool chat = item.source.IsChat();
+        item.sourceHistoryId = PBC_AppendHistoryMessage(chat ? item.source.senderGuid : 0,
+            chat ? static_cast<uint8_t>(item.chatType) : 0,
+            chat ? item.source.message : item.source.narratorText, owners, &item.sourceRecorded);
+        if (!item.sourceRecorded || DB_HistoryRecoveryPending())
+        {
+            PBC_Log(PBC_LogLevel::PBC_WARNING, "Event response deferred: source history is not ready");
+            return;
+        }
+    }
     std::lock_guard<std::mutex> lock(g_PBC_EventQueueMutex);
+    if (g_PBC_EventQueue.size() >= 64)
+    {
+        PBC_Log(PBC_LogLevel::PBC_WARNING, "Event queue full; reaction dropped, recorded source retained");
+        return;
+    }
     g_PBC_EventQueue.push(std::move(item));
 }
 

@@ -13,13 +13,7 @@ struct PBC_CharacterSnapshot;
 // ---------------------------------------------------------------------------
 bool PBC_CondenseInline(PBC_CharacterSnapshot& snap,
                         const std::string& sysPrompt,
-                        const std::string& userPromptTmpl);
-
-// ---------------------------------------------------------------------------
-// Validate the entire [N] text batch before inserting any memories.
-// Returns zero without writes for empty or malformed responses.
-// ---------------------------------------------------------------------------
-int PBC_ParseMemoryLines(const std::string& text, uint64_t botGuid);
+                        const std::string& userPromptTmpl, int timeoutCapSec = 0);
 
 // ---------------------------------------------------------------------------
 // After condensation succeeds, queue RelationshipUpdate events for all party

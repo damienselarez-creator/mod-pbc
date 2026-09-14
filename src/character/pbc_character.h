@@ -63,7 +63,8 @@ std::deque<std::string> PBC_GetChatHistoryPreRendered(uint64_t botGuid);
 // Deduplicates against each owner's last message. Returns the new history_id (0 if deduped).
 uint64_t PBC_AppendHistoryMessage(uint64_t authorGuid, uint8_t type,
                                   const std::string& message,
-                                  const std::vector<uint64_t>& ownerGuids);
+                                  const std::vector<uint64_t>& ownerGuids, bool* durable = nullptr,
+                                  const std::deque<std::string>* expectedHistory = nullptr);
 
 int PBC_EstimateHistoryTokens(uint64_t botGuid);
 
@@ -92,7 +93,7 @@ std::unordered_set<uint64_t> PBC_MaybeInsertSharedTimeGap(
 // ---------------------------------------------------------------------------
 // Mutation result (thread-safe, also updates the database)
 // ---------------------------------------------------------------------------
-enum class PBC_HistoryResult { Ok, NotFound, Desync, PersistenceFailed };
+enum class PBC_HistoryResult { Ok, NotFound, Desync, PersistenceFailed, Forbidden };
 
 PBC_HistoryResult PBC_StoreGeneratedRelationship(uint64_t botGuid, std::string const& targetName,
     std::string const& newText, std::string const& originalText, uint64_t generation);
@@ -106,11 +107,11 @@ PBC_HistoryResult PBC_ResetCharacterMemory(uint64_t botGuid, bool allCharacters 
 // Editing affects ALL characters who own the shared message.
 // ---------------------------------------------------------------------------
 PBC_HistoryResult PBC_UpdateHistoryMessage(uint64_t historyId,
-                                           const std::string& newMessage);
+                                           const std::string& newMessage, uint64_t ownerGuid = 0, uint32_t accountId = 0);
 
 // Hard delete: removes the message from mod_pbc_history AND all ownership rows.
 // Affects every character who shared this message.
-PBC_HistoryResult PBC_DeleteHistoryMessage(uint64_t historyId);
+PBC_HistoryResult PBC_DeleteHistoryMessage(uint64_t historyId, uint64_t ownerGuid = 0, uint32_t accountId = 0);
 
 // Soft unlink: removes one character's ownership only. If the message becomes
 // orphaned (zero owners), it is cleaned up from mod_pbc_history.

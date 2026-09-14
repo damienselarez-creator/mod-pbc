@@ -305,3 +305,6 @@ PBC.Blacklist = t ,c ,items,autogear,talents,reset botAI,summon,release,revive,l
 # Durable history journal. Use one persistent directory per server/database.
 # Keep it with the matching database backups. Changing this path requires restart.
 PBC.HistoryJournalPath = "./pbc-journal"
+
+# Optional trusted CA bundle for HTTPS. Verification is always enabled.
+PBC.HttpCaFile = ""

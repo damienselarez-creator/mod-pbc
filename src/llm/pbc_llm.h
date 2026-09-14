@@ -47,7 +47,7 @@ PBC_LLMResult PBC_CallLLMWithConfig(const PBC_APIConfig& cfg,
 // Convenience wrapper — uses the "default" connection from the registry.
 PBC_LLMResult PBC_CallLLM(const std::string& systemPrompt,
                            const std::string& userPrompt,
-                           bool preserveNewlines = false);
+                           bool preserveNewlines = false, int timeoutCapSec = 0);
 
 // Estimate token count (rough: 1 token ≈ 4 chars).
 int PBC_EstimateTokens(const std::string& text);

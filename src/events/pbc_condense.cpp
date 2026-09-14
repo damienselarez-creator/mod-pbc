@@ -10,6 +10,7 @@
 #include "pbc_memory_parser.h"
 
 #include <ctime>
+#include <algorithm>
 #include <mutex>
 #include <utility>
 #include <vector>
@@ -23,21 +24,6 @@ namespace
 // History mutex protects this process-lifetime circuit breaker. Restart reloads
 // the authoritative database state after an uncertain transaction outcome.
 std::unordered_set<uint64_t> suspendedPersistence;
-
-void StoreValidatedMemories(const std::vector<PBC_ParsedMemory>& memories, uint64_t botGuid)
-{
-    for (const auto& memory : memories)
-    {
-        DB_InsertMemory(botGuid, memory.text, memory.importance);
-        PBC_MemoryEntry entry;
-        entry.dbId = 0;
-        entry.text = memory.text;
-        entry.importance = memory.importance;
-        entry.createdAt = PBC_FormatDate(std::time(nullptr));
-        std::lock_guard<std::mutex> lock(g_PBC_MemoriesMutex);
-        g_PBC_Memories[botGuid].push_back(std::move(entry));
-    }
-}
 
 // Caller holds the history mutex. Fail closed on stale snapshots, missing rows,
 // edits or replacement histories; never discard data absent from the prompt.
@@ -58,13 +44,6 @@ bool HistoryMatchesSnapshot(const PBC_CharacterSnapshot& snap)
 }
 } // namespace
 
-int PBC_ParseMemoryLines(const std::string& text, uint64_t botGuid)
-{
-    const auto memories = PBC_ValidateMemoryLines(text);
-    StoreValidatedMemories(memories, botGuid);
-    return static_cast<int>(memories.size());
-}
-
 // ---------------------------------------------------------------------------
 // PBC_CondenseInline
 //
@@ -72,7 +51,7 @@ int PBC_ParseMemoryLines(const std::string& text, uint64_t botGuid)
 // ---------------------------------------------------------------------------
 bool PBC_CondenseInline(PBC_CharacterSnapshot& snap,
                         const std::string& sysPrompt,
-                        const std::string& userPromptTmpl)
+                        const std::string& userPromptTmpl, int timeoutCapSec)
 {
     if (sysPrompt.empty() || userPromptTmpl.empty())
     {
@@ -96,11 +75,12 @@ bool PBC_CondenseInline(PBC_CharacterSnapshot& snap,
     }
 
     std::string userPrompt = PBC_BuildCondensationPromptFromSnapshot(snap, userPromptTmpl);
-    const PBC_APIConfig* cfg = PBC_GetConnection("condensation");
+    auto cfg = PBC_GetConnection("condensation");
     if (!cfg)
         return false;
     // Own a copy while the network request is running.
-    const auto connection = *cfg;
+    auto connection = *cfg;
+    if (timeoutCapSec > 0) connection.requestTimeoutSec = std::min(connection.requestTimeoutSec, timeoutCapSec);
     PBC_LLMResult res = PBC_CallLLMWithConfig(connection, sysPrompt, userPrompt, /*preserveNewlines=*/true);
 
     if (!res.success || res.text.empty())

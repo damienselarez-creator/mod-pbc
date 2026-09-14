@@ -195,8 +195,9 @@ bool DB_HistoryRecoveryPending()
 }
 
 uint64_t DB_InsertHistoryMessage(uint64_t authorGuid, uint8_t type,
-    std::string const& message, std::vector<uint64_t> const& ownerGuids)
+    std::string const& message, std::vector<uint64_t> const& ownerGuids, bool* durable)
 {
+    if (durable) *durable = false;
     if (ownerGuids.empty())
         return 0;
     std::lock_guard<std::mutex> lock(journalMutex);
@@ -207,6 +208,7 @@ uint64_t DB_InsertHistoryMessage(uint64_t authorGuid, uint8_t type,
         owners.erase(std::unique(owners.begin(), owners.end()), owners.end());
         auto& journal = HistoryJournal();
         auto record = journal.Append(authorGuid, type, message, owners);
+        if (durable) *durable = true;
         if (journal.Pending().size() != 1)
         {
             PBC_Log(PBC_LogLevel::PBC_WARNING,
@@ -223,6 +225,19 @@ uint64_t DB_InsertHistoryMessage(uint64_t authorGuid, uint8_t type,
         PBC_Log(PBC_LogLevel::PBC_ERROR, "History persistence unconfirmed: {}", error.what());
         return 0;
     }
+}
+
+bool DB_ReplaceHistoryBatch(const std::vector<std::pair<uint64_t, std::string>>& changes)
+{
+    if (changes.empty()) return false;
+    auto transaction = CharacterDatabase.BeginTransaction();
+    for (auto const& [id, text] : changes)
+    {
+        std::string escaped = text;
+        CharacterDatabase.EscapeString(escaped);
+        transaction->Append("UPDATE mod_pbc_history SET message = '{}' WHERE id = {}", escaped, id);
+    }
+    return DB_ConfirmMutation(transaction);
 }
 
 bool DB_UpdateHistoryMessage(uint64_t historyId, const std::string& newMessage)
@@ -266,16 +281,29 @@ bool DB_RemoveHistoryOwnership(uint64_t guid, uint64_t historyId,
 // Character memories
 // ---------------------------------------------------------------------------
 
-void DB_InsertMemory(uint64_t botGuid, const std::string& memoryText, uint8_t importance)
+bool DB_MigrateCardAdditionsBatch()
 {
-    std::string escaped = memoryText;
-    CharacterDatabase.EscapeString(escaped);
-    CharacterDatabase.DirectExecute(
-        "INSERT INTO mod_pbc_memories (bot_guid, memory_text, importance) VALUES ({}, '{}', {})",
-        botGuid,
-        escaped,
-        importance
-    );
+    auto engines = CharacterDatabase.Query(
+        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() "
+        "AND table_name IN ('mod_pbc_character_card_additions','mod_pbc_memories') AND engine = 'InnoDB'");
+    if (!engines || (*engines)[0].Get<uint64_t>() != 2 || DB_HistoryRecoveryPending())
+        return false;
+    QueryResult rows = CharacterDatabase.Query(
+        "SELECT id FROM mod_pbc_character_card_additions ORDER BY id LIMIT 256");
+    if (!rows) return false;
+    std::string ids;
+    do
+    {
+        if (!ids.empty()) ids += ",";
+        ids += std::to_string((*rows)[0].Get<uint64_t>());
+    } while (rows->NextRow());
+    auto transaction = CharacterDatabase.BeginTransaction();
+    transaction->Append(
+        "INSERT INTO mod_pbc_memories (bot_guid, memory_text, importance) "
+        "SELECT bot_guid, addition, 5 FROM mod_pbc_character_card_additions WHERE id IN ({}) ORDER BY id",
+        ids);
+    transaction->Append("DELETE FROM mod_pbc_character_card_additions WHERE id IN ({})", ids);
+    return DB_ConfirmMutation(transaction);
 }
 
 bool DB_UpdateMemoryById(uint64_t memoryId, const std::string& newText, uint8_t importance)
@@ -383,8 +411,8 @@ bool DB_DeleteRelationship(uint64_t botGuid, const std::string& targetName)
 
 bool DB_MemoriesTableEmpty()
 {
-    QueryResult result = CharacterDatabase.Query("SELECT 1 FROM mod_pbc_memories LIMIT 1");
-    return !result;
+    QueryResult result = CharacterDatabase.Query("SELECT COUNT(*) FROM mod_pbc_memories");
+    return result && (*result)[0].Get<uint64_t>() == 0;
 }
 
 bool DB_CardAdditionsTableNotEmpty()

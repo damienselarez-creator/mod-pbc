@@ -262,6 +262,12 @@ static Player* ResolveOnlineBot(uint64_t charGuid, const PBC_AuthInfo& authInfo,
 static bool RespondMutationResult(httplib::Response& res, PBC_HistoryResult result,
                                   const std::string& entityName)
 {
+    if (result == PBC_HistoryResult::Forbidden)
+    {
+        res.status = 403;
+        res.set_content("{\"error\":\"Message is not exclusively owned by this account\"}", "application/json");
+        return false;
+    }
     if (result == PBC_HistoryResult::PersistenceFailed)
     {
         res.status = 503;
@@ -727,7 +733,7 @@ void HandlePostCharHistory(const httplib::Request& req, httplib::Response& res,
     std::string newMessage = ExtractRequiredBodyField(body, "message", res);
     if (newMessage.empty()) return;
 
-    PBC_HistoryResult result = PBC_UpdateHistoryMessage(historyId, newMessage);
+    PBC_HistoryResult result = PBC_UpdateHistoryMessage(historyId, newMessage, charGuid, authInfo.accountId);
     if (!RespondMutationResult(res, result, "Message")) return;
 
     PBC_Log(PBC_LogLevel::PBC_DEBUG, "API history edit: historyId={}", historyId);
@@ -749,7 +755,7 @@ void HandleDeleteCharHistory(const httplib::Request& req, httplib::Response& res
     uint64_t historyId = ParseQueryId(req, res);
     if (historyId == 0) return;
 
-    PBC_HistoryResult result = PBC_DeleteHistoryMessage(historyId);
+    PBC_HistoryResult result = PBC_DeleteHistoryMessage(historyId, charGuid, authInfo.accountId);
     if (!RespondMutationResult(res, result, "Message")) return;
 
     PBC_Log(PBC_LogLevel::PBC_DEBUG, "API history delete: historyId={}", historyId);
@@ -1256,6 +1262,12 @@ void HandlePostCharWhisper(const httplib::Request& req, httplib::Response& res,
         wr.targetGuid = charGuid;
 
         std::lock_guard<std::mutex> lock(g_PBC_PendingWhisperRequestsMutex);
+        if (g_PBC_PendingWhisperRequests.size() >= 64 || g_PBC_Stopping.load())
+        {
+            res.status = 429;
+            res.set_content("{\"error\":\"Request queue unavailable\"}", "application/json");
+            return;
+        }
         g_PBC_PendingWhisperRequests.push(std::move(wr));
     }
 
@@ -1418,6 +1430,12 @@ void HandlePostCharTrigger(const httplib::Request& req, httplib::Response& res,
         tr.targetGuid = charGuid;
 
         std::lock_guard<std::mutex> lock(g_PBC_PendingTriggerRequestsMutex);
+        if (g_PBC_PendingTriggerRequests.size() >= 64 || g_PBC_Stopping.load())
+        {
+            res.status = 429;
+            res.set_content("{\"error\":\"Request queue unavailable\"}", "application/json");
+            return;
+        }
         g_PBC_PendingTriggerRequests.push(std::move(tr));
     }
 
@@ -1467,6 +1485,12 @@ void HandlePostPartyMessage(const httplib::Request& req, httplib::Response& res,
         pm.message    = message;
 
         std::lock_guard<std::mutex> lock(g_PBC_PendingPartyMessageRequestsMutex);
+        if (g_PBC_PendingPartyMessageRequests.size() >= 64 || g_PBC_Stopping.load())
+        {
+            res.status = 429;
+            res.set_content("{\"error\":\"Request queue unavailable\"}", "application/json");
+            return;
+        }
         g_PBC_PendingPartyMessageRequests.push(std::move(pm));
     }
 

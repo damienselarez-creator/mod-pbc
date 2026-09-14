@@ -29,7 +29,7 @@ bool     g_PBC_Enable              = true;
 bool     g_PBC_DebugEnabled        = false;
 bool     g_PBC_DebugShowFullRequest = false;
 bool     g_PBC_DisplayNarratorEvents = true;
-bool     g_PBC_CardAdditionsMigrationNeeded = false;
+std::atomic<bool> g_PBC_CardAdditionsMigrationNeeded{false};
 
 // Connection registry
 std::unordered_map<std::string, PBC_APIConfig> g_PBC_Connections;
@@ -426,18 +426,18 @@ static bool PBC_LoadConnections()
     return true;
 }
 
-const PBC_APIConfig* PBC_GetConnection(const std::string& name)
+std::shared_ptr<const PBC_APIConfig> PBC_GetConnection(const std::string& name)
 {
     std::lock_guard<std::mutex> lock(g_PBC_ConnectionsMutex);
 
     auto it = g_PBC_Connections.find(name);
     if (it != g_PBC_Connections.end())
-        return &it->second;
+        return std::make_shared<const PBC_APIConfig>(it->second);
 
     // Fall back to default
     it = g_PBC_Connections.find("default");
     if (it != g_PBC_Connections.end())
-        return &it->second;
+        return std::make_shared<const PBC_APIConfig>(it->second);
 
     return nullptr;
 }
@@ -750,3 +750,5 @@ uint32_t PBC_GetEffectiveChance(uint64_t botGuid, uint32_t baseChance)
 }
 
 
+
+std::atomic<bool> g_PBC_Stopping{false};

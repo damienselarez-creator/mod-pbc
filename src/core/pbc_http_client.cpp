@@ -13,12 +13,14 @@
 #include <regex>
 #include <vector>
 #include <utility>
+#include <algorithm>
+#include "Config.h"
 
 PBC_HttpClient::PBC_HttpClient() : m_timeoutSec(120) {}
 
 void PBC_HttpClient::SetTimeoutSeconds(int seconds)
 {
-    m_timeoutSec = seconds;
+    m_timeoutSec = std::clamp(seconds, 1, 120);
 }
 
 std::string PBC_HttpClient::Post(const std::string& url,
@@ -41,6 +43,8 @@ std::string PBC_HttpClient::Post(const std::string& url,
         std::string path   = m[4].matched ? m[4].str() : "/";
         int         port   = proto == "https" ? 443 : 80;
         if (m[3].matched) port = std::stoi(m[3].str());
+        if (port < 1 || port > 65535 || host.find_first_of("@?#\\\r\n") != std::string::npos)
+            return "";
 
         PBC_Log(PBC_LogLevel::PBC_DEBUG, "HTTP {} {}:{}{}", proto, host, port, path);
 
@@ -57,11 +61,19 @@ std::string PBC_HttpClient::Post(const std::string& url,
         {
 #ifdef CPPHTTPLIB_OPENSSL_SUPPORT
             httplib::SSLClient cli(host, port);
-            cli.enable_server_certificate_verification(false);
-            cli.set_connection_timeout(m_timeoutSec);
+            cli.enable_server_certificate_verification(true);
+            std::string caFile = sConfigMgr->GetOption<std::string>("PBC.HttpCaFile", "");
+            if (!caFile.empty())
+                cli.set_ca_cert_path(caFile);
+            cli.set_follow_location(false);
+            cli.set_max_timeout(std::chrono::seconds(m_timeoutSec));
+            cli.set_payload_max_length(2 * 1024 * 1024);
+            cli.set_connection_timeout(std::min(m_timeoutSec, 10));
             cli.set_read_timeout(m_timeoutSec);
             cli.set_write_timeout(m_timeoutSec);
             res = cli.Post(path, headers, jsonData, "application/json");
+            if (!res)
+                PBC_Log(PBC_LogLevel::PBC_ERROR, "TLS certificate verification result: {}", res.ssl_backend_error());
 #else
             PBC_Log(PBC_LogLevel::PBC_ERROR, "HTTPS requested but OpenSSL not compiled in.");
             return "";
@@ -70,7 +82,10 @@ std::string PBC_HttpClient::Post(const std::string& url,
         else
         {
             httplib::Client cli(host, port);
-            cli.set_connection_timeout(m_timeoutSec);
+            cli.set_follow_location(false);
+            cli.set_max_timeout(std::chrono::seconds(m_timeoutSec));
+            cli.set_payload_max_length(2 * 1024 * 1024);
+            cli.set_connection_timeout(std::min(m_timeoutSec, 10));
             cli.set_read_timeout(m_timeoutSec);
             cli.set_write_timeout(m_timeoutSec);
             res = cli.Post(path, headers, jsonData, "application/json");
@@ -78,7 +93,8 @@ std::string PBC_HttpClient::Post(const std::string& url,
 
         if (!res)
         {
-            PBC_Log(PBC_LogLevel::PBC_ERROR, "HTTP request failed (no response) for {}:{}{}", host, port, path);
+            PBC_Log(PBC_LogLevel::PBC_ERROR, "HTTP request failed for {}:{}{}: {}", host, port, path,
+                httplib::to_string(res.error()));
             return "";
         }
         if (res->status != 200)

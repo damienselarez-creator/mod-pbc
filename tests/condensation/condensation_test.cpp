@@ -122,7 +122,6 @@ int main()
     Check(snap.history.empty(), "completed snapshot cleared");
 
     snap = Reset();
-    Check(PBC_ParseMemoryLines("[7] Good.\nBad.", 1) == 0 && writes == 0, "migration parser is all-or-nothing");
     snap = Reset();
     commitSucceeds = false;
     const int previousCommits = commitCalls;

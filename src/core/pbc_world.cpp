@@ -19,10 +19,16 @@
 #include "SharedDefines.h"
 #include "GameTime.h"
 
+namespace
+{
+std::thread eventWorker;
+}
+
 PBC_WorldScript::PBC_WorldScript() : WorldScript("PBC_WorldScript") {}
 
 void PBC_WorldScript::OnStartup()
 {
+    g_PBC_Stopping.store(false);
     PBC_LoadConfig(true);
 
     if (!g_PBC_Enable)
@@ -70,6 +76,9 @@ void PBC_WorldScript::OnStartup()
 
 void PBC_WorldScript::OnShutdown()
 {
+    g_PBC_Stopping.store(true);
+    if (eventWorker.joinable())
+        eventWorker.join();
     if (PBC_HttpServerIsRunning())
     {
         PBC_Log(PBC_LogLevel::PBC_DEFAULT, "Stopping HTTP server...");
@@ -160,6 +169,11 @@ void PBC_WorldScript::OnUpdate(uint32_t diff)
         while (!localReqs.empty())
         {
             PBC_PendingEventRequest& req = localReqs.front();
+            if (std::chrono::steady_clock::now() - req.createdAt >= std::chrono::seconds(60))
+            {
+                localReqs.pop();
+                continue;
+            }
 
             // Find the anchor bot to locate the group.
             Player* anchor = ObjectAccessor::FindPlayer(ObjectGuid(req.anchorCharGuid));
@@ -191,6 +205,7 @@ void PBC_WorldScript::OnUpdate(uint32_t diff)
                 }
 
                 PBC_EventItem newEv;
+                newEv.createdAt = req.createdAt;
                 newEv.type             = PBC_EventType::Normal;
                 newEv.eventLine        = req.eventLine;
                 newEv.source           = req.source;
@@ -343,6 +358,11 @@ void PBC_WorldScript::OnUpdate(uint32_t diff)
         while (!local.empty())
         {
             PBC_PendingAction& action = local.front();
+            if (std::chrono::steady_clock::now() >= action.expiresAt)
+            {
+                local.pop();
+                continue;
+            }
 
             if (!action.text.empty())
             {
@@ -437,16 +457,37 @@ void PBC_WorldScript::OnUpdate(uint32_t diff)
 
         {
             std::lock_guard<std::mutex> lock(g_PBC_EventQueueMutex);
-            if (!g_PBC_EventQueue.empty())
+            while (!g_PBC_EventQueue.empty())
             {
                 nextEvent = std::move(g_PBC_EventQueue.front());
                 g_PBC_EventQueue.pop();
+                if (PBC_EventExpired(nextEvent)) continue;
                 hasEvent = true;
+                break;
             }
         }
 
         if (hasEvent)
         {
+            if (eventWorker.joinable())
+                eventWorker.join();
+            if (nextEvent.type == PBC_EventType::Normal ||
+                nextEvent.type == PBC_EventType::QuestSummarization ||
+                nextEvent.type == PBC_EventType::CombatSummarization)
+            {
+                for (auto& snap : nextEvent.respondingChars)
+                {
+                    Player* bot = ObjectAccessor::FindPlayer(snap.charObjGuid);
+                    if (!bot || !bot->IsInWorld())
+                    {
+                        snap.charGuidRaw = 0;
+                        continue;
+                    }
+                    auto whisperTarget = snap.whisperTargetGuid;
+                    snap = PBC_SnapshotCharacter(bot);
+                    snap.whisperTargetGuid = whisperTarget;
+                }
+            }
             g_PBC_EventThreadDone.store(false);
 
             switch (nextEvent.type)
@@ -477,9 +518,18 @@ void PBC_WorldScript::OnUpdate(uint32_t diff)
                     break;
             }
 
-            std::thread([ev = std::move(nextEvent)]() mutable {
-                PBC_ProcessEventItem(std::move(ev));
-            }).detach();
+            eventWorker = std::thread([ev = std::move(nextEvent)]() mutable {
+                try { PBC_ProcessEventItem(std::move(ev)); }
+                catch (std::exception const& error)
+                {
+                    PBC_Log(PBC_LogLevel::PBC_ERROR, "Event worker failed: {}", error.what());
+                }
+                catch (...)
+                {
+                    PBC_Log(PBC_LogLevel::PBC_ERROR, "Event worker failed with unknown exception");
+                }
+                g_PBC_EventThreadDone.store(true);
+            });
         }
     }
 

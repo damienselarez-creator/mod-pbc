@@ -5,6 +5,7 @@
 #include <vector>
 #include <cstdint>
 #include <deque>
+#include <utility>
 
 struct PBC_ParsedMemory;
 
@@ -30,9 +31,11 @@ bool DB_CommitCondensation(uint64_t botGuid, const std::vector<PBC_ParsedMemory>
 // generated id only after confirmation on that same connection; zero otherwise.
 uint64_t DB_InsertHistoryMessage(uint64_t authorGuid, uint8_t type,
                                  const std::string& message,
-                                 const std::vector<uint64_t>& ownerGuids);
+                                 const std::vector<uint64_t>& ownerGuids, bool* durable = nullptr);
 
 // Update the raw message text in mod_pbc_history (affects all owners).
+bool DB_ReplaceHistoryBatch(const std::vector<std::pair<uint64_t, std::string>>& changes);
+
 bool DB_UpdateHistoryMessage(uint64_t historyId, const std::string& newMessage);
 
 // Remove one character's ownership of a message.
@@ -45,7 +48,7 @@ bool DB_RemoveHistoryOwnership(uint64_t guid, uint64_t historyId,
 // ---------------------------------------------------------------------------
 
 // Insert a single memory for a character.
-void DB_InsertMemory(uint64_t botGuid, const std::string& memoryText, uint8_t importance);
+bool DB_MigrateCardAdditionsBatch();
 
 // Update a single memory by DB row id.
 bool DB_UpdateMemoryById(uint64_t memoryId, const std::string& newText, uint8_t importance);

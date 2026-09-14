@@ -24,13 +24,16 @@ std::unordered_map<uint64_t, time_t> g_PBC_LastHistoryTime;
 bool failWrite = false;
 uint64_t writes = 0, notifications = 0;
 void Check(bool ok) { if (!ok) throw std::runtime_error("history invariant failed"); }
-uint64_t DB_InsertHistoryMessage(uint64_t, uint8_t, const std::string&, const std::vector<uint64_t>& owners) {
+uint64_t DB_InsertHistoryMessage(uint64_t, uint8_t, const std::string&, const std::vector<uint64_t>& owners, bool* durable) {
+    if (durable) *durable = !failWrite;
     Check(std::adjacent_find(owners.begin(), owners.end()) == owners.end());
     return failWrite ? 0 : ++writes;
 }
 void PBC_WsNotifyHistory(uint64_t, const PBC_HistoryEntry&) { ++notifications; }
 bool PBC_TimeGapNeeded_Locked(uint64_t, bool) { return true; }
 std::string PBC_Localize(const char* value) { return value; }
+uint64_t PBC_AppendHistoryMessage(uint64_t, uint8_t, const std::string&, const std::vector<uint64_t>&, bool* = nullptr, const std::deque<std::string>* = nullptr);
+std::string PBC_RenderHistoryLine(const PBC_HistoryEntry& entry, uint64_t) { return entry.message; }
 #include "production_history.inc"
 
 int main() {
@@ -51,6 +54,8 @@ int main() {
     Check(writes == 2 && g_PBC_History.size() == 2 && notifications == 4);
     Check(g_PBC_HistoryOwners.at(1) == std::deque<uint64_t>({1,2}));
     Check(g_PBC_HistoryOwners.at(2) == std::deque<uint64_t>({1,2}));
+    std::deque<std::string> stale{"old"};
+    Check(PBC_AppendHistoryMessage(1,1,"stale reply",{1},nullptr,&stale)==0 && writes==2);
     Check(PBC_MaybeInsertTimeGap(1, false));
     Check(!PBC_MaybeInsertTimeGap(1, false));
     std::cout << "Production history publication tests passed.\n";

@@ -124,10 +124,11 @@ PBC_LLMResult PBC_CallLLMWithConfig(const PBC_APIConfig& cfg,
 
     // Merge provider-specific extra parameters from the connection file
     // into the request body. Keys in requestParameters override the defaults
-    // set above (e.g. max_tokens, temperature, stream).
+    // set above (e.g. max_tokens, temperature). Streaming stays disabled.
     if (cfg.requestParameters.is_object())
         body.update(cfg.requestParameters, /*merge_objects=*/true);
 
+    body["stream"] = false; // Parsing is strictly non-streaming, including custom parameters.
     std::string bodyStr = body.dump();
 
     // --- Build headers ----------------------------------------------------
@@ -159,15 +160,9 @@ PBC_LLMResult PBC_CallLLMWithConfig(const PBC_APIConfig& cfg,
     }
 
     // --- Execute request --------------------------------------------------
-    constexpr int MAX_ATTEMPTS = 2;
+    constexpr int MAX_ATTEMPTS = 1; // Do not multiply latency or duplicate billed work after uncertain transport failure.
     for (int attempt = 1; attempt <= MAX_ATTEMPTS; ++attempt)
     {
-        if (attempt > 1)
-        {
-            PBC_Log(PBC_LogLevel::PBC_DEBUG, "LLM: waiting 3s before retry (attempt {}/{})...", attempt, MAX_ATTEMPTS);
-            std::this_thread::sleep_for(std::chrono::seconds(3));
-        }
-
         PBC_HttpClient http;
         http.SetTimeoutSeconds(cfg.requestTimeoutSec);
         std::string responseBody = http.Post(url, bodyStr, headers);
@@ -199,6 +194,21 @@ PBC_LLMResult PBC_CallLLMWithConfig(const PBC_APIConfig& cfg,
                 continue;
             }
 
+            // Accept only a confirmed, complete textual turn. Missing completion
+            // metadata, tool calls, refusals and token-limit termination fail closed.
+            bool complete = false;
+            if (isAnthropic)
+                complete = resp.value("stop_reason", "") == "end_turn" || resp.value("stop_reason", "") == "stop_sequence";
+            else if (isOllama)
+                complete = resp.value("done", false) && resp.value("done_reason", "") == "stop";
+            else if (resp.contains("choices") && resp["choices"].is_array() && !resp["choices"].empty())
+                complete = resp["choices"][0].value("finish_reason", "") == "stop";
+            if (!complete)
+            {
+                PBC_Log(PBC_LogLevel::PBC_WARNING, "LLM: incomplete or unsupported completion discarded");
+                return result;
+            }
+
             std::string text;
             int tokensUsed = 0;
 
@@ -210,7 +220,9 @@ PBC_LLMResult PBC_CallLLMWithConfig(const PBC_APIConfig& cfg,
                     PBC_Log(PBC_LogLevel::PBC_ERROR, "LLM: unexpected Anthropic response format (attempt {}/{}).", attempt, MAX_ATTEMPTS);
                     continue;
                 }
-                text = resp["content"][0]["text"].get<std::string>();
+                for (auto const& block : resp["content"])
+                    if (block.value("type", "") == "text")
+                        text += block.at("text").get<std::string>();
 
                 // Usage: input_tokens + output_tokens
                 if (resp.contains("usage"))
@@ -228,6 +240,7 @@ PBC_LLMResult PBC_CallLLMWithConfig(const PBC_APIConfig& cfg,
                     PBC_Log(PBC_LogLevel::PBC_ERROR, "LLM: unexpected Ollama response format (attempt {}/{}).", attempt, MAX_ATTEMPTS);
                     continue;
                 }
+                if (resp["message"].contains("tool_calls") && !resp["message"]["tool_calls"].empty()) return result;
                 text = resp["message"]["content"].get<std::string>();
 
                 // Usage: prompt_eval_count (input) + eval_count (output).
@@ -239,7 +252,10 @@ PBC_LLMResult PBC_CallLLMWithConfig(const PBC_APIConfig& cfg,
             else
             {
                 // OpenAI response: choices[0].message.content
-                text = resp["choices"][0]["message"]["content"].get<std::string>();
+                auto const& message = resp["choices"][0].at("message");
+                if ((message.contains("refusal") && !message["refusal"].is_null() && !message["refusal"].empty()) ||
+                    (message.contains("tool_calls") && !message["tool_calls"].empty())) return result;
+                text = message.at("content").get<std::string>();
 
                 if (resp.contains("usage") && resp["usage"].contains("total_tokens"))
                     tokensUsed = resp["usage"]["total_tokens"].get<int>();
@@ -255,6 +271,8 @@ PBC_LLMResult PBC_CallLLMWithConfig(const PBC_APIConfig& cfg,
                 for (char& c : text)
                     if (c == '\n' || c == '\r') c = ' ';
 
+            if (Trim(text).empty())
+                return result;
             result.success    = true;
             result.text       = text;
             result.tokensUsed = tokensUsed;
@@ -278,13 +296,16 @@ PBC_LLMResult PBC_CallLLMWithConfig(const PBC_APIConfig& cfg,
 // ---------------------------------------------------------------------------
 PBC_LLMResult PBC_CallLLM(const std::string& systemPrompt,
                            const std::string& userPrompt,
-                           bool preserveNewlines)
+                           bool preserveNewlines, int timeoutCapSec)
 {
-    const PBC_APIConfig* cfg = PBC_GetConnection("default");
+    auto cfg = PBC_GetConnection("default");
     if (!cfg)
     {
         PBC_Log(PBC_LogLevel::PBC_ERROR, "PBC_CallLLM: no default connection configured.");
         return PBC_LLMResult{ false, "", 0 };
     }
-    return PBC_CallLLMWithConfig(*cfg, systemPrompt, userPrompt, preserveNewlines);
+    auto requestConfig = *cfg;
+    if (timeoutCapSec > 0)
+        requestConfig.requestTimeoutSec = std::min(requestConfig.requestTimeoutSec, timeoutCapSec);
+    return PBC_CallLLMWithConfig(requestConfig, systemPrompt, userPrompt, preserveNewlines);
 }

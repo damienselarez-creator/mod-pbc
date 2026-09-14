@@ -38,6 +38,11 @@ static Player* FindTarget(ChatHandler* handler, std::optional<std::string_view> 
 // ---------------------------------------------------------------------------
 static bool HandleCharsReload(ChatHandler* handler, Optional<std::string_view>)
 {
+    if (!g_PBC_EventThreadDone.load())
+    {
+        handler->PSendSysMessage("[PBC] An event is still running. Retry reload when it finishes.");
+        return false;
+    }
     if (!PBC_ReloadMemoryCaches())
     {
         handler->PSendSysMessage("[PBC] Memory recovery/reload failed. Previous caches retained; see server log.");
@@ -442,20 +447,20 @@ static bool HandleCharsConnectionTest(ChatHandler* handler,
     // PBC_GetConnection falls back to the default connection when the requested
     // slot is not specifically configured. Detect that so we can inform the user.
     bool fellBack = false;
-    const PBC_APIConfig* cfg = nullptr;
+    std::shared_ptr<const PBC_APIConfig> cfg;
     {
         std::lock_guard<std::mutex> lock(g_PBC_ConnectionsMutex);
         auto it = g_PBC_Connections.find(connName);
         if (it != g_PBC_Connections.end())
         {
-            cfg = &it->second;
+            cfg = std::make_shared<const PBC_APIConfig>(it->second);
         }
         else
         {
             it = g_PBC_Connections.find("default");
             if (it != g_PBC_Connections.end())
             {
-                cfg = &it->second;
+                cfg = std::make_shared<const PBC_APIConfig>(it->second);
                 fellBack = true;
             }
         }
@@ -734,8 +739,7 @@ static bool HandleCharsNarrateParty(ChatHandler* handler, Tail messageArg)
 // .chars migrate-card-additions
 // Console-only command that queues a CardAdditionsMigration event.
 // The event thread reads all rows from the legacy mod_pbc_character_card_additions
-// table, feeds each bot's additions through the condensation LLM prompt, and
-// inserts the resulting discrete memories into mod_pbc_memories.
+// table, then transfers original texts and consumes each source atomically.
 // ---------------------------------------------------------------------------
 static bool HandleCharsMigrateCardAdditions(ChatHandler* handler, Optional<std::string_view>)
 {
@@ -753,7 +757,6 @@ static bool HandleCharsMigrateCardAdditions(ChatHandler* handler, Optional<std::
     ev.migrationCondensationUserPromptTmpl = g_PBC_CondensationUserPrompt;
     PBC_PushEvent(std::move(ev));
 
-    g_PBC_CardAdditionsMigrationNeeded = false;
 
     handler->PSendSysMessage("[PBC] Card additions migration queued. Watch the server console for progress.");
     return true;

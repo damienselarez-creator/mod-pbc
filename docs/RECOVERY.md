@@ -20,7 +20,8 @@ backups matched; replay against an unrelated or older database is not a supporte
 restore procedure.
 
 After a temporary database failure, exchanges that were durably journaled can be
-recovered with `.chars reload`, or automatically at the next startup. Later
+recovered with `.chars reload` when the event worker is idle, or automatically at
+the next startup. Later
 exchanges stay queued behind them until recovery. Reset is refused while recovery
 is pending. Read the command result and server log; a queued exchange has not yet
 been published in the live history cache.
@@ -33,8 +34,8 @@ Receipts prevent reapplying a completed record, even if its message was later
 condensed or deleted. No automatic receipt garbage collection is implemented.
 
 Disk flushes, SQL confirmation, and full reloads are synchronous and can delay
-users of the corresponding locks. Background recovery and latency limits remain
-separate work. Durability relies on the filesystem and storage honoring flushes;
+users of the corresponding locks. Reaction deadlines and bounded queues are
+described in TECHNICAL_FOUNDATION.md; database/storage waits remain synchronous. Durability relies on the filesystem and storage honoring flushes;
 physical media loss and failures before a successful local flush are outside
-this guarantee. Legacy migration and durable edit/delete intentions are not
-covered by the incoming-history journal.
+this guarantee. Legacy migration is independently transactional. Durable edit/delete
+intentions are not covered by the incoming-history journal.

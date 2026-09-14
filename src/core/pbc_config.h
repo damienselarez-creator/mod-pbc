@@ -12,6 +12,7 @@
 #include <thread>
 #include <atomic>
 #include <cstdint>
+#include <chrono>
 #include <memory>
 #include "ObjectGuid.h"
 #include "ScriptMgr.h"
@@ -22,7 +23,7 @@ extern bool     g_PBC_Enable;
 extern bool     g_PBC_DebugEnabled;
 extern bool     g_PBC_DebugShowFullRequest;
 extern bool     g_PBC_DisplayNarratorEvents;
-extern bool     g_PBC_CardAdditionsMigrationNeeded;
+extern std::atomic<bool> g_PBC_CardAdditionsMigrationNeeded;
 
 // ---------------------------------------------------------------------------
 // LLM API connection registry
@@ -36,8 +37,8 @@ extern std::mutex g_PBC_ConnectionsMutex;
 
 // Returns a pointer to the connection for the given task name, or nullptr if
 // the task has no connection and no "default" fallback exists. Thread-safe.
-// The returned pointer is valid until the next config reload.
-const PBC_APIConfig* PBC_GetConnection(const std::string& name);
+// The returned immutable copy remains valid across config reloads.
+std::shared_ptr<const PBC_APIConfig> PBC_GetConnection(const std::string& name);
 
 // Context / condensation
 extern uint32_t    g_PBC_MaxHistoryCtx;
@@ -166,6 +167,7 @@ enum class PBC_EventType : uint8_t
 // ---------------------------------------------------------------------------
 struct PBC_HistoryEntry
 {
+    bool journaled = false; // Transient event-buffer marker; not a database column.
     uint64_t    id         = 0;
     time_t      timestamp  = 0;       // Unix timestamp
     uint64_t    authorGuid = 0;       // 0 = narrator
@@ -252,6 +254,9 @@ struct PBC_LastEventRecord
 // A single unit of work for the event queue.
 struct PBC_EventItem
 {
+    std::chrono::steady_clock::time_point createdAt = std::chrono::steady_clock::now();
+    uint64_t sourceHistoryId = 0;
+    bool sourceRecorded = false;
     PBC_EventType type = PBC_EventType::Normal;
 
     // Normal / QuestSummarization / CombatSummarization fields
@@ -320,6 +325,7 @@ struct PBC_EventItem
 // Chat-send action posted from event thread to main thread.
 struct PBC_PendingAction
 {
+    std::chrono::steady_clock::time_point expiresAt = std::chrono::steady_clock::now() + std::chrono::seconds(60);
     ObjectGuid  charGuid;
     ObjectGuid  targetGuid;     // Non-empty = whisper target
     uint32_t    chatType = 0;
@@ -333,6 +339,7 @@ extern std::mutex                    g_PBC_PendingActionsMutex;
 // Secondary event request from event thread to main thread.
 struct PBC_PendingEventRequest
 {
+    std::chrono::steady_clock::time_point createdAt = std::chrono::steady_clock::now();
     std::string eventLine;
     PBC_EventSource source;         // Raw event data from the original event
     uint32_t chatType = 0;
@@ -450,5 +457,7 @@ uint32_t PBC_GetEffectiveChance(uint64_t botGuid, uint32_t baseChance);
 void PBC_LoadConfig(bool isStartup = false);
 bool PBC_LoadPrompts();
 void PBC_LoadCharacterCards();
+
+extern std::atomic<bool> g_PBC_Stopping;
 
 #endif // MOD_PBC_CONFIG_H

@@ -434,8 +434,10 @@ std::unordered_set<uint64_t> PBC_MaybeInsertSharedTimeGap(
 // ---------------------------------------------------------------------------
 uint64_t PBC_AppendHistoryMessage(uint64_t authorGuid, uint8_t type,
                                   const std::string& message,
-                                  const std::vector<uint64_t>& ownerGuids)
+                                  const std::vector<uint64_t>& ownerGuids, bool* durable,
+                                  const std::deque<std::string>* expectedHistory)
 {
+    if (durable) *durable = false;
     if (ownerGuids.empty())
         return 0;
 
@@ -446,6 +448,19 @@ uint64_t PBC_AppendHistoryMessage(uint64_t authorGuid, uint8_t type,
     // Serialize deduplication, persistence and cache publication. Otherwise two
     // appenders may both pass deduplication or publish messages in reverse order.
     std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
+    if (expectedHistory)
+    {
+        std::deque<std::string> current;
+        auto owner = g_PBC_HistoryOwners.find(authorGuid);
+        if (owner != g_PBC_HistoryOwners.end())
+            for (uint64_t id : owner->second)
+            {
+                auto entry = g_PBC_History.find(id);
+                if (entry == g_PBC_History.end()) return 0;
+                current.push_back(PBC_RenderHistoryLine(entry->second, authorGuid));
+            }
+        if (current != *expectedHistory) return 0;
+    }
     {
         bool allDedup = true;
         for (uint64_t ownerGuid : owners)
@@ -468,11 +483,14 @@ uint64_t PBC_AppendHistoryMessage(uint64_t authorGuid, uint8_t type,
             }
         }
         if (allDedup)
-            return 0; // dedup — same author+type+text for all owners
+        {
+            if (durable) *durable = true;
+            return 0;
+        }
     }
 
     // DB write
-    uint64_t newId = DB_InsertHistoryMessage(authorGuid, type, message, owners);
+    uint64_t newId = DB_InsertHistoryMessage(authorGuid, type, message, owners, durable);
     if (newId == 0)
         return 0;
 
@@ -522,14 +540,31 @@ int PBC_EstimateHistoryTokens(uint64_t botGuid)
 // ---------------------------------------------------------------------------
 // Edit a message by its real mod_pbc_history.id (affects ALL owners)
 // ---------------------------------------------------------------------------
+static bool HistoryEditableLocked(uint64_t historyId, uint64_t ownerGuid, uint32_t accountId)
+{
+    if (!ownerGuid)
+        return true; // Internal server operation, not an account-scoped API call.
+    auto owner = g_PBC_HistoryOwners.find(ownerGuid);
+    if (!accountId || owner == g_PBC_HistoryOwners.end() ||
+        std::find(owner->second.begin(), owner->second.end(), historyId) == owner->second.end())
+        return false;
+    for (auto const& [guid, ids] : g_PBC_HistoryOwners)
+        if (std::find(ids.begin(), ids.end(), historyId) != ids.end() &&
+            sCharacterCache->GetCharacterAccountIdByGuid(ObjectGuid(guid)) != accountId)
+            return false;
+    return true;
+}
+
 PBC_HistoryResult PBC_UpdateHistoryMessage(uint64_t historyId,
-                                           const std::string& newMessage)
+                                           const std::string& newMessage, uint64_t ownerGuid, uint32_t accountId)
 {
     std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
     auto it = g_PBC_History.find(historyId);
     if (it == g_PBC_History.end())
         return PBC_HistoryResult::NotFound;
 
+    if (!HistoryEditableLocked(historyId, ownerGuid, accountId))
+        return PBC_HistoryResult::Forbidden;
     if (!DB_UpdateHistoryMessage(historyId, newMessage))
         return PBC_HistoryResult::PersistenceFailed;
     it->second.message = newMessage;
@@ -539,11 +574,13 @@ PBC_HistoryResult PBC_UpdateHistoryMessage(uint64_t historyId,
 // ---------------------------------------------------------------------------
 // Hard delete: remove message from mod_pbc_history AND all ownership rows
 // ---------------------------------------------------------------------------
-PBC_HistoryResult PBC_DeleteHistoryMessage(uint64_t historyId)
+PBC_HistoryResult PBC_DeleteHistoryMessage(uint64_t historyId, uint64_t ownerGuid, uint32_t accountId)
 {
     std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
     if (g_PBC_History.find(historyId) == g_PBC_History.end())
         return PBC_HistoryResult::NotFound;
+    if (!HistoryEditableLocked(historyId, ownerGuid, accountId))
+        return PBC_HistoryResult::Forbidden;
     if (!DB_DeleteHistoryMessage(historyId))
         return PBC_HistoryResult::PersistenceFailed;
     for (auto& [guid, ids] : g_PBC_HistoryOwners)

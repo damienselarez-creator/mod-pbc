@@ -103,23 +103,27 @@ void PushReplySegments(const PBC_CharacterSnapshot& snap,
         if (seg.isNarrator)
         {
             PBC_PendingAction narrAction;
+            narrAction.expiresAt = ev.createdAt + std::chrono::seconds(60);
             narrAction.charGuid          = snap.charObjGuid;
             narrAction.text              = seg.text;
             narrAction.isNarratorMessage = true;
 
             std::lock_guard<std::mutex> lock(g_PBC_PendingActionsMutex);
-            g_PBC_PendingActions.push(std::move(narrAction));
+            if (g_PBC_PendingActions.size() < 512)
+                g_PBC_PendingActions.push(std::move(narrAction));
         }
         else if (!seg.text.empty())
         {
             PBC_PendingAction action;
+            action.expiresAt = ev.createdAt + std::chrono::seconds(60);
             action.charGuid    = snap.charObjGuid;
             action.targetGuid  = snap.whisperTargetGuid;
             action.chatType    = ev.chatType;
             action.text        = seg.text;
 
             std::lock_guard<std::mutex> lock(g_PBC_PendingActionsMutex);
-            g_PBC_PendingActions.push(std::move(action));
+            if (g_PBC_PendingActions.size() < 512)
+                g_PBC_PendingActions.push(std::move(action));
         }
     }
 }
@@ -138,7 +142,8 @@ void PBC_PushNarratorSummary(const ObjectGuid& anchorObjGuid, const std::string&
         narrAction.isNarratorMessage = true;
 
         std::lock_guard<std::mutex> lock(g_PBC_PendingActionsMutex);
-        g_PBC_PendingActions.push(std::move(narrAction));
+        if (g_PBC_PendingActions.size() < 512)
+            g_PBC_PendingActions.push(std::move(narrAction));
     }
 }
 
@@ -152,7 +157,6 @@ void ProcessHistoryReload()
 {
     if (!PBC_ReloadMemoryCaches())
         PBC_Log(PBC_LogLevel::PBC_ERROR, "HistoryReload failed; previous caches retained");
-    g_PBC_EventThreadDone.store(true);
 }
 
 void ProcessCondensation(PBC_EventItem& ev,
@@ -174,7 +178,6 @@ void ProcessCondensation(PBC_EventItem& ev,
                  "Condensation event failed for character={} — history left untouched, "
                  "will retry when threshold is reached again",
                  ev.condensationChar.charName);
-        g_PBC_EventThreadDone.store(true);
         return;
     }
 
@@ -184,7 +187,6 @@ void ProcessCondensation(PBC_EventItem& ev,
     // Queue relationship updates for all party members
     QueueRelationshipUpdatesAfterCondensation(ev.condensationChar, preCondensationHistory);
 
-    g_PBC_EventThreadDone.store(true);
 }
 
 void ProcessRelationshipUpdate(PBC_EventItem& ev)
@@ -193,7 +195,6 @@ void ProcessRelationshipUpdate(PBC_EventItem& ev)
     {
         PBC_Log(PBC_LogLevel::PBC_WARNING, "RelationshipUpdate: prompts not configured, skipping for character={}",
                  ev.relationshipChar.charName);
-        g_PBC_EventThreadDone.store(true);
         return;
     }
 
@@ -212,14 +213,14 @@ void ProcessRelationshipUpdate(PBC_EventItem& ev)
     PBC_ReplaceToken(userPrompt, "relationship_target",      ev.relationshipTargetInfo);
     PBC_ReplaceToken(userPrompt, "target_current_relationship", ev.relationshipCurrentText);
 
-    const PBC_APIConfig* relCfg = PBC_GetConnection("relationship");
+    auto relCfg = PBC_GetConnection("relationship");
+    if (!relCfg) return;
     PBC_LLMResult res = PBC_CallLLMWithConfig(*relCfg, ev.relationshipSystemPrompt, userPrompt);
 
     if (!res.success || res.text.empty())
     {
         PBC_Log(PBC_LogLevel::PBC_WARNING, "RelationshipUpdate: LLM failed for character={} target={}",
                  ev.relationshipChar.charName, ev.relationshipTargetName);
-        g_PBC_EventThreadDone.store(true);
         return;
     }
 
@@ -228,7 +229,6 @@ void ProcessRelationshipUpdate(PBC_EventItem& ev)
     {
         PBC_Log(PBC_LogLevel::PBC_WARNING,
             "RelationshipUpdate: stale or unconfirmed result discarded for character={}", ev.relationshipChar.charName);
-        g_PBC_EventThreadDone.store(true);
         return;
     }
     PBC_WsNotify(ev.relationshipChar.charGuidRaw, "relationship");
@@ -237,146 +237,97 @@ void ProcessRelationshipUpdate(PBC_EventItem& ev)
              ev.relationshipChar.charName, ev.relationshipTargetName,
              PBC_SanitizeForFmt(res.text));
 
-    g_PBC_EventThreadDone.store(true);
 }
 
 void ProcessCardAdditionsMigration(PBC_EventItem& ev)
 {
-    PBC_Log(PBC_LogLevel::PBC_DEFAULT, "CardAdditionsMigration: starting...");
-
-    QueryResult addResult = CharacterDatabase.Query(
-        "SELECT bot_guid, addition FROM mod_pbc_character_card_additions ORDER BY bot_guid ASC, id ASC"
-    );
-
-    if (!addResult)
+    // Transfer the original text and consume its source in the same transaction.
+    // Retrying a committed batch cannot create duplicate memories.
+    while (!g_PBC_Stopping.load() && DB_CardAdditionsTableNotEmpty())
     {
-        PBC_Log(PBC_LogLevel::PBC_DEFAULT, "CardAdditionsMigration: no card additions found, nothing to migrate.");
-        g_PBC_EventThreadDone.store(true);
-        return;
-    }
-
-    std::unordered_map<uint64_t, std::vector<std::string>> additionsByBot;
-    uint32_t totalAdditions = 0;
-    do
-    {
-        uint64_t    botGuid  = (*addResult)[0].Get<uint64_t>();
-        std::string addition = (*addResult)[1].Get<std::string>();
-        additionsByBot[botGuid].push_back(std::move(addition));
-        ++totalAdditions;
-    } while (addResult->NextRow());
-
-    PBC_Log(PBC_LogLevel::PBC_DEFAULT, "CardAdditionsMigration: found {} additions across {} characters",
-             totalAdditions, additionsByBot.size());
-
-    uint32_t processed = 0;
-    uint32_t totalMemories = 0;
-
-    for (auto& [botGuid, additions] : additionsByBot)
-    {
-        std::string charName;
-        QueryResult nameResult = CharacterDatabase.Query(
-            "SELECT name FROM characters WHERE guid = {}", botGuid
-        );
-        if (nameResult)
-            charName = (*nameResult)[0].Get<std::string>();
-
-        std::string charCard;
-        if (!charName.empty())
+        bool confirmed;
         {
-            auto cardIt = g_PBC_CharacterCards.find(charName);
-            if (cardIt != g_PBC_CharacterCards.end())
-                charCard = cardIt->second;
+            std::scoped_lock lock(g_PBC_HistoryMutex, g_PBC_MemoriesMutex, g_PBC_RelationshipsMutex);
+            confirmed = DB_MigrateCardAdditionsBatch();
         }
-        if (charCard.empty())
-            charCard = g_PBC_DefaultCharacterDescription;
-
-        PBC_CharacterSnapshot snap;
-        snap.charGuidRaw   = botGuid;
-        snap.charName      = charName;
-        snap.characterCard = charCard;
-        for (const auto& addition : additions)
-            snap.history.push_back(addition);
-
-        std::string userPrompt = PBC_BuildCondensationPromptFromSnapshot(
-            snap, ev.migrationCondensationUserPromptTmpl);
-
-        const PBC_APIConfig* condCfg = PBC_GetConnection("condensation");
-        PBC_LLMResult res = PBC_CallLLMWithConfig(*condCfg, ev.migrationCondensationSystemPrompt, userPrompt, /*preserveNewlines=*/true);
-
-        if (!res.success || res.text.empty())
+        if (!confirmed || !PBC_ReloadMemoryCaches())
         {
-            PBC_Log(PBC_LogLevel::PBC_WARNING,
-                     "CardAdditionsMigration: LLM failed for character={}, skipping",
-                     charName.empty() ? fmt::format("guid:{}", botGuid) : charName);
-            processed += additions.size();
-            continue;
+            PBC_Log(PBC_LogLevel::PBC_ERROR, "Legacy memory migration interrupted; retry after recovery");
+            return;
         }
-
-        int memCount = PBC_ParseMemoryLines(res.text, botGuid);
-        totalMemories += memCount;
-        processed += additions.size();
-
-        PBC_Log(PBC_LogLevel::PBC_DEFAULT,
-                 "CardAdditionsMigration: character={} additions={} memories_extracted={} progress={}/{}",
-                 charName.empty() ? fmt::format("guid:{}", botGuid) : charName,
-                 additions.size(), memCount, processed, totalAdditions);
     }
-
-    PBC_LoadMemoriesFromDB();
-
-    PBC_Log(PBC_LogLevel::PBC_DEFAULT,
-             "CardAdditionsMigration: complete. {} additions processed, {} memories created.",
-             totalAdditions, totalMemories);
-
-    g_PBC_EventThreadDone.store(true);
+    g_PBC_CardAdditionsMigrationNeeded.store(DB_CardAdditionsTableNotEmpty());
+    PBC_Log(PBC_LogLevel::PBC_DEFAULT, "Legacy memory migration finished; original texts preserved");
 }
 
-void ProcessCombatSummarization(PBC_EventItem& ev)
+static int RemainingSeconds(const PBC_EventItem& ev)
+{
+    return std::max(1, static_cast<int>(std::chrono::duration_cast<std::chrono::seconds>(
+        ev.createdAt + std::chrono::seconds(60) - std::chrono::steady_clock::now()).count()));
+}
+
+bool ProcessCombatSummarization(PBC_EventItem& ev)
 {
     if (ev.combatSystemPrompt.empty() || ev.combatUserPrompt.empty())
     {
         PBC_Log(PBC_LogLevel::PBC_WARNING, "ProcessEvent: CombatSummarization prompts empty, skipping");
-        g_PBC_EventThreadDone.store(true);
-        return;
+        return false;
     }
 
-    const PBC_APIConfig* utilCfg = PBC_GetConnection("utility");
-    PBC_LLMResult summary = PBC_CallLLMWithConfig(*utilCfg, ev.combatSystemPrompt, ev.combatUserPrompt);
-    if (!summary.success || summary.text.empty())
+    auto utilCfg = PBC_GetConnection("utility");
+    if (!utilCfg || PBC_EventExpired(ev)) return false;
+    auto requestConfig = *utilCfg;
+    requestConfig.requestTimeoutSec = std::min(requestConfig.requestTimeoutSec, RemainingSeconds(ev));
+    PBC_LLMResult summary = PBC_CallLLMWithConfig(requestConfig, ev.combatSystemPrompt, ev.combatUserPrompt);
+    if (PBC_EventExpired(ev) || !summary.success || summary.text.empty())
     {
         PBC_Log(PBC_LogLevel::PBC_WARNING, "ProcessEvent: CombatSummarization LLM failed");
-        g_PBC_EventThreadDone.store(true);
-        return;
+        return false;
     }
 
     ev.eventLine = PBC_MakeEventLine(summary.text);
     ev.source.narratorText = summary.text;
 
+    std::vector<uint64_t> owners;
+    for (auto const& snap : ev.respondingChars) if (snap.charGuidRaw) owners.push_back(snap.charGuidRaw);
+    owners.insert(owners.end(), ev.silentCharGuids.begin(), ev.silentCharGuids.end());
+    owners.insert(owners.end(), ev.playerCharGuids.begin(), ev.playerCharGuids.end());
+    ev.sourceHistoryId = PBC_AppendHistoryMessage(0, 0, summary.text, owners, &ev.sourceRecorded);
+    if (!ev.sourceHistoryId) return false;
     PBC_PushNarratorSummary(ev.anchorObjGuid, ev.eventLine);
+    return true;
 }
 
-void ProcessQuestSummarization(PBC_EventItem& ev)
+bool ProcessQuestSummarization(PBC_EventItem& ev)
 {
     if (ev.questSystemPrompt.empty() || ev.questUserPrompt.empty())
     {
         PBC_Log(PBC_LogLevel::PBC_WARNING, "ProcessEvent: QuestSummarization prompts empty, skipping");
-        g_PBC_EventThreadDone.store(true);
-        return;
+        return false;
     }
 
-    const PBC_APIConfig* utilCfg = PBC_GetConnection("utility");
-    PBC_LLMResult summary = PBC_CallLLMWithConfig(*utilCfg, ev.questSystemPrompt, ev.questUserPrompt);
-    if (!summary.success || summary.text.empty())
+    auto utilCfg = PBC_GetConnection("utility");
+    if (!utilCfg || PBC_EventExpired(ev)) return false;
+    auto requestConfig = *utilCfg;
+    requestConfig.requestTimeoutSec = std::min(requestConfig.requestTimeoutSec, RemainingSeconds(ev));
+    PBC_LLMResult summary = PBC_CallLLMWithConfig(requestConfig, ev.questSystemPrompt, ev.questUserPrompt);
+    if (PBC_EventExpired(ev) || !summary.success || summary.text.empty())
     {
         PBC_Log(PBC_LogLevel::PBC_WARNING, "ProcessEvent: QuestSummarization LLM failed");
-        g_PBC_EventThreadDone.store(true);
-        return;
+        return false;
     }
 
     ev.eventLine = PBC_MakeEventLine(summary.text);
     ev.source.narratorText = summary.text;
 
+    std::vector<uint64_t> owners;
+    for (auto const& snap : ev.respondingChars) if (snap.charGuidRaw) owners.push_back(snap.charGuidRaw);
+    owners.insert(owners.end(), ev.silentCharGuids.begin(), ev.silentCharGuids.end());
+    owners.insert(owners.end(), ev.playerCharGuids.begin(), ev.playerCharGuids.end());
+    ev.sourceHistoryId = PBC_AppendHistoryMessage(0, 0, summary.text, owners, &ev.sourceRecorded);
+    if (!ev.sourceHistoryId) return false;
     PBC_PushNarratorSummary(ev.anchorObjGuid, ev.eventLine);
+    return true;
 }
 
 struct PendingReply {
@@ -385,6 +336,36 @@ struct PendingReply {
     uint8_t     chatType;
     std::string messageText;  // Raw text (no speaker prefix)
 };
+
+// Confirm the whole replacement against the captured state before publishing it.
+static bool CommitRegeneratedHistory(const std::vector<PBC_HistoryEntry>& entries,
+    const std::vector<uint64_t>& savedIds,
+    const std::unordered_map<uint64_t, std::string>& originalMessages,
+    const std::unordered_map<uint64_t, std::deque<uint64_t>>& originalOwners)
+{
+    if (entries.size() != savedIds.size() || savedIds.empty()) return false;
+
+    for (uint64_t id : savedIds) if (!originalMessages.count(id)) return false;
+    std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
+    // Reject edits, clears and new exchanges received while the LLM ran.
+    for (auto const& [id, text] : originalMessages)
+    {
+        auto it = g_PBC_History.find(id);
+        if (it == g_PBC_History.end() || it->second.message != text) return false;
+    }
+    for (auto const& [guid, ids] : originalOwners)
+    {
+        auto it = g_PBC_HistoryOwners.find(guid);
+        if (it == g_PBC_HistoryOwners.end() || it->second != ids) return false;
+    }
+    std::vector<std::pair<uint64_t, std::string>> changes;
+    for (size_t i = 0; i < savedIds.size(); ++i)
+        changes.emplace_back(savedIds[i], entries[i].message);
+    if (!DB_ReplaceHistoryBatch(changes)) return false;
+    for (auto& [id, text] : changes)
+        g_PBC_History.at(id).message.swap(text);
+    return true;
+}
 
 // ---------------------------------------------------------------------------
 // ProcessNormal
@@ -405,7 +386,7 @@ struct PendingReply {
 //   chronological order.  Used by the caller to build the
 //   PBC_LastEventRecord for normal (non-regen) events.
 // ---------------------------------------------------------------------------
-void ProcessNormal(PBC_EventItem& ev,
+bool ProcessNormal(PBC_EventItem& ev,
                    const std::string& sysPrompt,
                    const std::string& condenseSysPrompt,
                    const std::string& condenseUsrTmpl,
@@ -413,6 +394,26 @@ void ProcessNormal(PBC_EventItem& ev,
                    std::vector<uint64_t>* outCreatedIds = nullptr)
 {
     bool isRegen = (regenRecord != nullptr);
+    std::unordered_map<uint64_t, std::string> originalMessages;
+    std::unordered_map<uint64_t, std::deque<uint64_t>> originalOwners;
+    if (isRegen)
+    {
+        std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
+        for (uint64_t id : regenRecord->createdHistoryIds)
+        {
+            auto it = g_PBC_History.find(id);
+            if (it == g_PBC_History.end()) return false;
+            originalMessages.emplace(id, it->second.message);
+        }
+        for (auto const& [guid, ids] : g_PBC_HistoryOwners)
+            for (uint64_t id : ids)
+                if (originalMessages.count(id))
+                {
+                    originalOwners.emplace(guid, ids);
+                    break;
+                }
+    }
+
 
     PBC_Log(PBC_LogLevel::PBC_DEBUG, "ProcessEvent: type={} isRegen={} respondingChars={} silentChars={} event=\"{}\"",
              static_cast<int>(ev.type), isRegen, ev.respondingChars.size(), ev.silentCharGuids.size(), ev.eventLine);
@@ -434,6 +435,8 @@ void ProcessNormal(PBC_EventItem& ev,
             srcEntry.authorGuid = ev.source.senderGuid;
             srcEntry.type       = static_cast<uint8_t>(ev.chatType);
             srcEntry.message    = ev.source.message;
+            srcEntry.id = ev.sourceHistoryId;
+            srcEntry.journaled = ev.sourceRecorded;
             ev.eventHistory.push_back(std::move(srcEntry));
         }
         else if (ev.source.IsNarrator())
@@ -442,6 +445,8 @@ void ProcessNormal(PBC_EventItem& ev,
             srcEntry.authorGuid = 0;
             srcEntry.type       = 0;
             srcEntry.message    = ev.source.narratorText;
+            srcEntry.id = ev.sourceHistoryId;
+            srcEntry.journaled = ev.sourceRecorded;
             ev.eventHistory.push_back(std::move(srcEntry));
         }
     }
@@ -469,29 +474,43 @@ void ProcessNormal(PBC_EventItem& ev,
 
     for (PBC_CharacterSnapshot& snap : ev.respondingChars)
     {
+        if (PBC_EventExpired(ev)) break;
+        if (!snap.charGuidRaw) continue;
+        if (!isRegen && !ev.eventHistory.empty() && ev.eventHistory.back().id)
+        {
+            std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
+            auto owner = g_PBC_HistoryOwners.find(snap.charGuidRaw);
+            if (owner == g_PBC_HistoryOwners.end() || owner->second.empty() ||
+                owner->second.back() != ev.eventHistory.back().id)
+                continue; // A newer exchange superseded this queued reaction.
+        }
         // Post deferred "thinks..." notification
         if (g_PBC_DisplayNarratorEvents)
         {
             PBC_PendingAction action;
+            action.expiresAt = ev.createdAt + std::chrono::seconds(60);
             action.charGuid          = snap.charObjGuid;
             action.text              = PBC_MakeEventLine(PBC_Localize("{0} thinks...", snap.charName));
             action.isNarratorMessage = true;
 
             std::lock_guard<std::mutex> lock(g_PBC_PendingActionsMutex);
-            g_PBC_PendingActions.push(std::move(action));
+            if (g_PBC_PendingActions.size() < 512)
+                g_PBC_PendingActions.push(std::move(action));
         }
         PBC_WsNotify(snap.charGuidRaw, "thinks");
 
+        if (!isRegen) snap.history = PBC_GetChatHistoryPreRendered(snap.charGuidRaw);
+
         // Condense inline if over token budget
         int histTokens = PBC_EstimateHistoryTokens(snap.charGuidRaw);
-        if (histTokens > static_cast<int>(g_PBC_MaxHistoryCtx))
+        if (!isRegen && histTokens > static_cast<int>(g_PBC_MaxHistoryCtx))
         {
             PBC_PushNarratorSummary(snap.charObjGuid,
                 PBC_MakeEventLine(PBC_Localize("Condensing {0}'s history...", snap.charName)));
 
             std::deque<std::string> preCondensationHistory = snap.history;
 
-            bool condensed = PBC_CondenseInline(snap, condenseSysPrompt, condenseUsrTmpl);
+            bool condensed = PBC_CondenseInline(snap, condenseSysPrompt, condenseUsrTmpl, RemainingSeconds(ev));
             if (condensed)
             {
                 PBC_LoadMemoriesFromDB();
@@ -499,14 +518,23 @@ void ProcessNormal(PBC_EventItem& ev,
             }
         }
 
-        // Render all eventHistory entries EXCEPT the last one into this
-        // character's snapshot.  The last entry IS the currentEvent —
-        // it belongs in [CURRENT EVENT], not [HISTORY].  Previous entries
-        // are "the past" that this responder needs as context.
-        for (size_t i = 0; i + 1 < ev.eventHistory.size(); ++i)
+        std::deque<std::string> promptHistory;
+        if (!isRegen)
         {
-            std::string rendered = PBC_RenderHistoryLine(ev.eventHistory[i], snap.charGuidRaw);
-            snap.history.push_back(rendered);
+            promptHistory = PBC_GetChatHistoryPreRendered(snap.charGuidRaw);
+            snap.history = promptHistory;
+            if (!ev.eventHistory.empty() && !snap.history.empty() &&
+                snap.history.back() == PBC_RenderHistoryLine(ev.eventHistory.back(), snap.charGuidRaw))
+                snap.history.pop_back();
+        }
+        else
+        {
+            if (ev.sourceRecorded && ev.eventHistory.size() == 1 && !snap.history.empty() &&
+                snap.history.back() == PBC_RenderHistoryLine(ev.eventHistory.front(), snap.charGuidRaw))
+                snap.history.pop_back();
+            for (size_t i = 0; i + 1 < ev.eventHistory.size(); ++i)
+                if (i != 0 || !ev.sourceRecorded)
+                    snap.history.push_back(PBC_RenderHistoryLine(ev.eventHistory[i], snap.charGuidRaw));
         }
 
         // Build user prompt from snapshot
@@ -515,7 +543,16 @@ void ProcessNormal(PBC_EventItem& ev,
         PBC_Log(PBC_LogLevel::PBC_DEBUG, "ProcessEvent: calling LLM for character={} event=\"{}\"",
                  snap.charName, currentEvent);
 
-        PBC_LLMResult res = PBC_CallLLM(sysPrompt, userPrompt);
+        int remaining = static_cast<int>(std::chrono::duration_cast<std::chrono::seconds>(
+            ev.createdAt + std::chrono::seconds(60) - std::chrono::steady_clock::now()).count());
+        if (remaining <= 0) break;
+        PBC_LLMResult res = PBC_CallLLM(sysPrompt, userPrompt, false, remaining);
+        if (PBC_EventExpired(ev)) break;
+        if (!isRegen && PBC_GetChatHistoryPreRendered(snap.charGuidRaw) != promptHistory)
+        {
+            PBC_Log(PBC_LogLevel::PBC_WARNING, "Reply discarded: history changed during generation");
+            break;
+        }
 
         if (!res.success || res.text.empty())
         {
@@ -540,68 +577,30 @@ void ProcessNormal(PBC_EventItem& ev,
             replyEntry.authorGuid = snap.charGuidRaw;
             replyEntry.type       = static_cast<uint8_t>(ev.chatType);
             replyEntry.message    = res.text;
+            if (!isRegen)
+            {
+                std::vector<uint64_t> owners;
+                for (auto const& character : ev.respondingChars)
+                    if (character.charGuidRaw) owners.push_back(character.charGuidRaw);
+                owners.insert(owners.end(), ev.silentCharGuids.begin(), ev.silentCharGuids.end());
+                owners.insert(owners.end(), ev.replyOnlyCharGuids.begin(), ev.replyOnlyCharGuids.end());
+                owners.insert(owners.end(), ev.playerCharGuids.begin(), ev.playerCharGuids.end());
+                replyEntry.id = PBC_AppendHistoryMessage(replyEntry.authorGuid, replyEntry.type,
+                    replyEntry.message, owners, &replyEntry.journaled, &promptHistory);
+                if (!replyEntry.id) break; // Never announce a reply whose persistence is unconfirmed.
+            }
             ev.eventHistory.push_back(std::move(replyEntry));
         }
 
         replies.push_back(std::move(reply));
 
-        // -----------------------------------------------------------------
-        // Send immediate WS preview (id=0) — pre-render for each recipient
-        // -----------------------------------------------------------------
+        // PBC_AppendHistoryMessage already notified the UI with the confirmed ID.
+        // Queue in-game delivery only after persistence; regen publishes after its batch.
+        if (!isRegen)
         {
-            PBC_HistoryEntry previewEntry;
-            previewEntry.id         = 0;
-            previewEntry.authorGuid = snap.charGuidRaw;
-            previewEntry.type       = static_cast<uint8_t>(ev.chatType);
-            previewEntry.message    = res.text;
-
-            // Preview for all recipients (responding chars, silent, replyOnly, players)
-            std::unordered_set<uint64_t> previewTargets;
-            for (const PBC_CharacterSnapshot& rs : ev.respondingChars)
-                previewTargets.insert(rs.charGuidRaw);
-            if (ev.chatType != CHAT_MSG_WHISPER)
-            {
-                for (uint64_t g : ev.silentCharGuids)   previewTargets.insert(g);
-                for (uint64_t g : ev.replyOnlyCharGuids) previewTargets.insert(g);
-                for (uint64_t g : ev.playerCharGuids)    previewTargets.insert(g);
-            }
-            else
-            {
-                // Whispers: only sender + target see them
-                previewTargets.clear();
-                previewTargets.insert(snap.charGuidRaw);
-                if (!snap.whisperTargetGuid.IsEmpty())
-                    previewTargets.insert(snap.whisperTargetGuid.GetCounter());
-                for (uint64_t g : ev.playerCharGuids)
-                    previewTargets.insert(g);
-            }
-
-            for (uint64_t targetGuid : previewTargets)
-            {
-                std::string rendered = PBC_RenderHistoryLine(previewEntry, targetGuid);
-                PBC_WsNotifyHistoryPreview(targetGuid, rendered);
-            }
-        }
-
-        // Split reply into narrator/regular segments if narrator events enabled
-        if (g_PBC_DisplayNarratorEvents)
-        {
-            auto segments = ParseNarratorSpans(res.text);
+            auto segments = g_PBC_DisplayNarratorEvents ? ParseNarratorSpans(res.text)
+                : std::vector<NarratorSegment>{{res.text, false}};
             PushReplySegments(snap, ev, segments);
-        }
-        else
-        {
-            if (!res.text.empty())
-            {
-                PBC_PendingAction action;
-                action.charGuid    = snap.charObjGuid;
-                action.targetGuid  = snap.whisperTargetGuid;
-                action.chatType    = ev.chatType;
-                action.text        = res.text;
-
-                std::lock_guard<std::mutex> lock(g_PBC_PendingActionsMutex);
-                g_PBC_PendingActions.push(std::move(action));
-            }
         }
 
         // Advance the chain
@@ -643,7 +642,7 @@ void ProcessNormal(PBC_EventItem& ev,
         // allOwners already correctly contains only {bot, sender}.
         for (const auto& entry : ev.eventHistory)
         {
-            uint64_t newId = PBC_AppendHistoryMessage(entry.authorGuid, entry.type,
+            uint64_t newId = entry.journaled ? entry.id : PBC_AppendHistoryMessage(entry.authorGuid, entry.type,
                                                       entry.message, allOwners);
             if (outCreatedIds)
                 outCreatedIds->push_back(newId);
@@ -651,29 +650,21 @@ void ProcessNormal(PBC_EventItem& ev,
     }
     else
     {
-        // Regen mode: edit the existing messages in place.  The number of
-        // entries in ev.eventHistory must match the number of saved IDs
-        // (seed + replies).  If the counts don't line up — which should
-        // never happen under normal operation — we abort the regen
-        // entirely and leave the original messages untouched, rather
-        // than risk corrupting the history.
         const auto& savedIds = regenRecord->createdHistoryIds;
-        if (ev.eventHistory.size() != savedIds.size())
-        {
-            PBC_Log(PBC_LogLevel::PBC_WARNING,
-                     "ProcessEvent: regen aborted — eventHistory size {} != savedIds size {} "
-                     "(original messages left untouched)",
-                     ev.eventHistory.size(), savedIds.size());
-        }
-        else
-        {
-            for (size_t i = 0; i < ev.eventHistory.size(); ++i)
-            {
-                const auto& entry = ev.eventHistory[i];
-                if (savedIds[i] != 0)
-                    PBC_UpdateHistoryMessage(savedIds[i], entry.message);
-            }
-        }
+        if (PBC_EventExpired(ev) || ev.eventHistory.size() != savedIds.size())
+            return false;
+        if (!CommitRegeneratedHistory(ev.eventHistory, savedIds, originalMessages, originalOwners))
+            return false;
+        // Publish only the complete, confirmed replacement.
+        for (auto const& reply : replies)
+            for (auto const& snap : ev.respondingChars)
+                if (snap.charGuidRaw == reply.authorGuid)
+                {
+                    auto segments = g_PBC_DisplayNarratorEvents ? ParseNarratorSpans(reply.messageText)
+                        : std::vector<NarratorSegment>{{reply.messageText, false}};
+                    PushReplySegments(snap, ev, segments);
+                    break;
+                }
     }
 
     // -----------------------------------------------------------------------
@@ -682,7 +673,8 @@ void ProcessNormal(PBC_EventItem& ev,
     // The record is reused across regens — a regen does not replace it,
     // so regeneration can be triggered repeatedly.
     // -----------------------------------------------------------------------
-    if (!isRegen && outCreatedIds && !replies.empty())
+    if (!isRegen && outCreatedIds && !replies.empty() &&
+        std::all_of(outCreatedIds->begin(), outCreatedIds->end(), [](uint64_t id) { return id != 0; }))
     {
         auto record = std::make_shared<PBC_LastEventRecord>();
         record->eventLine          = ev.eventLine;
@@ -718,7 +710,9 @@ void ProcessNormal(PBC_EventItem& ev,
 
         PBC_PendingEventRequest req;
         req.eventLine           = lastEventLine;
-        req.source              = ev.source;
+        req.createdAt = ev.createdAt;
+        req.source.senderGuid = replies.back().authorGuid;
+        req.source.message = replies.back().messageText;
         req.chatType            = ev.chatType;
         req.anchorCharGuid     = lastResponderGuid;
         req.eventHistory        = ev.eventHistory;
@@ -729,7 +723,8 @@ void ProcessNormal(PBC_EventItem& ev,
 
         {
             std::lock_guard<std::mutex> lock(g_PBC_PendingEventRequestsMutex);
-            g_PBC_PendingEventRequests.push(std::move(req));
+            if (g_PBC_PendingEventRequests.size() < 64)
+                g_PBC_PendingEventRequests.push(std::move(req));
         }
 
         PBC_Log(PBC_LogLevel::PBC_DEBUG,
@@ -737,6 +732,7 @@ void ProcessNormal(PBC_EventItem& ev,
                  "excluded={} silent={} event=\"{}\"",
                  lastResponderGuid, req.excludedCharGuids.size(), ev.silentCharGuids.size(), lastEventLine);
     }
+    return true;
 }
 
 // ===========================================================================
@@ -866,8 +862,13 @@ void ProcessRegen(PBC_EventItem& ev,
     ev.replyOnlyCharGuids = record->replyOnlyCharGuids;
     ev.eventHistory      = record->seedEventHistory;  // source-only seed
 
-    ProcessNormal(ev, sysPrompt, condenseSysPrompt, condenseUsrTmpl,
-                  /*regenRecord=*/record.get(), /*outCreatedIds=*/nullptr);
+    ev.sourceRecorded = !ev.eventHistory.empty() && ev.eventHistory.front().journaled;
+    if (!ProcessNormal(ev, sysPrompt, condenseSysPrompt, condenseUsrTmpl,
+                  /*regenRecord=*/record.get(), /*outCreatedIds=*/nullptr))
+    {
+        PBC_Log(PBC_LogLevel::PBC_WARNING, "Regeneration rejected: incomplete, stale or unconfirmed batch");
+        return;
+    }
 
     // Notify WS clients of the regen so the frontend can replace the
     // affected messages in place.  Every participant (responding chars,
@@ -906,61 +907,7 @@ void PBC_ProcessEventItem(PBC_EventItem ev)
     // the time of the original event, and we don't want to insert a new
     // "some time passes" line just because the regen was triggered later.
     // -------------------------------------------------------------------
-    bool isRegen = (ev.type == PBC_EventType::Regen);
-
-    if (!isRegen)
-    {
-        // -------------------------------------------------------------------
-        // Insert time-gap narrator lines BEFORE any event-type-specific
-        // processing, so every character (responding, silent, or undergoing
-        // condensation/relationship-update) knows about the time gap before
-        // the LLM prompt is built.
-        //
-        // We collect all relevant character GUIDs first, then create ONE
-        // shared "some time passes" entry owned by all of them, instead of
-        // inserting one duplicate DB row per character.
-        // -------------------------------------------------------------------
-        bool incomingIsWhisper = (ev.chatType == CHAT_MSG_WHISPER);
-
-        // Collect all character GUIDs that participate in this event
-        std::vector<uint64_t> allGuids;
-        allGuids.reserve(ev.respondingChars.size() + ev.silentCharGuids.size() + 2);
-
-        for (const PBC_CharacterSnapshot& snap : ev.respondingChars)
-            allGuids.push_back(snap.charGuidRaw);
-        for (uint64_t guid : ev.silentCharGuids)
-            allGuids.push_back(guid);
-        if (ev.type == PBC_EventType::Condensation)
-            allGuids.push_back(ev.condensationChar.charGuidRaw);
-        if (ev.type == PBC_EventType::RelationshipUpdate)
-            allGuids.push_back(ev.relationshipChar.charGuidRaw);
-
-        // One shared batch call — creates a single DB row for all that need it
-        std::unordered_set<uint64_t> gapInserted =
-            PBC_MaybeInsertSharedTimeGap(allGuids, incomingIsWhisper);
-
-        if (!gapInserted.empty())
-        {
-            std::string renderedGap = PBC_Localize("Narrator: *{0}*", PBC_Localize("some time passes"));
-
-            // Push the rendered line into snapshots that need it for prompt building
-            for (PBC_CharacterSnapshot& snap : ev.respondingChars)
-            {
-                if (gapInserted.count(snap.charGuidRaw))
-                    snap.history.push_back(renderedGap);
-            }
-            if (ev.type == PBC_EventType::Condensation &&
-                gapInserted.count(ev.condensationChar.charGuidRaw))
-            {
-                ev.condensationChar.history.push_back(renderedGap);
-            }
-            if (ev.type == PBC_EventType::RelationshipUpdate &&
-                gapInserted.count(ev.relationshipChar.charGuidRaw))
-            {
-                ev.relationshipChar.history.push_back(renderedGap);
-            }
-        }
-    }
+    if (PBC_EventExpired(ev)) return;
 
     // Capture config strings (read-only, safe without lock)
     std::string sysPrompt         = g_PBC_SystemPrompt;
@@ -1009,7 +956,6 @@ void PBC_ProcessEventItem(PBC_EventItem ev)
     if (ev.type == PBC_EventType::Regen)
     {
         ProcessRegen(ev, sysPrompt, condenseSysPrompt, condenseUsrTmpl);
-        g_PBC_EventThreadDone.store(true);
         return;
     }
 
@@ -1018,7 +964,7 @@ void PBC_ProcessEventItem(PBC_EventItem ev)
     // -----------------------------------------------------------------------
     if (ev.type == PBC_EventType::CombatSummarization)
     {
-        ProcessCombatSummarization(ev);
+        if (!ProcessCombatSummarization(ev)) return;
         // Fall through to Normal processing
     }
 
@@ -1027,7 +973,7 @@ void PBC_ProcessEventItem(PBC_EventItem ev)
     // -----------------------------------------------------------------------
     if (ev.type == PBC_EventType::QuestSummarization)
     {
-        ProcessQuestSummarization(ev);
+        if (!ProcessQuestSummarization(ev)) return;
         // Fall through to Normal processing
     }
 
@@ -1041,5 +987,4 @@ void PBC_ProcessEventItem(PBC_EventItem ev)
     ProcessNormal(ev, sysPrompt, condenseSysPrompt, condenseUsrTmpl,
                   /*regenRecord=*/nullptr, /*outCreatedIds=*/&createdIds);
 
-    g_PBC_EventThreadDone.store(true);
 }
