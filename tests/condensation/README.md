@@ -26,7 +26,8 @@ The GitHub Actions workflow runs GCC, Clang and MSVC; each test has a timeout.
 - Missing prompts/connection, LLM failure and empty/missing/stale history.
 - Edits, appends, resets and replacement IDs while the request is outstanding.
 - Exact memory content, shared ownership, duplicate condensation attempts.
-- A new message arriving after verification, during source-row cleanup.
+- A new message arriving after the transaction and cache update.
+- Unconfirmed persistence keeps history and suspends retries for the character.
 
 Mutations during a request are injected deterministically. These tests validate
 the guard logic, not real thread scheduling, locks across the whole module or
@@ -40,7 +41,14 @@ Before merging, also compile against the intended AzerothCore/Playerbots
 revision and run real-database tests. Record those revisions and results in
 the PR.
 
-SQL write failures/atomicity remain a separate follow-up: the existing insert
-API does not return success. Syntax validation cannot identify hallucinations
-or truncation ending on an otherwise valid line. Configuration reload and
-other global concurrency issues are not proven safe by this harness.
+Condensation now commits its memory inserts and exact source cleanup together,
+and updates caches only on confirmation. This requires the companion core fix
+which checks START/COMMIT and prohibits reconnection replay inside a transaction.
+An unconfirmed result suspends condensation for the affected character until
+process restart, when authoritative database contents are reloaded.
+
+These doubles do not validate the production database driver. See the separate
+local MySQL validation report. Legacy card migration and other history mutation
+APIs are outside this change. Syntax validation cannot identify hallucinations
+or truncation ending on an otherwise valid line. Configuration reload and global
+concurrency are not proven safe by this harness.

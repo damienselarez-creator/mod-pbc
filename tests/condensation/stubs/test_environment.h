@@ -64,7 +64,9 @@ inline PBC_LLMResult PBC_CallLLMWithConfig(const PBC_APIConfig&, const std::stri
     if (duringRequest) duringRequest();
     return response;
 }
-inline void PBC_WsNotify(uint64_t, const std::string&) {}
+inline void PBC_WsNotify(uint64_t, const std::string&) {
+    if (duringDelete) { auto callback = std::move(duringDelete); duringDelete = {}; callback(); }
+}
 inline std::string PBC_DefaultRelationshipText(const std::string& name) { return name; }
 inline std::string PBC_BuildTargetInfo(const std::string& name) { return name; }
 inline void PBC_PushEvent(PBC_EventItem ev) { queued.push_back(std::move(ev)); }

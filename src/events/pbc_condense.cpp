@@ -13,12 +13,17 @@
 #include <mutex>
 #include <utility>
 #include <vector>
+#include <unordered_set>
 
 // ---------------------------------------------------------------------------
 // Internal helpers for validated persistence and snapshot checks.
 // ---------------------------------------------------------------------------
 namespace
 {
+// History mutex protects this process-lifetime circuit breaker. Restart reloads
+// the authoritative database state after an uncertain transaction outcome.
+std::unordered_set<uint64_t> suspendedPersistence;
+
 void StoreValidatedMemories(const std::vector<PBC_ParsedMemory>& memories, uint64_t botGuid)
 {
     for (const auto& memory : memories)
@@ -80,6 +85,8 @@ bool PBC_CondenseInline(PBC_CharacterSnapshot& snap,
     std::deque<uint64_t> sourceIds;
     {
         std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
+        if (suspendedPersistence.count(snap.charGuidRaw))
+            return false;
         if (!HistoryMatchesSnapshot(snap))
         {
             PBC_Log(PBC_LogLevel::PBC_WARNING, "CondenseInline: empty or stale snapshot for character={} — history retained", snap.charName);
@@ -117,14 +124,37 @@ bool PBC_CondenseInline(PBC_CharacterSnapshot& snap,
             PBC_Log(PBC_LogLevel::PBC_WARNING, "CondenseInline: history changed during extraction for character={} — result discarded", snap.charName);
             return false;
         }
-        StoreValidatedMemories(memories, snap.charGuidRaw);
+        if (suspendedPersistence.count(snap.charGuidRaw))
+            return false;
+
+        // Reserve the cache before committing so allocation failure cannot
+        // leave a successfully committed batch only partially cached.
+        std::lock_guard<std::mutex> memoryLock(g_PBC_MemoriesMutex);
+        std::vector<PBC_MemoryEntry> updated = g_PBC_Memories[snap.charGuidRaw];
+        for (const auto& memory : memories)
+        {
+            PBC_MemoryEntry entry;
+            entry.dbId = 0;
+            entry.text = memory.text;
+            entry.importance = memory.importance;
+            entry.createdAt = PBC_FormatDate(std::time(nullptr));
+            updated.push_back(std::move(entry));
+        }
+        // Insert the suspension before starting any database writes. In
+        // particular, never automatically retry an uncertain COMMIT.
+        suspendedPersistence.insert(snap.charGuidRaw);
+        if (!DB_CommitCondensation(snap.charGuidRaw, memories, sourceIds))
+        {
+            PBC_Log(PBC_LogLevel::PBC_WARNING,
+                "CondenseInline: persistence unconfirmed for character={}; history retained, "
+                "condensation suspended until server restart", snap.charName);
+            return false;
+        }
+        g_PBC_Memories[snap.charGuidRaw].swap(updated);
+        suspendedPersistence.erase(snap.charGuidRaw);
         g_PBC_HistoryOwners.erase(snap.charGuidRaw);
         g_PBC_LastHistoryTime.erase(snap.charGuidRaw);
     }
-    // Scope asynchronous deletes to the exact source rows. New messages may
-    // already be arriving after the mutex is released.
-    for (uint64_t id : sourceIds)
-        DB_RemoveHistoryOwnership(snap.charGuidRaw, id, true);
     PBC_WsNotify(snap.charGuidRaw, "memory");
     snap.history.clear();
 

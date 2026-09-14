@@ -4,11 +4,49 @@
 #include "pbc_utils.h"
 
 #include "DatabaseEnv.h"
+#include "pbc_memory_parser.h"
 
 #include <string>
 #include <vector>
 #include <cstdint>
 #include <ctime>
+#include <exception>
+
+bool DB_CommitCondensation(uint64_t botGuid, const std::vector<PBC_ParsedMemory>& memories,
+                           const std::deque<uint64_t>& sourceIds)
+{
+    if (memories.empty() || sourceIds.empty())
+        return false;
+
+    auto transaction = CharacterDatabase.BeginTransaction();
+    for (const auto& memory : memories)
+    {
+        std::string escaped = memory.text;
+        CharacterDatabase.EscapeString(escaped);
+        transaction->Append(
+            "INSERT INTO mod_pbc_memories (bot_guid, memory_text, importance) VALUES ({}, '{}', {})",
+            botGuid, escaped, static_cast<uint32_t>(memory.importance));
+    }
+    for (uint64_t id : sourceIds)
+    {
+        transaction->Append("DELETE FROM mod_pbc_history_owners WHERE guid = {} AND history_id = {}",
+                            botGuid, id);
+        transaction->Append(
+            "DELETE FROM mod_pbc_history WHERE id = {} AND NOT EXISTS "
+            "(SELECT 1 FROM mod_pbc_history_owners WHERE history_id = {})", id, id);
+    }
+
+    try
+    {
+        auto completion = CharacterDatabase.AsyncCommitTransaction(transaction);
+        return completion.m_future.get();
+    }
+    catch (const std::exception&)
+    {
+        // Do not assume that an interrupted acknowledgement means rollback.
+        return false;
+    }
+}
 
 // ---------------------------------------------------------------------------
 // Chat history — normalized schema (mod_pbc_history + mod_pbc_history_owners)

@@ -1,6 +1,7 @@
 #include "test_environment.h"
 #include "pbc_condense.h"
 #include "pbc_memory_parser.h"
+#include "pbc_database.h"
 #include <cstdlib>
 #include <iostream>
 
@@ -122,5 +123,16 @@ int main()
 
     snap = Reset();
     Check(PBC_ParseMemoryLines("[7] Good.\nBad.", 1) == 0 && writes == 0, "migration parser is all-or-nothing");
+    snap = Reset();
+    commitSucceeds = false;
+    const int previousCommits = commitCalls;
+    Check(!PBC_CondenseInline(snap, "system", "user"), "failed persistence rejected");
+    Check(writes == 0 && deletedIds.empty() && snap.history.size() == 2
+        && g_PBC_HistoryOwners.at(1).size() == 2 && g_PBC_Memories.at(1).empty(),
+        "unconfirmed commit preserves history and memory contents");
+    commitSucceeds = true;
+    const int previousCalls = calls;
+    Check(!PBC_CondenseInline(snap, "system", "user") && calls == previousCalls
+        && commitCalls == previousCommits + 1, "uncertain commit is never retried in this process");
     std::cout << "Condensation regression tests passed.\n";
 }

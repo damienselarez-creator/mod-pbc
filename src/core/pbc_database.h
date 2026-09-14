@@ -4,6 +4,14 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <deque>
+
+struct PBC_ParsedMemory;
+
+// Requires a core which checks transaction boundaries and never replays a
+// statement after reconnecting inside a transaction. Called off the world thread.
+bool DB_CommitCondensation(uint64_t botGuid, const std::vector<PBC_ParsedMemory>& memories,
+                           const std::deque<uint64_t>& sourceIds);
 
 // ---------------------------------------------------------------------------
 // Chat history — normalized schema (mod_pbc_history + mod_pbc_history_owners)
