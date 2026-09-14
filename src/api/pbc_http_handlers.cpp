@@ -258,10 +258,16 @@ static Player* ResolveOnlineBot(uint64_t charGuid, const PBC_AuthInfo& authInfo,
 
 // Map a mutation result (PBC_HistoryResult) to the appropriate HTTP response.
 // Returns true if the result was Ok (caller should continue with success).
-// On NotFound or Desync, the response is already set and false is returned.
+// On failure, the response is already set and false is returned.
 static bool RespondMutationResult(httplib::Response& res, PBC_HistoryResult result,
                                   const std::string& entityName)
 {
+    if (result == PBC_HistoryResult::PersistenceFailed)
+    {
+        res.status = 503;
+        res.set_content("{\"error\":\"persistence_unconfirmed\"}", "application/json");
+        return false;
+    }
     if (result == PBC_HistoryResult::NotFound)
     {
         res.status = 404;

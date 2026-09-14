@@ -92,7 +92,12 @@ std::unordered_set<uint64_t> PBC_MaybeInsertSharedTimeGap(
 // ---------------------------------------------------------------------------
 // Mutation result (thread-safe, also updates the database)
 // ---------------------------------------------------------------------------
-enum class PBC_HistoryResult { Ok, NotFound, Desync };
+enum class PBC_HistoryResult { Ok, NotFound, Desync, PersistenceFailed };
+
+PBC_HistoryResult PBC_StoreGeneratedRelationship(uint64_t botGuid, std::string const& targetName,
+    std::string const& newText, std::string const& originalText, uint64_t generation);
+
+PBC_HistoryResult PBC_ResetCharacterMemory(uint64_t botGuid, bool allCharacters = false);
 
 // ---------------------------------------------------------------------------
 // History mutation (thread-safe, also updates the database)

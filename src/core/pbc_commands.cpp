@@ -172,24 +172,10 @@ static bool HandleCharsReset(ChatHandler* handler, Optional<std::string_view> na
     // Handle the @ALL special token: wipe every bot's data.
     if (nameArg && *nameArg == "@ALL")
     {
-        CharacterDatabase.Execute("DELETE FROM mod_pbc_history");
-        CharacterDatabase.Execute("DELETE FROM mod_pbc_history_owners");
-        DB_DeleteAllMemories();
-        DB_DeleteAllRelationships();
-
+        if (PBC_ResetCharacterMemory(0, true) != PBC_HistoryResult::Ok)
         {
-            std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
-            g_PBC_History.clear();
-            g_PBC_HistoryOwners.clear();
-            g_PBC_LastHistoryTime.clear();
-        }
-        {
-            std::lock_guard<std::mutex> lock(g_PBC_MemoriesMutex);
-            g_PBC_Memories.clear();
-        }
-        {
-            std::lock_guard<std::mutex> lock(g_PBC_RelationshipsMutex);
-            g_PBC_Relationships.clear();
+            handler->PSendSysMessage("[PBC] Reset not confirmed by the database; cached memory retained.");
+            return false;
         }
 
         handler->PSendSysMessage("[PBC] History, memories and relationships cleared for ALL characters.");
@@ -205,22 +191,10 @@ static bool HandleCharsReset(ChatHandler* handler, Optional<std::string_view> na
 
     uint64_t botGuid = target->GetGUID().GetCounter();
 
-    DB_RemoveAllHistoryOwnership(botGuid);
-    DB_DeleteMemoriesForCharacter(botGuid);
-    DB_DeleteRelationshipsForCharacter(botGuid);
-
+    if (PBC_ResetCharacterMemory(botGuid) != PBC_HistoryResult::Ok)
     {
-        std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
-        g_PBC_HistoryOwners.erase(botGuid);
-        g_PBC_LastHistoryTime.erase(botGuid);
-    }
-    {
-        std::lock_guard<std::mutex> lock(g_PBC_MemoriesMutex);
-        g_PBC_Memories.erase(botGuid);
-    }
-    {
-        std::lock_guard<std::mutex> lock(g_PBC_RelationshipsMutex);
-        g_PBC_Relationships.erase(botGuid);
+        handler->PSendSysMessage("[PBC] Reset not confirmed by the database; cached memory retained.");
+        return false;
     }
 
     handler->PSendSysMessage("[PBC] History, memories and relationships cleared for '{}'.", target->GetName());

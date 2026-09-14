@@ -13,6 +13,54 @@
 #include <exception>
 #include <algorithm>
 
+namespace
+{
+bool DB_ConfirmMutation(CharacterDatabaseTransaction& transaction)
+{
+    try
+    {
+        auto completion = CharacterDatabase.AsyncCommitTransaction(transaction);
+        if (completion.m_future.get())
+            return true;
+    }
+    catch (std::exception const&)
+    {
+        // A missing acknowledgement does not prove rollback.
+    }
+    PBC_Log(PBC_LogLevel::PBC_WARNING, "Memory mutation unconfirmed; cache retained");
+    return false;
+}
+}
+
+bool DB_DeleteHistoryMessage(uint64_t historyId)
+{
+    auto transaction = CharacterDatabase.BeginTransaction();
+    transaction->Append("DELETE FROM mod_pbc_history_owners WHERE history_id = {}", historyId);
+    transaction->Append("DELETE FROM mod_pbc_history WHERE id = {}", historyId);
+    return DB_ConfirmMutation(transaction);
+}
+
+bool DB_ResetCharacterMemory(uint64_t botGuid, bool allCharacters)
+{
+    auto transaction = CharacterDatabase.BeginTransaction();
+    if (allCharacters)
+    {
+        transaction->Append("DELETE FROM mod_pbc_history_owners");
+        transaction->Append("DELETE FROM mod_pbc_history");
+        transaction->Append("DELETE FROM mod_pbc_memories");
+        transaction->Append("DELETE FROM mod_pbc_relationships");
+    }
+    else
+    {
+        transaction->Append("DELETE FROM mod_pbc_history_owners WHERE guid = {}", botGuid);
+        transaction->Append("DELETE FROM mod_pbc_history WHERE NOT EXISTS "
+            "(SELECT 1 FROM mod_pbc_history_owners WHERE history_id = mod_pbc_history.id)");
+        transaction->Append("DELETE FROM mod_pbc_memories WHERE bot_guid = {}", botGuid);
+        transaction->Append("DELETE FROM mod_pbc_relationships WHERE bot_guid = {}", botGuid);
+    }
+    return DB_ConfirmMutation(transaction);
+}
+
 bool DB_CommitCondensation(uint64_t botGuid, const std::vector<PBC_ParsedMemory>& memories,
                            const std::deque<uint64_t>& sourceIds)
 {
@@ -42,7 +90,7 @@ bool DB_CommitCondensation(uint64_t botGuid, const std::vector<PBC_ParsedMemory>
         auto completion = CharacterDatabase.AsyncCommitTransaction(transaction);
         return completion.m_future.get();
     }
-    catch (const std::exception&)
+    catch (std::exception const&)
     {
         // Do not assume that an interrupted acknowledgement means rollback.
         return false;
@@ -91,21 +139,24 @@ uint64_t DB_InsertHistoryMessage(uint64_t authorGuid, uint8_t type,
     return historyId;
 }
 
-void DB_UpdateHistoryMessage(uint64_t historyId, const std::string& newMessage)
+bool DB_UpdateHistoryMessage(uint64_t historyId, const std::string& newMessage)
 {
+    auto transaction = CharacterDatabase.BeginTransaction();
     std::string escaped = newMessage;
     CharacterDatabase.EscapeString(escaped);
-    CharacterDatabase.Execute(
+    transaction->Append(
         "UPDATE mod_pbc_history SET message = '{}' WHERE id = {}",
         escaped,
         historyId
     );
+    return DB_ConfirmMutation(transaction);
 }
 
-void DB_RemoveHistoryOwnership(uint64_t guid, uint64_t historyId,
+bool DB_RemoveHistoryOwnership(uint64_t guid, uint64_t historyId,
                                bool removeOrphaned)
 {
-    CharacterDatabase.Execute(
+    auto transaction = CharacterDatabase.BeginTransaction();
+    transaction->Append(
         "DELETE FROM mod_pbc_history_owners WHERE guid = {} AND history_id = {}",
         guid,
         historyId
@@ -113,7 +164,7 @@ void DB_RemoveHistoryOwnership(uint64_t guid, uint64_t historyId,
 
     if (removeOrphaned)
     {
-        CharacterDatabase.Execute(
+        transaction->Append(
             "DELETE FROM mod_pbc_history "
             "WHERE id = {} AND NOT EXISTS ("
             "  SELECT 1 FROM mod_pbc_history_owners WHERE history_id = {}"
@@ -122,23 +173,7 @@ void DB_RemoveHistoryOwnership(uint64_t guid, uint64_t historyId,
             historyId
         );
     }
-}
-
-void DB_RemoveAllHistoryOwnership(uint64_t guid)
-{
-    // Delete all ownership rows for this character
-    CharacterDatabase.Execute(
-        "DELETE FROM mod_pbc_history_owners WHERE guid = {}",
-        guid
-    );
-
-    // Clean orphaned messages (those with zero remaining owners)
-    CharacterDatabase.Execute(
-        "DELETE FROM mod_pbc_history "
-        "WHERE NOT EXISTS ("
-        "  SELECT 1 FROM mod_pbc_history_owners WHERE history_id = mod_pbc_history.id"
-        ")"
-    );
+    return DB_ConfirmMutation(transaction);
 }
 
 // ---------------------------------------------------------------------------
@@ -157,37 +192,28 @@ void DB_InsertMemory(uint64_t botGuid, const std::string& memoryText, uint8_t im
     );
 }
 
-void DB_DeleteMemoriesForCharacter(uint64_t botGuid)
+bool DB_UpdateMemoryById(uint64_t memoryId, const std::string& newText, uint8_t importance)
 {
-    CharacterDatabase.Execute(
-        "DELETE FROM mod_pbc_memories WHERE bot_guid = {}",
-        botGuid
-    );
-}
-
-void DB_DeleteAllMemories()
-{
-    CharacterDatabase.Execute("DELETE FROM mod_pbc_memories");
-}
-
-void DB_UpdateMemoryById(uint64_t memoryId, const std::string& newText, uint8_t importance)
-{
+    auto transaction = CharacterDatabase.BeginTransaction();
     std::string escaped = newText;
     CharacterDatabase.EscapeString(escaped);
-    CharacterDatabase.Execute(
+    transaction->Append(
         "UPDATE mod_pbc_memories SET memory_text = '{}', importance = {} WHERE id = {}",
         escaped,
         static_cast<uint32_t>(importance),
         memoryId
     );
+    return DB_ConfirmMutation(transaction);
 }
 
-void DB_DeleteMemoryById(uint64_t memoryId)
+bool DB_DeleteMemoryById(uint64_t memoryId)
 {
-    CharacterDatabase.Execute(
+    auto transaction = CharacterDatabase.BeginTransaction();
+    transaction->Append(
         "DELETE FROM mod_pbc_memories WHERE id = {}",
         memoryId
     );
+    return DB_ConfirmMutation(transaction);
 }
 
 // ---------------------------------------------------------------------------
@@ -209,14 +235,15 @@ void DB_UpsertRollChanceModifier(uint64_t botGuid, int32_t modifier)
 // Character relationships
 // ---------------------------------------------------------------------------
 
-void DB_UpsertRelationship(uint64_t botGuid, const std::string& targetName,
+bool DB_UpsertRelationship(uint64_t botGuid, const std::string& targetName,
                             const std::string& relationshipText)
 {
+    auto transaction = CharacterDatabase.BeginTransaction();
     std::string escapedName = targetName;
     CharacterDatabase.EscapeString(escapedName);
     std::string escapedText = relationshipText;
     CharacterDatabase.EscapeString(escapedText);
-    CharacterDatabase.Execute(
+    transaction->Append(
         "INSERT INTO mod_pbc_relationships "
         "  (bot_guid, target_name, relationship_text) "
         "VALUES ({}, '{}', '{}') "
@@ -228,46 +255,38 @@ void DB_UpsertRelationship(uint64_t botGuid, const std::string& targetName,
         escapedText,
         escapedText
     );
+    return DB_ConfirmMutation(transaction);
 }
 
-void DB_DeleteRelationshipsForCharacter(uint64_t botGuid)
-{
-    CharacterDatabase.Execute(
-        "DELETE FROM mod_pbc_relationships WHERE bot_guid = {}",
-        botGuid
-    );
-}
-
-void DB_DeleteAllRelationships()
-{
-    CharacterDatabase.Execute("DELETE FROM mod_pbc_relationships");
-}
-
-void DB_UpdateRelationshipText(uint64_t botGuid, const std::string& targetName,
+bool DB_UpdateRelationshipText(uint64_t botGuid, const std::string& targetName,
                                 const std::string& newText)
 {
+    auto transaction = CharacterDatabase.BeginTransaction();
     std::string escapedName = targetName;
     CharacterDatabase.EscapeString(escapedName);
     std::string escapedText = newText;
     CharacterDatabase.EscapeString(escapedText);
-    CharacterDatabase.Execute(
+    transaction->Append(
         "UPDATE mod_pbc_relationships SET relationship_text = '{}' "
         "WHERE bot_guid = {} AND target_name = '{}'",
         escapedText,
         botGuid,
         escapedName
     );
+    return DB_ConfirmMutation(transaction);
 }
 
-void DB_DeleteRelationship(uint64_t botGuid, const std::string& targetName)
+bool DB_DeleteRelationship(uint64_t botGuid, const std::string& targetName)
 {
+    auto transaction = CharacterDatabase.BeginTransaction();
     std::string escapedName = targetName;
     CharacterDatabase.EscapeString(escapedName);
-    CharacterDatabase.Execute(
+    transaction->Append(
         "DELETE FROM mod_pbc_relationships WHERE bot_guid = {} AND target_name = '{}'",
         botGuid,
         escapedName
     );
+    return DB_ConfirmMutation(transaction);
 }
 
 // ---------------------------------------------------------------------------

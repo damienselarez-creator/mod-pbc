@@ -20,6 +20,14 @@
 #include <unordered_set>
 #include <ctime>
 #include <algorithm>
+#include <atomic>
+
+namespace
+{
+// Conservatively invalidate queued relationship snapshots after a reset or edit.
+std::atomic<uint64_t> relationshipGeneration{0};
+}
+
 
 // ---------------------------------------------------------------------------
 // Variable substitution — var map
@@ -522,8 +530,9 @@ PBC_HistoryResult PBC_UpdateHistoryMessage(uint64_t historyId,
     if (it == g_PBC_History.end())
         return PBC_HistoryResult::NotFound;
 
+    if (!DB_UpdateHistoryMessage(historyId, newMessage))
+        return PBC_HistoryResult::PersistenceFailed;
     it->second.message = newMessage;
-    DB_UpdateHistoryMessage(historyId, newMessage);
     return PBC_HistoryResult::Ok;
 }
 
@@ -532,73 +541,98 @@ PBC_HistoryResult PBC_UpdateHistoryMessage(uint64_t historyId,
 // ---------------------------------------------------------------------------
 PBC_HistoryResult PBC_DeleteHistoryMessage(uint64_t historyId)
 {
-    {
-        std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
-        if (g_PBC_History.find(historyId) == g_PBC_History.end())
-            return PBC_HistoryResult::NotFound;
-
-        // Remove this historyId from every owner's deque
-        for (auto& [guid, idList] : g_PBC_HistoryOwners)
-        {
-            auto pos = std::find(idList.begin(), idList.end(), historyId);
-            if (pos != idList.end())
-                idList.erase(pos);
-        }
-
-        g_PBC_History.erase(historyId);
-    }
-
-    // DB cleanup: remove all ownership rows, then the message itself.
-    // Use DirectExecute for synchronous, ordered execution — avoids a window
-    // where ownership rows are gone but the message still exists (or vice
-    // versa), which could cause a subsequent reload to resurrect the message.
-    CharacterDatabase.DirectExecute(
-        "DELETE FROM mod_pbc_history_owners WHERE history_id = {}", historyId);
-    CharacterDatabase.DirectExecute(
-        "DELETE FROM mod_pbc_history WHERE id = {}", historyId);
-
+    std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
+    if (g_PBC_History.find(historyId) == g_PBC_History.end())
+        return PBC_HistoryResult::NotFound;
+    if (!DB_DeleteHistoryMessage(historyId))
+        return PBC_HistoryResult::PersistenceFailed;
+    for (auto& [guid, ids] : g_PBC_HistoryOwners)
+        ids.erase(std::remove(ids.begin(), ids.end(), historyId), ids.end());
+    g_PBC_History.erase(historyId);
     return PBC_HistoryResult::Ok;
 }
 
-// ---------------------------------------------------------------------------
-// Soft unlink: remove one character's ownership (cleanup orphaned message)
-// ---------------------------------------------------------------------------
 PBC_HistoryResult PBC_RemoveHistoryOwnership(uint64_t guid, uint64_t historyId)
 {
-    {
-        std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
-        auto ownersIt = g_PBC_HistoryOwners.find(guid);
-        if (ownersIt == g_PBC_HistoryOwners.end())
-            return PBC_HistoryResult::NotFound;
-
-        auto pos = std::find(ownersIt->second.begin(), ownersIt->second.end(), historyId);
-        if (pos == ownersIt->second.end())
-            return PBC_HistoryResult::NotFound;
-
-        ownersIt->second.erase(pos);
-    }
-
-    DB_RemoveHistoryOwnership(guid, historyId, true);
-
-    // If message is now orphaned, remove from g_PBC_History
-    {
-        std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
-        bool hasOwners = false;
-        for (const auto& [g, idList] : g_PBC_HistoryOwners)
-        {
-            if (std::find(idList.begin(), idList.end(), historyId) != idList.end())
-            {
-                hasOwners = true;
-                break;
-            }
-        }
-        if (!hasOwners)
-            g_PBC_History.erase(historyId);
-    }
-
+    std::lock_guard<std::mutex> lock(g_PBC_HistoryMutex);
+    auto owner = g_PBC_HistoryOwners.find(guid);
+    if (owner == g_PBC_HistoryOwners.end())
+        return PBC_HistoryResult::NotFound;
+    auto pos = std::find(owner->second.begin(), owner->second.end(), historyId);
+    if (pos == owner->second.end())
+        return PBC_HistoryResult::NotFound;
+    if (!DB_RemoveHistoryOwnership(guid, historyId, true))
+        return PBC_HistoryResult::PersistenceFailed;
+    owner->second.erase(pos);
+    for (auto const& [otherGuid, ids] : g_PBC_HistoryOwners)
+        if (std::find(ids.begin(), ids.end(), historyId) != ids.end())
+            return PBC_HistoryResult::Ok;
+    g_PBC_History.erase(historyId);
     return PBC_HistoryResult::Ok;
 }
 
+PBC_HistoryResult PBC_ResetCharacterMemory(uint64_t botGuid, bool allCharacters)
+{
+    std::scoped_lock lock(g_PBC_HistoryMutex, g_PBC_MemoriesMutex, g_PBC_RelationshipsMutex);
+    ++relationshipGeneration;
+    if (!DB_ResetCharacterMemory(botGuid, allCharacters))
+        return PBC_HistoryResult::PersistenceFailed;
+    if (allCharacters)
+    {
+        g_PBC_History.clear();
+        g_PBC_HistoryOwners.clear();
+        g_PBC_LastHistoryTime.clear();
+        g_PBC_Memories.clear();
+        g_PBC_Relationships.clear();
+    }
+    else
+    {
+        g_PBC_HistoryOwners.erase(botGuid);
+        g_PBC_LastHistoryTime.erase(botGuid);
+        g_PBC_Memories.erase(botGuid);
+        g_PBC_Relationships.erase(botGuid);
+        for (auto it = g_PBC_History.begin(); it != g_PBC_History.end();)
+        {
+            bool owned = false;
+            for (auto const& [guid, ids] : g_PBC_HistoryOwners)
+                if (std::find(ids.begin(), ids.end(), it->first) != ids.end())
+                {
+                    owned = true;
+                    break;
+                }
+            if (owned)
+                ++it;
+            else
+                it = g_PBC_History.erase(it);
+        }
+    }
+    return PBC_HistoryResult::Ok;
+}
+
+
+PBC_HistoryResult PBC_StoreGeneratedRelationship(uint64_t botGuid, std::string const& targetName,
+    std::string const& newText, std::string const& originalText, uint64_t generation)
+{
+    std::lock_guard<std::mutex> lock(g_PBC_RelationshipsMutex);
+    if (generation != relationshipGeneration.load())
+        return PBC_HistoryResult::Desync;
+    auto bot = g_PBC_Relationships.find(botGuid);
+    std::string current;
+    if (bot != g_PBC_Relationships.end())
+    {
+        auto relation = bot->second.find(targetName);
+        if (relation != bot->second.end())
+            current = relation->second.text;
+    }
+    if (current != originalText)
+        return PBC_HistoryResult::Desync;
+    if (!DB_UpsertRelationship(botGuid, targetName, newText))
+        return PBC_HistoryResult::PersistenceFailed;
+    auto& entry = g_PBC_Relationships[botGuid][targetName];
+    entry.text = newText;
+    entry.updatedAt = PBC_FormatDateTime(std::time(nullptr));
+    return PBC_HistoryResult::Ok;
+}
 
 PBC_HistoryResult PBC_UpdateRelationship(uint64_t botGuid, const std::string& targetName,
                                           const std::string& newText,
@@ -616,9 +650,11 @@ PBC_HistoryResult PBC_UpdateRelationship(uint64_t botGuid, const std::string& ta
     if (relIt->second.text != originalText)
         return PBC_HistoryResult::Desync;
 
+    ++relationshipGeneration;
+    if (!DB_UpdateRelationshipText(botGuid, targetName, newText))
+        return PBC_HistoryResult::PersistenceFailed;
     relIt->second.text = newText;
     relIt->second.updatedAt = PBC_FormatDateTime(std::time(nullptr));
-    DB_UpdateRelationshipText(botGuid, targetName, newText);
     return PBC_HistoryResult::Ok;
 }
 
@@ -637,8 +673,10 @@ PBC_HistoryResult PBC_DeleteRelationship(uint64_t botGuid, const std::string& ta
     if (relIt->second.text != originalText)
         return PBC_HistoryResult::Desync;
 
+    ++relationshipGeneration;
+    if (!DB_DeleteRelationship(botGuid, targetName))
+        return PBC_HistoryResult::PersistenceFailed;
     charIt->second.erase(relIt);
-    DB_DeleteRelationship(botGuid, targetName);
     return PBC_HistoryResult::Ok;
 }
 
@@ -660,9 +698,10 @@ PBC_HistoryResult PBC_UpdateMemory(uint64_t botGuid, uint64_t memoryId,
         if (entry.text != originalText)
             return PBC_HistoryResult::Desync;
 
+        if (!DB_UpdateMemoryById(memoryId, newText, newImportance))
+            return PBC_HistoryResult::PersistenceFailed;
         entry.text       = newText;
         entry.importance = newImportance;
-        DB_UpdateMemoryById(memoryId, newText, newImportance);
         return PBC_HistoryResult::Ok;
     }
 
@@ -685,8 +724,9 @@ PBC_HistoryResult PBC_DeleteMemory(uint64_t botGuid, uint64_t memoryId,
         if (vit->text != originalText)
             return PBC_HistoryResult::Desync;
 
+        if (!DB_DeleteMemoryById(memoryId))
+            return PBC_HistoryResult::PersistenceFailed;
         it->second.erase(vit);
-        DB_DeleteMemoryById(memoryId);
         return PBC_HistoryResult::Ok;
     }
 
@@ -719,6 +759,7 @@ static void ReplaceSnapshotVars(std::string& out, const PBC_CharacterSnapshot& s
 PBC_CharacterSnapshot PBC_SnapshotCharacter(Player* bot)
 {
     PBC_CharacterSnapshot snap;
+    snap.relationshipGeneration = relationshipGeneration.load();
     snap.charObjGuid  = bot->GetGUID();
     snap.charGuidRaw  = bot->GetGUID().GetCounter();
     snap.charName     = bot->GetName();

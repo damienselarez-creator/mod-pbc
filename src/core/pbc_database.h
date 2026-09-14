@@ -8,6 +8,10 @@
 
 struct PBC_ParsedMemory;
 
+// Confirmed mutations: false includes uncertain transaction outcomes.
+bool DB_DeleteHistoryMessage(uint64_t historyId);
+bool DB_ResetCharacterMemory(uint64_t botGuid, bool allCharacters);
+
 // Requires a core which checks transaction boundaries and never replays a
 // statement after reconnecting inside a transaction. Called off the world thread.
 bool DB_CommitCondensation(uint64_t botGuid, const std::vector<PBC_ParsedMemory>& memories,
@@ -25,16 +29,12 @@ uint64_t DB_InsertHistoryMessage(uint64_t authorGuid, uint8_t type,
                                  const std::vector<uint64_t>& ownerGuids);
 
 // Update the raw message text in mod_pbc_history (affects all owners).
-void DB_UpdateHistoryMessage(uint64_t historyId, const std::string& newMessage);
+bool DB_UpdateHistoryMessage(uint64_t historyId, const std::string& newMessage);
 
 // Remove one character's ownership of a message.
 // If removeOrphaned is true and no owners remain, also delete the message.
-void DB_RemoveHistoryOwnership(uint64_t guid, uint64_t historyId,
+bool DB_RemoveHistoryOwnership(uint64_t guid, uint64_t historyId,
                                bool removeOrphaned = true);
-
-// Remove all ownership rows for a character, then clean orphaned messages.
-// Used by condensation and .chars reset.
-void DB_RemoveAllHistoryOwnership(uint64_t guid);
 
 // ---------------------------------------------------------------------------
 // Character memories
@@ -43,17 +43,11 @@ void DB_RemoveAllHistoryOwnership(uint64_t guid);
 // Insert a single memory for a character.
 void DB_InsertMemory(uint64_t botGuid, const std::string& memoryText, uint8_t importance);
 
-// Delete all memories for a character (used by .chars reset).
-void DB_DeleteMemoriesForCharacter(uint64_t botGuid);
-
-// Delete all memories for every character (used by .chars reset @ALL).
-void DB_DeleteAllMemories();
-
 // Update a single memory by DB row id.
-void DB_UpdateMemoryById(uint64_t memoryId, const std::string& newText, uint8_t importance);
+bool DB_UpdateMemoryById(uint64_t memoryId, const std::string& newText, uint8_t importance);
 
 // Delete a single memory by DB row id.
-void DB_DeleteMemoryById(uint64_t memoryId);
+bool DB_DeleteMemoryById(uint64_t memoryId);
 
 // ---------------------------------------------------------------------------
 // Character data (roll chance modifier)
@@ -68,21 +62,15 @@ void DB_UpsertRollChanceModifier(uint64_t botGuid, int32_t modifier);
 // ---------------------------------------------------------------------------
 
 // Upsert a relationship description for a character with a named target.
-void DB_UpsertRelationship(uint64_t botGuid, const std::string& targetName,
+bool DB_UpsertRelationship(uint64_t botGuid, const std::string& targetName,
                            const std::string& relationshipText);
 
-// Delete all relationship rows for a character (used by .chars reset).
-void DB_DeleteRelationshipsForCharacter(uint64_t botGuid);
-
-// Delete all relationship rows for every character (used by .chars reset @ALL).
-void DB_DeleteAllRelationships();
-
 // Update the relationship text for a specific (bot, target) pair.
-void DB_UpdateRelationshipText(uint64_t botGuid, const std::string& targetName,
+bool DB_UpdateRelationshipText(uint64_t botGuid, const std::string& targetName,
                                const std::string& newText);
 
 // Delete a single relationship row for a specific (bot, target) pair.
-void DB_DeleteRelationship(uint64_t botGuid, const std::string& targetName);
+bool DB_DeleteRelationship(uint64_t botGuid, const std::string& targetName);
 
 // ---------------------------------------------------------------------------
 // Migration helpers

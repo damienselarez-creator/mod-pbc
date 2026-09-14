@@ -109,6 +109,7 @@ extern std::mutex g_PBC_DataMutex;
 // The event thread works exclusively with these — never touches live Player*.
 struct PBC_CharacterSnapshot
 {
+    uint64_t relationshipGeneration = 0;
     ObjectGuid  charObjGuid;
     uint64_t    charGuidRaw = 0;
     std::string charName;

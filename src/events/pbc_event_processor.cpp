@@ -224,13 +224,14 @@ void ProcessRelationshipUpdate(PBC_EventItem& ev)
         return;
     }
 
+    if (PBC_StoreGeneratedRelationship(ev.relationshipChar.charGuidRaw, ev.relationshipTargetName,
+        res.text, ev.relationshipCurrentText, ev.relationshipChar.relationshipGeneration) != PBC_HistoryResult::Ok)
     {
-        std::lock_guard<std::mutex> lk(g_PBC_RelationshipsMutex);
-        auto& entry = g_PBC_Relationships[ev.relationshipChar.charGuidRaw][ev.relationshipTargetName];
-        entry.text = res.text;
-        entry.updatedAt = PBC_FormatDateTime(std::time(nullptr));
+        PBC_Log(PBC_LogLevel::PBC_WARNING,
+            "RelationshipUpdate: stale or unconfirmed result discarded for character={}", ev.relationshipChar.charName);
+        g_PBC_EventThreadDone.store(true);
+        return;
     }
-    DB_UpsertRelationship(ev.relationshipChar.charGuidRaw, ev.relationshipTargetName, res.text);
     PBC_WsNotify(ev.relationshipChar.charGuidRaw, "relationship");
 
     PBC_Log(PBC_LogLevel::PBC_DEBUG, "RelationshipUpdate: updated character={} target={} text=\"{}\"",
