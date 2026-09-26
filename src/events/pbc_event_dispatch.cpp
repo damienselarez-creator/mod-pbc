@@ -158,6 +158,8 @@ void PBC_DispatchGroupEvent(Player* anchor, const std::string& eventLine,
         PBC_NotifyRealPlayersInGroup(anchor, eventLine);
 
     auto bots = PBC_FindGroupBots(anchor);
+    if (PBC_IsActiveSelfbot(anchor))
+        bots.push_back(anchor);
     if (bots.empty() && !anchorIsBot) return;
 
     std::shuffle(bots.begin(), bots.end(), PBC_GetRNG());
@@ -192,13 +194,29 @@ void PBC_DispatchGroupEvent(Player* anchor, const std::string& eventLine,
 // PBC_RollGroupBotsIntoEvent
 // ---------------------------------------------------------------------------
 bool PBC_RollGroupBotsIntoEvent(PBC_EventItem& ev, Player* player,
-                                 uint32_t chance, const char* debugLabel)
+    uint32_t chance, char const* debugLabel, bool fixedChance)
 {
     auto bots = PBC_FindGroupBots(player);
+    if (PBC_IsActiveSelfbot(player))
+        bots.push_back(player);
     if (bots.empty()) return false;
 
     std::shuffle(bots.begin(), bots.end(), PBC_GetRNG());
-    PBC_RollBotsWithPenalty(ev, bots, chance, debugLabel);
+    if (fixedChance)
+    {
+        for (Player* bot : bots)
+        {
+            bool responds = PBC_RollChance(chance);
+            PBC_Log(PBC_LogLevel::PBC_DEBUG, "Roll {} character={} fixed chance={}% -> {}",
+                debugLabel, bot->GetName(), chance, responds ? "RESPOND" : "silent");
+            if (responds)
+                ev.respondingChars.push_back(PBC_SnapshotCharacter(bot));
+            else
+                ev.silentCharGuids.push_back(bot->GetGUID().GetCounter());
+        }
+    }
+    else
+        PBC_RollBotsWithPenalty(ev, bots, chance, debugLabel);
     return true;
 }
 

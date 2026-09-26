@@ -1,0 +1,2034 @@
+{
+  "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+  "indexation": "Paragraphes Word, base 1, paragraphes vides inclus.",
+  "paragraphes": [
+    {
+      "numero": 1,
+      "texte": "# Histoire des Réprouvés"
+    },
+    {
+      "numero": 2,
+      "texte": ""
+    },
+    {
+      "numero": 3,
+      "texte": "## De Warcraft III au début de Wrath of the Lich King"
+    },
+    {
+      "numero": 4,
+      "texte": ""
+    },
+    {
+      "numero": 5,
+      "texte": "### Repères pour entrer dans le récit"
+    },
+    {
+      "numero": 6,
+      "texte": ""
+    },
+    {
+      "numero": 7,
+      "texte": "Warcraft est un univers de fantasy : des sociétés humaines y côtoient des peuples imaginaires, et la magie y produit des effets concrets. Azeroth est le nom du monde où se déroule l’essentiel de cette histoire. Un sort peut soigner un blessé, déplacer un combattant ou animer un cadavre. La possibilité de faire agir les morts change donc les conditions de la guerre : une armée peut retourner contre ses ennemis les corps de ceux qu’elle vient de tuer."
+    },
+    {
+      "numero": 8,
+      "texte": ""
+    },
+    {
+      "numero": 9,
+      "texte": "Dans ce récit, un « mort-vivant » est un être que la mort n’a pas rendu définitivement inactif. Le terme désigne une condition, et non une nationalité. Le Fléau est une organisation militaire dominée par le Roi-Liche. Les Réprouvés sont un groupe de morts-vivants qui s’est affranchi de cette domination et s’est rassemblé autour de Sylvanas Coursevent. Deux individus peuvent ainsi être morts-vivants et appartenir à des camps ennemis. Cette distinction sera nécessaire à chaque étape du récit."
+    },
+    {
+      "numero": 10,
+      "texte": ""
+    },
+    {
+      "numero": 11,
+      "texte": "Trois ensembles géographiques permettent de situer l’action. Les **Royaumes de l’Est** forment la grande masse continentale orientale ; c’est dans leur partie nord que se trouvent Lordaeron et Quel’Thalas. **Kalimdor** se situe à l’ouest, de l’autre côté de la mer ; plusieurs peuples de la Horde y ont leurs principales implantations. Le **Norfendre** est un continent septentrional, où réside le Roi-Liche. Aller de Lordaeron au Norfendre signifie donc entreprendre une expédition au-delà des mers, et non simplement franchir la frontière du royaume. Les cartes des manuels permettent de retrouver ces positions. [13], [41]"
+    },
+    {
+      "numero": 12,
+      "texte": ""
+    },
+    {
+      "numero": 13,
+      "texte": "Les noms des jeux désignent aussi les étapes du récit. Warcraft III: Reign of Chaos raconte notamment la chute de Lordaeron ; son prolongement, The Frozen Throne, présente l’émancipation de Sylvanas. World of Warcraft montre ensuite les Réprouvés déjà installés dans leur capitale. The Burning Crusade poursuit cette histoire, puis Wrath of the Lich King ouvre la campagne du Norfendre. Le sigle « WotLK » renvoie à cette dernière extension, c’est-à-dire à un ajout majeur au jeu et à son histoire."
+    },
+    {
+      "numero": 14,
+      "texte": ""
+    },
+    {
+      "numero": 15,
+      "texte": "Les sources changent de forme au cours de cette progression. Dans Warcraft III, le joueur commande des armées au fil de missions successives. Dans World of Warcraft, il incarne un aventurier qui reçoit des quêtes : un personnage lui expose une situation, lui confie une tâche et réagit à son accomplissement. Ces échanges donnent accès à la vie locale, aux souvenirs et aux objectifs de personnages moins célèbres. Lorsqu’une quête est mentionnée ci-dessous, son titre anglais permet de la retrouver dans les références ; son contenu et son intérêt sont expliqués dans le récit."
+    },
+    {
+      "numero": 16,
+      "texte": ""
+    },
+    {
+      "numero": 17,
+      "texte": "### Introduction"
+    },
+    {
+      "numero": 18,
+      "texte": ""
+    },
+    {
+      "numero": 19,
+      "texte": "Les Réprouvés naissent d’une rupture dans l’ordre imposé par le Fléau. Anciens serviteurs du Roi-Liche, ils retrouvent la possibilité d’agir pour eux-mêmes sans retrouver la vie qui leur a été arrachée. Leur affranchissement ouvre une nouvelle existence, mais ne leur rend ni la sécurité de leurs anciens foyers ni une place assurée parmi les vivants. Pour durer, ils doivent se rassembler, défendre un territoire et trouver des alliés. Leur histoire est celle de cette construction politique, sous la conduite de Sylvanas Coursevent."
+    },
+    {
+      "numero": 20,
+      "texte": ""
+    },
+    {
+      "numero": 21,
+      "texte": "La destruction de Lordaeron en constitue le préalable. La peste, la conversion des morts en soldats et la chute de la monarchie bouleversent les appartenances anciennes. Des habitants du même royaume se retrouvent séparés par leur condition, leur allégeance ou les circonstances de leur survie. À cette catastrophe s’ajoute celle de Quel’Thalas, où Sylvanas est tuée puis asservie. Le peuple qu’elle rassemble ensuite conserve les traces de ces deux histoires, sans se confondre avec l’un des royaumes détruits."
+    },
+    {
+      "numero": 22,
+      "texte": ""
+    },
+    {
+      "numero": 23,
+      "texte": "L’indépendance des Réprouvés ne peut cependant être comprise à travers la seule opposition entre servitude et liberté. Leur dirigeante refuse de demeurer soumise, mais recourt elle-même à la contrainte. Leurs institutions les protègent, tout en organisant des opérations contre des populations vivantes. Leur appartenance à la Horde leur procure des partenaires, sans faire disparaître leurs objectifs particuliers. Ces tensions sont déjà présentes dans les campagnes et les quêtes de la période ; elles ne nécessitent pas les révélations des extensions suivantes pour être étudiées."
+    },
+    {
+      "numero": 24,
+      "texte": ""
+    },
+    {
+      "numero": 25,
+      "texte": "La question centrale est donc la suivante : comment les Réprouvés transforment-ils leur affranchissement du Roi-Liche en une communauté politique durable, alors que leur sécurité dépend de l’autorité de Sylvanas, de leur implantation à Lordaeron et de leur alliance avec la Horde ? L’analyse distinguera la liberté retrouvée face à un maître, la capacité collective de se défendre et les formes de gouvernement exercées à l’intérieur de la faction. Ces dimensions se soutiennent parfois ; elles ne sont pas équivalentes."
+    },
+    {
+      "numero": 26,
+      "texte": ""
+    },
+    {
+      "numero": 27,
+      "texte": "Le récit suit la trame de Warcraft III, de World of Warcraft originel et de The Burning Crusade jusqu’à l’ouverture de Wrath of the Lich King. Il s’arrête aux événements de prélancement, à l’émancipation des chevaliers d’Acherus et au départ pour le Norfendre. Les campagnes, dialogues, quêtes et textes officiels de cet ensemble constituent le corpus. Les retcons et les éclaircissements publiés ensuite ne sont pas employés pour compléter les intentions des personnages ou résoudre les incertitudes de l’époque."
+    },
+    {
+      "numero": 28,
+      "texte": ""
+    },
+    {
+      "numero": 29,
+      "texte": "Il s’agit d’une histoire interne d’un univers de fiction. Les missions permettent de restituer des événements ; les quêtes font aussi entendre des acteurs qui défendent leurs intérêts. Leurs déclarations ne valent pas toujours description impartiale. L’étude distingue donc les actes montrés, les explications avancées par les protagonistes et les interprétations politiques proposées. Elle ne transforme pas davantage la répétition des combats dans le jeu en chronologie littérale de chaque victoire."
+    },
+    {
+      "numero": 30,
+      "texte": ""
+    },
+    {
+      "numero": 31,
+      "texte": "Un prologue rappelle les destructions dont les Réprouvés sont issus. La première partie suit leur émancipation et la prise de la capitale de Lordaeron. La deuxième examine leur implantation territoriale ; la troisième, leur gouvernement et leur vie collective. La quatrième analyse les alliances qui élargissent leur place dans Azeroth. Enfin, la cinquième étudie le passage des conflits régionaux à la mobilisation contre le Roi-Liche. Cette progression permet de comprendre une autonomie acquise par étapes, toujours exposée à la guerre et à ses propres contradictions."
+    },
+    {
+      "numero": 32,
+      "texte": ""
+    },
+    {
+      "numero": 33,
+      "texte": "## Prologue Le monde dont les Réprouvés sont issus"
+    },
+    {
+      "numero": 34,
+      "texte": ""
+    },
+    {
+      "numero": 35,
+      "texte": "### Le Fléau avant Arthas"
+    },
+    {
+      "numero": 36,
+      "texte": ""
+    },
+    {
+      "numero": 37,
+      "texte": "La Légion ardente est une armée démoniaque qui envahit des mondes. Un démon n’est donc pas simplement un humain revenu d’entre les morts : les démons et les morts-vivants constituent des catégories différentes, même lorsqu’ils combattent ensemble. Kil’jaeden est l’un des grands dirigeants de cette Légion. Ner’zhul, avant de devenir le Roi-Liche, est un chaman orc, autrement dit un personnage issu d’un peuple vivant et associé à une tradition spirituelle. Leur relation initiale est celle d’un geôlier et de son prisonnier transformé en instrument de guerre. [1]"
+    },
+    {
+      "numero": 38,
+      "texte": ""
+    },
+    {
+      "numero": 39,
+      "texte": "Le titre de Roi-Liche peut induire en erreur. Au début de l’histoire, il ne désigne pas Arthas, mais Ner’zhul. Il ne désigne pas davantage le roi légitime de Lordaeron. C’est le maître surnaturel d’une armée qui grandit sous son influence. La nécromancie est la magie employée pour agir sur les morts, notamment pour animer leurs corps ou assujettir des esprits. Elle fournit ici des moyens de domination que ne possède pas une armée ordinaire."
+    },
+    {
+      "numero": 40,
+      "texte": ""
+    },
+    {
+      "numero": 41,
+      "texte": "Dans le récit de Warcraft III, Kil’jaeden transforme Ner’zhul en Roi-Liche et l’enferme dans une prison de glace envoyée au Norfendre. Cette puissance doit préparer la conquête d’Azeroth par la Légion ardente. La constitution du Fléau précède donc la chute d’Arthas : le prince entre dans une guerre dont les principaux instruments ont déjà été préparés. [1]"
+    },
+    {
+      "numero": 42,
+      "texte": ""
+    },
+    {
+      "numero": 43,
+      "texte": "Kel’Thuzad joue un rôle essentiel dans cette préparation. Répondant à l’appel du Roi-Liche, il gagne le Norfendre puis revient parmi les humains. Il organise le Culte des damnés, recrute des fidèles et contribue à la diffusion de la peste. Le Fléau associe ainsi, dès ses origines, une autorité nécromantique, des agents conscients et un travail d’infiltration. La contagion ne dispense pas d’organisation ; elle dépend au contraire de personnes capables de la préparer et de la répandre. [2]"
+    },
+    {
+      "numero": 44,
+      "texte": ""
+    },
+    {
+      "numero": 45,
+      "texte": "Le Culte des damnés est le réseau de fidèles de Kel’Thuzad. Ses recrues ne sont pas toutes des cadavres obéissant à distance : des vivants choisissent de servir le Roi-Liche et préparent son avancée. Il faut donc distinguer l’appartenance au Fléau, l’état physique d’un serviteur et son degré de liberté. Ces trois questions ne reçoivent pas nécessairement la même réponse. Un homme vivant peut travailler à la propagation de la peste, tandis qu’un mort-vivant conservera, plus tard, assez de volonté pour combattre l’armée qui l’a créé. [2]"
+    },
+    {
+      "numero": 46,
+      "texte": ""
+    },
+    {
+      "numero": 47,
+      "texte": "Cette différence aide aussi à comprendre la place de Kel’Thuzad. Il possède un savoir, organise des opérations et conseille son maître. La présence de soldats privés d’autonomie n’empêche pas le Fléau d’utiliser des agents capables de comprendre un ordre et de choisir comment l’exécuter. L’organisation ne commence donc pas après les ravages : elle est l’une de leurs conditions."
+    },
+    {
+      "numero": 48,
+      "texte": ""
+    },
+    {
+      "numero": 49,
+      "texte": "Cette antériorité explique une partie du désastre de Lordaeron. Les autorités doivent répondre à une menace qui a déjà pénétré les circuits de la vie ordinaire. La mort des habitants renforce ensuite l’armée qui détruit leurs communautés. Le royaume perd simultanément des sujets, des défenseurs et la maîtrise de ses propres ressources humaines."
+    },
+    {
+      "numero": 50,
+      "texte": ""
+    },
+    {
+      "numero": 51,
+      "texte": "### La destruction de Lordaeron"
+    },
+    {
+      "numero": 52,
+      "texte": ""
+    },
+    {
+      "numero": 53,
+      "texte": "Lordaeron est un royaume humain du nord des Royaumes de l’Est. Son nom peut aussi désigner sa capitale ou, dans un sens géographique plus large, des terres du nord : cette proximité des noms explique plusieurs ambiguïtés. Le roi Terenas Menethil II gouverne le royaume ; son fils Arthas doit lui succéder. La destruction de la capitale aura ainsi une portée qui dépasse la perte d’une ville : elle touche le lieu où se concentre l’autorité de la monarchie."
+    },
+    {
+      "numero": 54,
+      "texte": ""
+    },
+    {
+      "numero": 55,
+      "texte": "Un paladin est un combattant formé à la guerre et au service de la Lumière, puissance sacrée associée notamment aux soins et à la protection. Uther, paladin expérimenté, est le mentor d’Arthas. Jaina Portvaillant est une magicienne qui participe à l’enquête sur la peste. Leur présence permet de comprendre que le prince n’agit pas d’emblée seul : sa rupture avec eux sera également la perte de conseillers capables de contester ses décisions. [3]"
+    },
+    {
+      "numero": 56,
+      "texte": ""
+    },
+    {
+      "numero": 57,
+      "texte": "Arthas, prince héritier et paladin, enquête d’abord sur la peste pour protéger son peuple. À Stratholme, il découvre une population qui a consommé du grain contaminé. Convaincu qu’elle va être transformée, il ordonne sa purge. Uther refuse de participer ; Jaina s’éloigne également. La mission montre un massacre décidé au nom de la prévention d’un désastre jugé inévitable. Le commandement du prince devient le lieu d’une rupture avec ceux qui l’accompagnaient. [3]"
+    },
+    {
+      "numero": 58,
+      "texte": ""
+    },
+    {
+      "numero": 59,
+      "texte": "À Stratholme, le danger vient de l’intérieur des maisons : les habitants ont déjà consommé le grain contaminé. Arthas veut empêcher qu’ils deviennent des renforts ennemis. Mais sa réponse consiste à tuer la population avant sa transformation. Le désaccord avec Uther porte donc sur un acte immédiat, le massacre de personnes encore vivantes, et sur l’autorité du prince pour l’imposer. Pour un lecteur découvrant cet épisode, cette précision est indispensable : une « purge » désigne ici une opération meurtrière, pas une désinfection des réserves alimentaires. [3]"
+    },
+    {
+      "numero": 60,
+      "texte": ""
+    },
+    {
+      "numero": 61,
+      "texte": "Mal’Ganis est un seigneur de l’effroi, un démon qui intervient dans les opérations du Fléau. Il devient la cible sur laquelle Arthas concentre sa colère. En le poursuivant, le prince déplace son effort : il cherche à abattre un adversaire identifié, au risque de subordonner toutes ses décisions à cette poursuite. Deuillegivre, ou Frostmourne en anglais, est une épée runique maudite. Sa puissance ne constitue pas un simple avantage matériel : son acquisition participe à l’asservissement d’Arthas. [4]"
+    },
+    {
+      "numero": 62,
+      "texte": ""
+    },
+    {
+      "numero": 63,
+      "texte": "La poursuite de Mal’Ganis entraîne ensuite Arthas au Norfendre. Il y prend Deuillegivre, puis revient à Lordaeron au service du Roi-Liche et tue son père, Terenas. La campagne humaine aboutit ainsi au retournement de son défenseur contre le royaume. Pour les habitants, la catastrophe ne tient plus seulement à une maladie ou à une invasion : l’autorité royale elle-même est devenue un instrument de destruction. [4]"
+    },
+    {
+      "numero": 64,
+      "texte": ""
+    },
+    {
+      "numero": 65,
+      "texte": "La disparition de cette autorité ne signifie pas que tous les humains meurent, ni que tout le territoire soit immédiatement soumis. Elle laisse un espace fragmenté dans lequel se poursuivent résistances, déplacements et luttes pour les places fortes. C’est dans cet espace que les Réprouvés devront établir leur propre pouvoir."
+    },
+    {
+      "numero": 66,
+      "texte": ""
+    },
+    {
+      "numero": 67,
+      "texte": "### Sylvanas et la chute de Quel’Thalas"
+    },
+    {
+      "numero": 68,
+      "texte": ""
+    },
+    {
+      "numero": 69,
+      "texte": "Quel’Thalas est le royaume des hauts-elfes, au nord de Lordaeron. Sa capitale est Lune-d’Argent, appelée Silvermoon dans les sources anglaises. Les forestiers sont les défenseurs qui surveillent notamment les frontières et les approches du royaume ; Sylvanas est leur générale. Elle n’est alors ni une souveraine morte-vivante ni une dirigeante de la Horde. Elle combat pour un pays vivant qu’Arthas entreprend de détruire. [5]"
+    },
+    {
+      "numero": 70,
+      "texte": ""
+    },
+    {
+      "numero": 71,
+      "texte": "Une banshee est un esprit mort-vivant. Dans le cas de Sylvanas, Arthas ne se contente pas de tuer une ennemie : il la maintient dans une existence imposée et l’asservit. Cela explique la nature de sa haine. Son adversaire lui a pris son pays, ses compagnons et la maîtrise de ses actes. Retrouver cette dernière ne pourra pas annuler les autres pertes."
+    },
+    {
+      "numero": 72,
+      "texte": ""
+    },
+    {
+      "numero": 73,
+      "texte": "Arthas poursuit sa campagne vers Quel’Thalas afin de ressusciter Kel’Thuzad grâce au Puits de Soleil. Sylvanas, générale des forestiers, lui oppose une résistance qui échoue. Arthas la tue et la relève sous la forme d’une banshee. L’épisode prive la défenseuse du royaume de la maîtrise de son existence tout en la maintenant dans le monde que ses ennemis ravagent. [5]"
+    },
+    {
+      "numero": 74,
+      "texte": ""
+    },
+    {
+      "numero": 75,
+      "texte": "La profanation du Puits frappe une civilisation nourrie par sa puissance arcanique. Les survivants que Kael’thas rassemble adoptent le nom d’elfes de sang, ou sin’dorei, en mémoire des morts. Il s’agit d’une nouvelle désignation collective, liée au deuil et à la survie, et non d’une transformation biologique directement provoquée par la corruption du Puits. [6]"
+    },
+    {
+      "numero": 76,
+      "texte": ""
+    },
+    {
+      "numero": 77,
+      "texte": "Le Puits de Soleil est une source de puissance magique au cœur de la civilisation des hauts-elfes. « Arcanique » renvoie ici à la magie que pratiquent notamment les mages ; le nom du Puits ne signifie pas que toute la culture du royaume repose sur un culte solaire. Kael’thas Haut-Soleil est le prince autour duquel se regroupent des survivants. L’expression « elfes de sang » commémore les victimes de la catastrophe. Elle ne veut pas dire que tous ces survivants sont devenus des morts-vivants : ils continuent à vivre, tandis que Sylvanas a subi un autre sort. [6]"
+    },
+    {
+      "numero": 78,
+      "texte": ""
+    },
+    {
+      "numero": 79,
+      "texte": "Lordaeron et Quel’Thalas ne connaissent pas exactement le même destin. Leurs catastrophes créent néanmoins un lien historique entre Sylvanas, les morts-vivants qu’elle dirigera et les elfes de sang qu’elle aidera plus tard. Ce lien ne suffit pas à produire une alliance ; il lui donnera un terrain commun."
+    },
+    {
+      "numero": 80,
+      "texte": ""
+    },
+    {
+      "numero": 81,
+      "texte": "### De la conquête de Lordaeron à l’échec de la Légion"
+    },
+    {
+      "numero": 82,
+      "texte": ""
+    },
+    {
+      "numero": 83,
+      "texte": "La campagne d’Arthas ne s’achève pas à Quel’Thalas. Kel’Thuzad, revenu sous la forme d’une liche, demeure un puissant lanceur de sorts malgré sa mort. Avec Arthas, il attaque Dalaran, cité de mages dont le Kirin Tor est l’organisation dirigeante. Ils s’emparent du livre de Medivh, un ouvrage magique nécessaire à l’invocation d’Archimonde, autre grand chef de la Légion. La destruction des royaumes prépare donc bien l’arrivée d’une puissance extérieure. [42]"
+    },
+    {
+      "numero": 84,
+      "texte": ""
+    },
+    {
+      "numero": 85,
+      "texte": "Arthas protège ensuite Kel’Thuzad pendant le rituel qui fait venir Archimonde en Azeroth. Une fois présent, le démon remet le commandement du Fléau aux seigneurs de l’effroi. Cette décision montre que la Légion traite l’armée du Roi-Liche comme son propre instrument. Arthas et Kel’Thuzad ne sont pas, aux yeux des démons, les bénéficiaires souverains de leurs conquêtes. [43]"
+    },
+    {
+      "numero": 86,
+      "texte": ""
+    },
+    {
+      "numero": 87,
+      "texte": "L’invasion se poursuit jusqu’en Kalimdor. Au mont Hyjal, des humains conduits par Jaina, les forces de Thrall et les elfes de la nuit s’unissent contre Archimonde. Les elfes de la nuit sont un autre peuple elfique, distinct des hauts-elfes de Quel’Thalas. Leur défense de l’Arbre-Monde, Nordrassil, aboutit à la défaite du chef démoniaque. Cette coopération d’urgence met un terme à son offensive sans effacer les conflits entre les peuples qui lui ont résisté. [44]"
+    },
+    {
+      "numero": 88,
+      "texte": ""
+    },
+    {
+      "numero": 89,
+      "texte": "La défaite de la Légion ne fait pas disparaître les morts-vivants de Lordaeron. Elle change cependant les rapports de force entre leurs chefs et les démons qui les surveillaient. C’est pourquoi la suite peut montrer à la fois un Roi-Liche qui cherche à préserver sa puissance, des seigneurs de l’effroi qui veulent conserver leurs possessions et Sylvanas qui tente de sortir de leur domination. Le même camp de conquête se divise en adversaires."
+    },
+    {
+      "numero": 90,
+      "texte": ""
+    },
+    {
+      "numero": 91,
+      "texte": "## Partie I La rupture avec le Roi Liche"
+    },
+    {
+      "numero": 92,
+      "texte": ""
+    },
+    {
+      "numero": 93,
+      "texte": "### Une autorité qui se fragmente"
+    },
+    {
+      "numero": 94,
+      "texte": ""
+    },
+    {
+      "numero": 95,
+      "texte": "Illidan Hurlorage, un elfe de la nuit transformé par l’usage de puissances démoniaques, intervient alors dans l’histoire du Roi-Liche. Kil’jaeden lui demande de détruire Ner’zhul. Cette mission s’explique par la volonté de la Légion de se débarrasser d’un serviteur devenu indocile. L’attaque d’Illidan vise le Trône de glace, la prison qui contient le Roi-Liche au Norfendre. Elle produit des effets jusqu’à Lordaeron, car les forces qui s’y trouvent dépendent de l’autorité magique de Ner’zhul. [7]"
+    },
+    {
+      "numero": 96,
+      "texte": ""
+    },
+    {
+      "numero": 97,
+      "texte": "The Frozen Throne présente un ordre mort-vivant qui se défait en plusieurs centres de pouvoir. La perte de puissance du Roi-Liche, liée aux dommages infligés au Trône de glace par le sort d’Illidan, affaiblit aussi l’autorité d’Arthas. Ner’zhul l’appelle au Norfendre tandis qu’une partie des forces de Lordaeron échappe à son emprise. Sylvanas retrouve dans cette crise la possibilité de poursuivre ses propres objectifs. [7]"
+    },
+    {
+      "numero": 98,
+      "texte": ""
+    },
+    {
+      "numero": 99,
+      "texte": "Les seigneurs de l’effroi cherchent, eux aussi, à profiter de la situation. Lorsque Arthas prépare son départ, ils se retournent contre lui et revendiquent le contrôle de ses troupes. Sa fuite montre que la possession d’un titre royal et le service du Roi-Liche ne garantissent plus l’obéissance de toutes les unités présentes. Le pouvoir militaire est désormais disputé à l’intérieur même de l’ancien appareil de conquête. [8]"
+    },
+    {
+      "numero": 100,
+      "texte": ""
+    },
+    {
+      "numero": 101,
+      "texte": "Cette fragmentation est le contexte immédiat de l’émancipation réprouvée. Elle ne résulte ni d’une conversion générale des serviteurs du Fléau ni d’un accord de paix. Une brèche apparaît dans la domination, puis plusieurs acteurs cherchent à la transformer en avantage. La capacité de Sylvanas à rassembler des forces est aussi importante que la défaillance du maître dont elle se libère."
+    },
+    {
+      "numero": 102,
+      "texte": ""
+    },
+    {
+      "numero": 103,
+      "texte": "### La revanche avant la fondation"
+    },
+    {
+      "numero": 104,
+      "texte": ""
+    },
+    {
+      "numero": 105,
+      "texte": "L’affranchissement désigne ici la fin d’une emprise surnaturelle. Un soldat peut désobéir à un chef ordinaire tout en risquant une punition ; un être dominé par le Roi-Liche peut être empêché d’agir contre la volonté de son maître. Retrouver son libre arbitre signifie retrouver une capacité de choisir. Ce changement ne guérit pas le corps, ne rend pas la vie et ne fournit pas automatiquement un abri. Il ouvre une possibilité dont il reste à faire quelque chose."
+    },
+    {
+      "numero": 106,
+      "texte": ""
+    },
+    {
+      "numero": 107,
+      "texte": "L’une des premières manifestations de son autonomie est une tentative contre Arthas. Après sa sortie de la capitale, des banshees l’attirent dans un piège. Sylvanas le frappe d’une flèche empoisonnée qui le paralyse et veut lui faire subir la souffrance qu’il lui a infligée. Kel’Thuzad intervient, brise l’embuscade et permet le départ du prince. Sylvanas doit renoncer à cette occasion, sans abandonner sa poursuite. [9]"
+    },
+    {
+      "numero": 108,
+      "texte": ""
+    },
+    {
+      "numero": 109,
+      "texte": "La vengeance n’apparaît donc pas tardivement, après une première période vouée à la seule survie. Elle accompagne l’usage initial de la liberté retrouvée. Toutefois, l’échec de l’embuscade oblige Sylvanas à poursuivre son existence dans un monde où Arthas demeure hors d’atteinte. Détruire son ancien maître ne peut tenir lieu, à lui seul, de solution immédiate aux besoins de ses partisans."
+    },
+    {
+      "numero": 110,
+      "texte": ""
+    },
+    {
+      "numero": 111,
+      "texte": "Ce décalage donne sa direction à la suite du récit. Il faut établir un commandement, vaincre des adversaires proches et assurer une base territoriale. Une intention personnelle devient ainsi l’un des motifs d’un rassemblement plus large, mais les conditions nécessaires à ce rassemblement dépassent déjà la personne d’Arthas."
+    },
+    {
+      "numero": 112,
+      "texte": ""
+    },
+    {
+      "numero": 113,
+      "texte": "Le nom français « Réprouvés » évoque des êtres rejetés ou condamnés ; le nom anglais, Forsaken, insiste sur l’abandon. En se donnant une désignation commune, les anciens serviteurs commencent à se présenter comme un groupe distinct. Le nom exprime une situation, mais aussi une revendication : ils ne veulent plus être identifiés uniquement à l’armée dont ils se sont séparés."
+    },
+    {
+      "numero": 114,
+      "texte": ""
+    },
+    {
+      "numero": 115,
+      "texte": "### Des forces rassemblées par des moyens différents"
+    },
+    {
+      "numero": 116,
+      "texte": ""
+    },
+    {
+      "numero": 117,
+      "texte": "Trois seigneurs de l’effroi jouent un rôle dans cette lutte : Varimathras, Detheroc et Balnazzar. Varimathras devient le serviteur contraint de Sylvanas après sa défaite. Detheroc contrôle notamment Garithos, un commandant humain, et ses hommes. Balnazzar tient la capitale. Ces positions expliquent l’ordre des opérations : Sylvanas doit modifier les alliances et réduire plusieurs centres de résistance avant de pouvoir s’emparer de la ville. [10], [11]"
+    },
+    {
+      "numero": 118,
+      "texte": ""
+    },
+    {
+      "numero": 119,
+      "texte": "La possession est le moyen magique par lequel une banshee peut prendre le contrôle d’un autre être. Elle se distingue d’un engagement volontaire. Les ogres, de grands humanoïdes présents dans la région, font partie des forces que Sylvanas peut ainsi employer. Combattre dans son armée ne signifie pas toujours avoir librement adopté la cause des Réprouvés. L’émancipation d’un groupe et les procédés employés pour assurer sa victoire doivent être examinés ensemble."
+    },
+    {
+      "numero": 120,
+      "texte": ""
+    },
+    {
+      "numero": 121,
+      "texte": "Varimathras propose à Sylvanas de rejoindre les seigneurs de l’effroi. Elle refuse et l’affronte. La mission The Dark Lady permet de renforcer ses forces par la possession de chefs locaux, notamment le seigneur ogre Mug’thol et un chef de bandits. Une fois vaincu, Varimathras obtient la vie sauve en offrant son service et des renseignements sur ses frères. [10]"
+    },
+    {
+      "numero": 122,
+      "texte": ""
+    },
+    {
+      "numero": 123,
+      "texte": "L’armée qui se forme ne repose donc pas sur une modalité unique d’adhésion. Elle réunit des morts-vivants affranchis, des forces soumises magiquement et un démon contraint par sa défaite. L’émancipation de Sylvanas ne produit pas une interdiction générale de l’asservissement : elle lui permet aussi de choisir à quelles fins employer des moyens de domination."
+    },
+    {
+      "numero": 124,
+      "texte": ""
+    },
+    {
+      "numero": 125,
+      "texte": "Cette différence importe pour qualifier le mouvement. Les Réprouvés se constituent contre leur propre servitude ; le récit ne leur attribue pas pour autant un programme universel de libération. Il faut partir des engagements et des actes effectivement montrés, sans leur prêter les principes d’un régime qu’ils n’ont pas proclamé."
+    },
+    {
+      "numero": 126,
+      "texte": ""
+    },
+    {
+      "numero": 127,
+      "texte": "### La prise de la capitale"
+    },
+    {
+      "numero": 128,
+      "texte": ""
+    },
+    {
+      "numero": 129,
+      "texte": "La défaite de Detheroc délivre Garithos et ses soldats de son contrôle. Sylvanas conclut avec ce chef humain un accord contre Balnazzar, qui tient la capitale. Elle promet la restitution des terres en échange de son aide. Le dialogue qui suit révèle cependant qu’elle ne compte pas respecter cette promesse : les forces humaines doivent lui fournir le concours nécessaire à la victoire. [11]"
+    },
+    {
+      "numero": 130,
+      "texte": ""
+    },
+    {
+      "numero": 131,
+      "texte": "Après la prise de la ville, Sylvanas ordonne à Varimathras de tuer Balnazzar, puis Garithos. Elle se trouve ainsi débarrassée du défenseur de la place et de l’allié qui réclame son retour sous autorité humaine. La proclamation du pouvoir réprouvé s’inscrit dans cette victoire. Elle repose sur la réussite d’une coalition provisoire suivie de l’élimination de l’un de ses partenaires. [12]"
+    },
+    {
+      "numero": 132,
+      "texte": ""
+    },
+    {
+      "numero": 133,
+      "texte": "L’épisode est fondateur parce qu’il associe l’existence d’un groupe autonome à la possession d’un centre politique. Il l’est aussi par la violence qui règle la question de la succession à Lordaeron. Les Réprouvés ne recueillent pas pacifiquement un royaume vacant : ils imposent leur présence au milieu de prétentions concurrentes. Leur implantation future conserve cette origine conflictuelle."
+    },
+    {
+      "numero": 134,
+      "texte": ""
+    },
+    {
+      "numero": 135,
+      "texte": "### Pendant ce temps, Arthas atteint le Trône de glace"
+    },
+    {
+      "numero": 136,
+      "texte": ""
+    },
+    {
+      "numero": 137,
+      "texte": "Tandis que Sylvanas conquiert la capitale, Arthas poursuit sa route au Norfendre pour secourir Ner’zhul. Il est aidé par Anub’arak, un roi nérubien relevé au service du Fléau. Les nérubiens sont un peuple de créatures arachnéennes associé au royaume souterrain d’Azjol-Nerub. Le passage par ces régions permet à Arthas d’approcher le Trône malgré les obstacles. La campagne conduit ensuite à l’affrontement décisif avec les forces d’Illidan. [45]"
+    },
+    {
+      "numero": 138,
+      "texte": ""
+    },
+    {
+      "numero": 139,
+      "texte": "Arthas l’emporte, atteint la prison de glace et la brise. Dans la cinématique finale de The Frozen Throne, il prend le heaume qui s’y trouve et le pose sur sa tête : le récit présente alors son union avec Ner’zhul. À partir de cette étape, Arthas est lui-même le Roi-Liche. Le maître et son champion, jusque-là deux personnages distincts, se trouvent réunis sous ce titre. [46]"
+    },
+    {
+      "numero": 140,
+      "texte": ""
+    },
+    {
+      "numero": 141,
+      "texte": "Cette précision éclaire toute la suite. Lorsque Sylvanas cherche à frapper le Roi-Liche au début de Wrath, son ancien tortionnaire se trouve désormais à la tête du pouvoir qui l’avait asservie. La réussite de son émancipation n’a pas supprimé cet ennemi. Deux issues différentes se dessinent donc à la fin de Warcraft III : Sylvanas obtient une base en Lordaeron ; Arthas atteint le centre du Fléau au Norfendre."
+    },
+    {
+      "numero": 142,
+      "texte": ""
+    },
+    {
+      "numero": 143,
+      "texte": "## Partie II Un peuple dans les ruines de Lordaeron"
+    },
+    {
+      "numero": 144,
+      "texte": ""
+    },
+    {
+      "numero": 145,
+      "texte": "### Fossoyeuse et l’appropriation d’un centre"
+    },
+    {
+      "numero": 146,
+      "texte": ""
+    },
+    {
+      "numero": 147,
+      "texte": "À partir de World of Warcraft, le lecteur découvre les conséquences durables de ces victoires. Les grandes armées de la campagne ont laissé place à des villes, des garnisons et des habitants qui doivent faire fonctionner leur nouvel ordre. Une capitale sert autant à échanger, apprendre un métier ou recevoir une mission qu’à loger une dirigeante. C’est ce changement d’échelle qui permet d’examiner les Réprouvés comme une société."
+    },
+    {
+      "numero": 148,
+      "texte": ""
+    },
+    {
+      "numero": 149,
+      "texte": "Fossoyeuse, appelée Undercity dans les sources anglaises, se trouve sous l’ancienne capitale humaine. « Lordaeron » et « Fossoyeuse » ne sont donc pas les noms de deux royaumes éloignés. La ville souterraine réprouvée occupe le dessous du centre politique détruit. Ce voisinage matériel entre les ruines des vivants et les activités des morts rend particulièrement visible la continuité du lieu."
+    },
+    {
+      "numero": 150,
+      "texte": ""
+    },
+    {
+      "numero": 151,
+      "texte": "Les Réprouvés aménagent leur capitale sous les ruines de l’ancienne cité royale. Fossoyeuse devient le siège de Sylvanas et le point de rassemblement de leurs activités. Les services de la ville, ses quartiers et ses responsables donnent une existence durable à ce qui avait d’abord été une force engagée dans une guerre civile. [13]"
+    },
+    {
+      "numero": 152,
+      "texte": ""
+    },
+    {
+      "numero": 153,
+      "texte": "Cette installation peut se lire comme une appropriation de l’héritage territorial de Lordaeron. Elle n’équivaut pourtant pas à une restauration de l’ancienne monarchie. Les habitants et leur dirigeante occupent les lieux dans des conditions nouvelles, sous une autorité issue de la conquête. La continuité des espaces coexiste avec la rupture des institutions et des appartenances."
+    },
+    {
+      "numero": 154,
+      "texte": ""
+    },
+    {
+      "numero": 155,
+      "texte": "La capitale rend possible la concentration des décisions, mais la sécurité de la faction ne se limite pas à ses accès. Elle dépend également des routes et des implantations qui l’entourent. Une cité peut servir de refuge sans contrôler tous les lieux dont ses habitants ont besoin. La géographie des premières quêtes montre précisément cet écart entre un centre organisé et des alentours encore dangereux."
+    },
+    {
+      "numero": 156,
+      "texte": ""
+    },
+    {
+      "numero": 157,
+      "texte": "### Tirisfal et les nécessités de l’existence quotidienne"
+    },
+    {
+      "numero": 158,
+      "texte": ""
+    },
+    {
+      "numero": 159,
+      "texte": "Les clairières de Tirisfal entourent la capitale. Le Glas est le lieu de départ du personnage réprouvé ; Brill est une localité voisine qui sert de relais à plusieurs missions. Au sud, la forêt des Pins-Argentés conduit vers d’autres zones disputées ; plus au sud-est, les contreforts de Hautebrande accueillent notamment Moulin-de-Tarren. À l’est s’étendent les Maleterres, des régions profondément ravagées par le Fléau. Ces noms désignent des espaces voisins, mais pas un territoire entièrement pacifié."
+    },
+    {
+      "numero": 160,
+      "texte": ""
+    },
+    {
+      "numero": 161,
+      "texte": "Mordo et Sarvis sont des interlocuteurs locaux chargés d’accueillir et d’orienter le nouvel arrivant. Ils ne parlent pas depuis le sommet du pouvoir ; ils montrent comment ce pouvoir se présente à un individu ordinaire. Le lecteur passe ainsi de la fondatrice et de ses généraux aux personnes qui organisent l’entrée dans la communauté."
+    },
+    {
+      "numero": 162,
+      "texte": ""
+    },
+    {
+      "numero": 163,
+      "texte": "À l’introduction d’un personnage réprouvé, Mordo puis Sarvis lui expliquent sa situation : il n’est plus l’esclave du Roi-Liche et appartient à un groupe dirigé par Sylvanas. Cette entrée dans le récit associe immédiatement l’affranchissement à une autorité collective. Le nouvel arrivant ne reçoit pas seulement une définition de ce qu’il est devenu ; il apprend aussi de qui viennent les ordres et dans quels conflits il se trouve engagé. [14]"
+    },
+    {
+      "numero": 164,
+      "texte": ""
+    },
+    {
+      "numero": 165,
+      "texte": "La quête The Mindless Ones lui demande de combattre des morts-vivants restés au service du Fléau. Sarvis les décrit comme d’anciens frères et sœurs qu’il faut néanmoins détruire. La frontière entre les deux camps passe donc à l’intérieur d’une même condition corporelle et, parfois, d’un même passé. Être mort-vivant ne suffit pas à appartenir aux Réprouvés : l’allégeance et la capacité d’intégration comptent également. [15]"
+    },
+    {
+      "numero": 166,
+      "texte": ""
+    },
+    {
+      "numero": 167,
+      "texte": "Les tâches matérielles occupent elles aussi une place significative. Dans Night Web’s Hollow, Arren veut récupérer l’accès à une mine envahie par des araignées. Il évoque le besoin d’or et le manque de personnel disponible. Cette demande interdit d’imaginer une société libérée de toute contrainte par la non-mort. Ses membres ont toujours besoin de ressources, de travail et d’une répartition des forces. [16]"
+    },
+    {
+      "numero": 168,
+      "texte": ""
+    },
+    {
+      "numero": 169,
+      "texte": "### Des ennemis proches et distincts"
+    },
+    {
+      "numero": 170,
+      "texte": ""
+    },
+    {
+      "numero": 171,
+      "texte": "La chute d’un royaume ne fait pas disparaître tous ses habitants. Certains survivants cherchent refuge, d’autres poursuivent le combat ou défendent une localité. Le problème des Réprouvés est que leur apparence les rapproche des créatures qui ont dévasté ces communautés. Affirmer qu’ils ont changé d’allégeance ne suffit pas à convaincre ceux qui voient en eux les anciens instruments du massacre."
+    },
+    {
+      "numero": 172,
+      "texte": ""
+    },
+    {
+      "numero": 173,
+      "texte": "La Croisade écarlate est une organisation combattante qui se réclame de la lutte contre les morts-vivants et de la purification. Elle ne représente pas à elle seule tous les humains, ni tous les fidèles de la Lumière. Le qualificatif « écarlate » permet de reconnaître cette faction particulière dans les noms de ses combattants et de ses établissements. [17]"
+    },
+    {
+      "numero": 174,
+      "texte": ""
+    },
+    {
+      "numero": 175,
+      "texte": "La Croisade écarlate constitue un autre adversaire immédiat. Arren la présente comme une organisation qui entend éliminer les morts-vivants sans distinguer les Réprouvés du Fléau. Pour les habitants de Tirisfal, la différence qui fonde leur nouvelle identité ne garantit donc aucune protection contre ceux qui les traquent. [17]"
+    },
+    {
+      "numero": 176,
+      "texte": ""
+    },
+    {
+      "numero": 177,
+      "texte": "Cette hostilité suscite des opérations de renseignement. Dans The Red Messenger, les responsables de Brill signalent un agent venu du monastère écarlate ; Arren charge l’aventurier d’intercepter les informations qu’il transporte. Une liaison apparaît entre des autorités locales, leurs supérieurs et les personnes envoyées sur le terrain. La défense repose sur cette circulation de messages autant que sur le nombre des combattants. [18]"
+    },
+    {
+      "numero": 178,
+      "texte": ""
+    },
+    {
+      "numero": 179,
+      "texte": "Il reste nécessaire de distinguer les organisations humaines. La Croisade, les forces de l’Alliance et les habitants des localités voisines ne composent pas un seul acteur doté d’une intention commune. Le langage des donneurs de quêtes peut les rapprocher dans une même hostilité ; l’analyse doit conserver leurs différences. Sans cela, toute opération réprouvée pourrait être décrite abusivement comme une réponse à une seule menace indistincte."
+    },
+    {
+      "numero": 180,
+      "texte": ""
+    },
+    {
+      "numero": 181,
+      "texte": "### Hautebrande et la guerre contre les établissements humains"
+    },
+    {
+      "numero": 182,
+      "texte": ""
+    },
+    {
+      "numero": 183,
+      "texte": "Hautebrande est une région habitée et exploitée par des communautés concurrentes. Moulin-de-Tarren sert de point d’appui aux Réprouvés ; la ville de Hautebrande et ses exploitations constituent des objectifs de leurs opérations. Darthalia est la responsable qui confie ces missions au joueur. À travers elle, les ambitions de Fossoyeuse deviennent une succession de tâches précises : frapper une population, obtenir un document, priver l’adversaire d’une ressource."
+    },
+    {
+      "numero": 184,
+      "texte": ""
+    },
+    {
+      "numero": 185,
+      "texte": "La suite de quêtes permet de suivre une relation de cause à effet que la seule mention d’une « expansion » masquerait. L’attaque des exploitations affaiblit l’approvisionnement. La prise des documents renseigne sur d’autres ressources. Ces renseignements orientent ensuite une nouvelle attaque. Le territoire se transforme en objectif militaire à travers la connaissance de son fonctionnement."
+    },
+    {
+      "numero": 186,
+      "texte": ""
+    },
+    {
+      "numero": 187,
+      "texte": "Depuis Moulin-de-Tarren, Darthalia organise une campagne contre les établissements humains de Hautebrande. La première étape vise des exploitants et des ouvriers agricoles afin de désorganiser l’approvisionnement. Elle présente l’opération comme un ordre rattaché à Varimathras et l’inscrit dans l’attente du développement d’une nouvelle peste. Il ne s’agit donc pas seulement de repousser des soldats arrivés devant Fossoyeuse : les structures de la vie civile deviennent des objectifs. [19]"
+    },
+    {
+      "numero": 188,
+      "texte": ""
+    },
+    {
+      "numero": 189,
+      "texte": "La campagne poursuit ce démantèlement en visant le magistrat, les conseillers et les documents de la ville. La destruction d’une proclamation et la prise du registre municipal donnent au conflit une dimension administrative explicite. L’adversaire doit perdre des dirigeants, mais aussi des instruments d’organisation. La conquête vise ainsi les moyens par lesquels une communauté se gouverne et conserve ses droits. [20]"
+    },
+    {
+      "numero": 190,
+      "texte": ""
+    },
+    {
+      "numero": 191,
+      "texte": "Une étape ultérieure porte sur la mine dont le registre a révélé l’importance pour l’Alliance. Darthalia ordonne la mise à mort du contremaître et des mineurs, puis présente le résultat comme un gain pour l’armement de Sylvanas. La ressource économique et la population qui l’exploite sont traitées ensemble comme des éléments de la puissance adverse. [21]"
+    },
+    {
+      "numero": 192,
+      "texte": ""
+    },
+    {
+      "numero": 193,
+      "texte": "Ces opérations témoignent d’une capacité offensive. Elles ne démontrent pas pour autant la disparition de toute présence humaine en Hautebrande. Les victoires locales, les déclarations de leurs commanditaires et le contrôle uniforme d’une région sont des réalités différentes. Au terme de cette phase, les Réprouvés disposent d’une implantation solide, mais leurs frontières restent traversées par la guerre."
+    },
+    {
+      "numero": 194,
+      "texte": ""
+    },
+    {
+      "numero": 195,
+      "texte": "### Le Fléau demeure dans le paysage politique"
+    },
+    {
+      "numero": 196,
+      "texte": ""
+    },
+    {
+      "numero": 197,
+      "texte": "Scholomance, Stratholme et Naxxramas appartiennent à cet environnement hostile. Elles renseignent sur la puissance à laquelle les Réprouvés ont échappé et qu’ils continuent de combattre. Elles ne sont pas leurs propres institutions. Scholomance demeure associée à l’enseignement nécromantique ; Naxxramas, au commandement de Kel’Thuzad. Leur importance ne permet pas de supposer que le Fléau se serait jusque-là passé d’organisation. [22]"
+    },
+    {
+      "numero": 198,
+      "texte": ""
+    },
+    {
+      "numero": 199,
+      "texte": "Ces trois lieux remplissent des fonctions différentes. Scholomance est une école de nécromancie située à Caer Darrow : on y rencontre des maîtres et des élèves de la magie des morts. Stratholme est une ville dévastée où subsistent plusieurs forces hostiles. Naxxramas est une nécropole volante, c’est-à-dire une forteresse suspendue dans les airs, dont Kel’Thuzad dirige les forces. Elle donne au Fléau un bastion qui ne ressemble pas à une ville ordinaire. [22], [23]"
+    },
+    {
+      "numero": 200,
+      "texte": ""
+    },
+    {
+      "numero": 201,
+      "texte": "Dans le jeu, ces lieux sont notamment explorés en groupe : un donjon ou un raid est une zone de combat organisée autour d’adversaires puissants. Leur présence dans le parcours du joueur rend la menace concrète. Le fait que des aventuriers attaquent un bastion ne signifie pas que toutes les communautés voisines puissent aussitôt reprendre une vie normale. Des forces, des bâtiments contaminés et des ennemis dispersés peuvent continuer à peser sur la région."
+    },
+    {
+      "numero": 202,
+      "texte": ""
+    },
+    {
+      "numero": 203,
+      "texte": "Stratholme montre en outre la complexité des appartenances. Le secteur du Fléau y côtoie le bastion écarlate ; Balnazzar s’y dissimule sous l’identité de Dathrohan. La victoire remportée contre lui lors de la prise de Lordaeron n’avait donc pas mis fin à toute son action. Cette révélation appartient déjà au jeu originel et ne nécessite aucune anticipation des extensions suivantes. [23]"
+    },
+    {
+      "numero": 204,
+      "texte": ""
+    },
+    {
+      "numero": 205,
+      "texte": "Le voisinage de ces forces explique pourquoi la possession d’une capitale ne clôt pas la construction des Réprouvés. Ils ont conquis un centre, mais doivent encore soutenir un ordre territorial face à des adversaires qui disposent de leurs propres bastions et réseaux."
+    },
+    {
+      "numero": 206,
+      "texte": ""
+    },
+    {
+      "numero": 207,
+      "texte": "## Partie III Gouverner et vivre après la mort"
+    },
+    {
+      "numero": 208,
+      "texte": ""
+    },
+    {
+      "numero": 209,
+      "texte": "### Une autorité personnelle relayée sur le terrain"
+    },
+    {
+      "numero": 210,
+      "texte": ""
+    },
+    {
+      "numero": 211,
+      "texte": "Sylvanas occupe une position centrale dans l’organisation réprouvée. Son rôle de libératrice, tel que Sarvis le présente aux nouveaux arrivants, soutient son autorité de dirigeante. L’origine du groupe et son commandement actuel sont réunis dans un même récit : servir la Dame noire revient à participer à la communauté qu’elle a rassemblée. Ce discours établit une légitimité, sans nous renseigner à lui seul sur l’adhésion intime de chaque habitant. [14]"
+    },
+    {
+      "numero": 212,
+      "texte": ""
+    },
+    {
+      "numero": 213,
+      "texte": "L’expression « Dame noire » est un titre de Sylvanas ; elle ne désigne pas une seconde dirigeante. De même, « reine banshee » renvoie à son histoire et à son autorité. Cette pluralité de noms peut masquer la continuité du personnage pour un néophyte : la forestière vaincue par Arthas, la banshee insurgée et la souveraine de Fossoyeuse sont la même personne."
+    },
+    {
+      "numero": 214,
+      "texte": ""
+    },
+    {
+      "numero": 215,
+      "texte": "Le problème politique devient alors concret. Celui qui attribue sa libération à Sylvanas peut lui être reconnaissant et accepter son commandement. Mais cette reconnaissance ne précise pas ce qu’il peut refuser, comment une décision peut être contestée, ni qui protège un individu contre un ordre arbitraire. C’est cet écart entre la liberté d’un peuple et les libertés de ses membres que les exemples suivants permettent d’examiner."
+    },
+    {
+      "numero": 216,
+      "texte": ""
+    },
+    {
+      "numero": 217,
+      "texte": "Les ordres circulent néanmoins par plusieurs intermédiaires. Les exécuteurs, les gardes et les apothicaires disposent de tâches identifiables et de lieux d’activité. Le joueur rencontre souvent leur autorité avant celle de Sylvanas. Cette organisation donne une continuité pratique au pouvoir : il peut engager des opérations locales, collecter des informations et faire parvenir des ressources à des responsables spécialisés."
+    },
+    {
+      "numero": 218,
+      "texte": ""
+    },
+    {
+      "numero": 219,
+      "texte": "Les menaces que certains commanditaires adressent aux agents qui tardent à remplir leurs missions montrent la place de la discipline. L’obéissance demandée n’est pas décrite comme une nouvelle emprise nécromantique universelle ; elle peut être imposée par la sanction et la peur. C’est pourquoi l’affranchissement du Roi-Liche ne suffit pas à caractériser les institutions de Fossoyeuse comme une république ou comme un système garantissant la liberté politique."
+    },
+    {
+      "numero": 220,
+      "texte": ""
+    },
+    {
+      "numero": 221,
+      "texte": "### La volonté protégée et la volonté dominée"
+    },
+    {
+      "numero": 222,
+      "texte": ""
+    },
+    {
+      "numero": 223,
+      "texte": "L’histoire de Mug’thol donne un prolongement à la question ouverte dans The Dark Lady. Une quête du jeu originel explique que l’ogre, envoyé chercher la Couronne de volonté, l’a utilisée pour résister à la possession qui le soumettait à Sylvanas. Les représentants de celle-ci demandent alors une opération punitive. Une étape ultérieure ordonne sa mise à mort et la récupération de l’objet. [24], [25]"
+    },
+    {
+      "numero": 224,
+      "texte": ""
+    },
+    {
+      "numero": 225,
+      "texte": "La scène révèle une limite précise à la valeur accordée à l’autonomie. Sylvanas et ses partisans défendent la leur, mais leur appareil ne reconnaît pas nécessairement la même revendication chez ceux qu’il utilise. Il n’est pas nécessaire de supposer une doctrine entièrement formulée pour constater cette asymétrie. Elle apparaît dans les objectifs mêmes de la mission."
+    },
+    {
+      "numero": 226,
+      "texte": ""
+    },
+    {
+      "numero": 227,
+      "texte": "Ce cas doit également être distingué de la situation des habitants de Fossoyeuse. Il prouve l’usage de la domination et la volonté de punir un serviteur qui y échappe ; il ne prouve pas que tous les Réprouvés seraient secrètement privés de libre arbitre. Leur société réunit des rapports de pouvoir différents. L’analyse perdrait en précision si elle remplaçait la présentation idéalisée d’une liberté générale par l’hypothèse inverse d’une servitude uniforme."
+    },
+    {
+      "numero": 228,
+      "texte": ""
+    },
+    {
+      "numero": 229,
+      "texte": "### Les apothicaires et le projet d’une nouvelle peste"
+    },
+    {
+      "numero": 230,
+      "texte": ""
+    },
+    {
+      "numero": 231,
+      "texte": "Un apothicaire prépare des substances et des remèdes ; chez les Réprouvés, ce savoir sert également à concevoir des poisons et des maladies. Les apothicaires sont ainsi des personnages dont l’activité relie les besoins matériels, les recherches et les projets militaires. L’Apothicarium est leur lieu d’activité à Fossoyeuse ; la Société royale des apothicaires désigne leur organisation. Le mot « recherche » ne garantit donc ni un objectif de soin ni une méthode acceptable. [48]"
+    },
+    {
+      "numero": 232,
+      "texte": ""
+    },
+    {
+      "numero": 233,
+      "texte": "Johaan est l’un de ces apothicaires, rencontré à Brill. Les ingrédients qu’il demande ne sont pas de simples accessoires de l’aventure : ils relient le travail du joueur à une commande de la dirigeante. On voit ainsi comment un projet politique devient réalisable grâce à des tâches réparties entre plusieurs acteurs."
+    },
+    {
+      "numero": 234,
+      "texte": ""
+    },
+    {
+      "numero": 235,
+      "texte": "Dans A New Plague, Johaan attribue à Sylvanas une commande explicite : élaborer une maladie capable de contribuer à la destruction d’Arthas et de son armée. Il sollicite des réactifs pour ses expériences. La revanche contre le Fléau se traduit donc en travail organisé, avec des exécutants, des matériaux et des recherches dont l’issue n’est pas encore acquise. [26]"
+    },
+    {
+      "numero": 236,
+      "texte": ""
+    },
+    {
+      "numero": 237,
+      "texte": "Le vocabulaire scientifique ne fait pas disparaître les enjeux de la méthode. Johaan cherche une préparation susceptible de se propager et distingue le simple empoisonnement d’une victime de la diffusion d’une maladie à grande échelle. Ses propos indiquent une ambition offensive qui dépasse l’usage ponctuel d’un poison sur le champ de bataille. [27]"
+    },
+    {
+      "numero": 238,
+      "texte": ""
+    },
+    {
+      "numero": 239,
+      "texte": "La dernière étape de la suite conduit à administrer une boisson expérimentale à un montagnard nain captif. Celui-ci la prend pour un rafraîchissement et meurt après l’avoir bue. La quête montre une expérimentation létale sans consentement, facilitée par la détention du sujet. Le projet de combattre le Fléau s’accompagne ainsi d’actes dirigés contre des vivants qui ne sont pas ses serviteurs. [28]"
+    },
+    {
+      "numero": 240,
+      "texte": ""
+    },
+    {
+      "numero": 241,
+      "texte": "Cette distinction est essentielle. La capacité de subir une persécution et celle d’exercer une violence ne s’excluent pas. Les Réprouvés peuvent être menacés en raison de leur condition tout en disposant d’institutions responsables d’actes cruels. Une histoire de leur formation doit tenir ensemble ces deux dimensions, sans transformer la première en justification automatique de la seconde."
+    },
+    {
+      "numero": 242,
+      "texte": ""
+    },
+    {
+      "numero": 243,
+      "texte": "### Les morts emportent leurs souvenirs"
+    },
+    {
+      "numero": 244,
+      "texte": ""
+    },
+    {
+      "numero": 245,
+      "texte": "Pour comprendre ces personnages, il faut séparer trois pertes possibles : celle de la vie, celle des souvenirs et celle de la capacité de choisir. Elles ne surviennent pas nécessairement ensemble. Quelqu’un peut être mort, se rappeler sa famille et vouloir agir, tout en découvrant que ses relations et ses sensations ont changé. Les récits individuels rendent cette situation compréhensible là où une formule générale sur « les morts » resterait trop vague."
+    },
+    {
+      "numero": 246,
+      "texte": ""
+    },
+    {
+      "numero": 247,
+      "texte": "La vie collective ne se réduit toutefois pas aux décisions militaires ou aux expériences. Les quêtes de Tirisfal et de Fossoyeuse conservent des traces de rapports sociaux antérieurs à la peste. Coleman Farthing, par exemple, réclame les restes de Devlin Agamand et explique sa satisfaction par le sentiment d’avoir été abandonné, avec sa famille, lorsque le désastre est survenu. Le passé des vivants fournit encore des noms, des griefs et des motifs d’action. [29]"
+    },
+    {
+      "numero": 248,
+      "texte": ""
+    },
+    {
+      "numero": 249,
+      "texte": "Le cas de Raleigh Andrean présente une autre relation à la perte. Il demande vengeance contre Valdred, qu’il accuse d’avoir tué son épouse. Il affirme ne plus pouvoir éprouver de deuil, mais souhaite conserver les mains du meurtrier comme souvenir de sa trahison. Son récit associe une transformation du rapport affectif à la persistance d’une mémoire personnelle. Cette déclaration décrit son expérience ; elle ne constitue pas une loi sur les émotions de tous les Réprouvés. [30]"
+    },
+    {
+      "numero": 250,
+      "texte": ""
+    },
+    {
+      "numero": 251,
+      "texte": "Sylvanas elle-même ne se laisse pas réduire à une absence de sentiment. Lorsque son ancien collier lui est rapporté, elle manifeste d’abord de l’émotion, puis rejette publiquement ce souvenir. La scène se poursuit par une lamentation et par la récupération du bijou qu’elle avait jeté. Le geste final empêche de prendre son refus verbal comme la totalité de sa relation à sa vie passée. [31]"
+    },
+    {
+      "numero": 252,
+      "texte": ""
+    },
+    {
+      "numero": 253,
+      "texte": "Ces épisodes donnent une épaisseur au peuple réprouvé. La non-mort n’efface pas mécaniquement les distinctions entre les individus. Certains rapports sont rompus, d’autres se prolongent sous la forme du ressentiment, du souvenir ou de l’attachement. Une identité commune se construit sur ces expériences différentes ; elle ne les remplace pas toutes par une seule psychologie."
+    },
+    {
+      "numero": 254,
+      "texte": ""
+    },
+    {
+      "numero": 255,
+      "texte": "### Une communauté définie par ses relations"
+    },
+    {
+      "numero": 256,
+      "texte": ""
+    },
+    {
+      "numero": 257,
+      "texte": "Les Réprouvés se reconnaissent à travers un ensemble de liens : l’affranchissement, les lieux qu’ils habitent, l’autorité dont ils dépendent et les adversaires qu’ils combattent. Aucun de ces éléments, pris isolément, ne suffit à rendre compte de leur existence. La seule non-mort les rapprocherait du Fléau ; la seule origine à Lordaeron ne rendrait pas compte de la place de Sylvanas ; la seule vengeance ne décrirait ni leurs besoins matériels ni leurs souvenirs."
+    },
+    {
+      "numero": 258,
+      "texte": ""
+    },
+    {
+      "numero": 259,
+      "texte": "L’organisation collective rend possible une continuité après le désastre. Elle fournit une place, des tâches et des protections, tout en exigeant du service et en employant la contrainte. C’est dans cet ensemble concret que se situe l’autonomie réprouvée. Son caractère durable dépend aussi de relations extérieures : pour ne pas affronter seuls tous leurs adversaires, les habitants de Fossoyeuse doivent entrer dans une alliance plus vaste."
+    },
+    {
+      "numero": 260,
+      "texte": ""
+    },
+    {
+      "numero": 261,
+      "texte": "## Partie IV Trouver des alliés"
+    },
+    {
+      "numero": 262,
+      "texte": ""
+    },
+    {
+      "numero": 263,
+      "texte": "### Une place dans la Horde"
+    },
+    {
+      "numero": 264,
+      "texte": ""
+    },
+    {
+      "numero": 265,
+      "texte": "La Horde et l’Alliance sont les deux grandes coalitions auxquelles appartiennent les personnages joueurs de World of Warcraft. Une coalition réunit plusieurs peuples et gouvernements ; elle ne les transforme pas tous en une seule nation. L’Alliance comprend notamment les humains, les nains, les gnomes et les elfes de la nuit dans le jeu originel. La Horde associe alors les orcs, les taurens, les trolls sombrelances et les Réprouvés. Les taurens sont un peuple à l’apparence bovine ; les trolls sombrelances constituent une communauté particulière parmi les nombreux trolls d’Azeroth."
+    },
+    {
+      "numero": 266,
+      "texte": ""
+    },
+    {
+      "numero": 267,
+      "texte": "Thrall est le chef de guerre de cette Horde. Il a conduit les orcs vers une nouvelle implantation en Kalimdor, où Orgrimmar est devenue leur capitale. Les Pitons-du-Tonnerre sont le grand centre tauren. Ces villes expliquent la portée géographique de l’accord avec Fossoyeuse : les Réprouvés rejoignent des partenaires dont les principales bases se trouvent loin de leurs frontières immédiates. [13]"
+    },
+    {
+      "numero": 268,
+      "texte": ""
+    },
+    {
+      "numero": 269,
+      "texte": "La Horde de Thrall ne doit pas être confondue avec la Légion ardente. Des orcs ont subi une domination démoniaque dans leur histoire, mais Thrall a combattu les forces de la Légion au mont Hyjal. Une organisation peut conserver un nom connu tout en ayant changé de direction et de projet. Pour suivre la diplomatie réprouvée, il faut donc identifier les interlocuteurs de cette période, plutôt que supposer une identité immuable de tous les camps. [44]"
+    },
+    {
+      "numero": 270,
+      "texte": ""
+    },
+    {
+      "numero": 271,
+      "texte": "Dans World of Warcraft originel, les Réprouvés appartiennent à la Horde aux côtés des orcs, des taurens et des trolls. Le manuel présente leur participation comme une alliance de circonstance. Cette intégration change leur position : ils disposent désormais de partenaires vivants et d’un cadre diplomatique qui dépasse les ruines de Lordaeron. [13]"
+    },
+    {
+      "numero": 272,
+      "texte": ""
+    },
+    {
+      "numero": 273,
+      "texte": "L’intérêt territorial de cet accord est visible. Fossoyeuse procure à la Horde un centre dans le nord des Royaumes de l’Est ; les Réprouvés peuvent s’appuyer sur une coalition implantée notamment en Kalimdor. L’alliance met en relation des positions complémentaires et élargit les possibilités d’action de chacun. Cette lecture stratégique n’oblige pas à inventer le détail des négociations que le corpus ne montre pas."
+    },
+    {
+      "numero": 274,
+      "texte": ""
+    },
+    {
+      "numero": 275,
+      "texte": "Elle n’implique pas non plus une communauté parfaite de valeurs ou d’intérêts. Un accord peut se maintenir parce qu’il offre une protection et des moyens supplémentaires. L’existence de cette utilité réciproque explique que Fossoyeuse puisse appartenir à la Horde tout en poursuivant une politique dont les priorités lui sont propres."
+    },
+    {
+      "numero": 276,
+      "texte": ""
+    },
+    {
+      "numero": 277,
+      "texte": "### Une alliance qui ne supprime pas les différences"
+    },
+    {
+      "numero": 278,
+      "texte": ""
+    },
+    {
+      "numero": 279,
+      "texte": "Le langage des premières quêtes reste fortement centré sur Sylvanas, son autorité et les besoins de ses sujets. La présence dans la Horde ne dissout donc pas le commandement réprouvé. Les deux niveaux d’appartenance coexistent : un aventurier sert des responsables locaux qui se réfèrent à Fossoyeuse, tout en circulant dans un ensemble politique plus large."
+    },
+    {
+      "numero": 280,
+      "texte": ""
+    },
+    {
+      "numero": 281,
+      "texte": "Ce constat invite à distinguer les opérations de la faction et les décisions explicitement prises en commun. Une action menée par un responsable réprouvé ne peut être attribuée automatiquement à une décision concertée de tous les chefs de la Horde. Inversement, le maintien d’un commandement propre n’annule pas les liens de coopération. Les relations se lisent dans les actes et les échanges, pas seulement dans les proclamations de loyauté."
+    },
+    {
+      "numero": 282,
+      "texte": ""
+    },
+    {
+      "numero": 283,
+      "texte": "Les taurens ne peuvent, dans ce cadre, être réduits à un refus uniforme des morts-vivants. Ils appartiennent à la même coalition, et la circulation ultérieure des recherches des apothicaires jusqu’aux Pitons-du-Tonnerre confirmera l’existence de collaborations pratiques. Il faut laisser place à cette diversité de relations sans attribuer à un peuple entier les réserves supposées de tous ses membres."
+    },
+    {
+      "numero": 284,
+      "texte": ""
+    },
+    {
+      "numero": 285,
+      "texte": "### Tranquillien et la coopération avec les elfes de sang"
+    },
+    {
+      "numero": 286,
+      "texte": ""
+    },
+    {
+      "numero": 287,
+      "texte": "The Burning Crusade conduit une grande partie des aventures en Outreterre, les restes d’un autre monde, Draenor, accessibles depuis Azeroth par la Porte des ténèbres. L’extension ne déplace pourtant pas toute l’histoire hors d’Azeroth. Elle permet aussi d’explorer le pays des elfes de sang et les territoires où ils tentent de rétablir leur sécurité. Le rapprochement avec les Réprouvés s’y observe à l’échelle d’une région et d’une garnison. [47]"
+    },
+    {
+      "numero": 288,
+      "texte": ""
+    },
+    {
+      "numero": 289,
+      "texte": "Les Terres fantômes correspondent à la partie méridionale ravagée de Quel’Thalas. Tranquillien y est un point d’appui des elfes de sang et de leurs partenaires réprouvés. Mortholme est une place forte ennemie ; Dar’Khan Drathir, un elfe passé au service du Fléau, y représente une menace directe. Sa présence rappelle que l’origine elfique ne garantit pas davantage une allégeance que la condition morte-vivante. Le grand exécuteur Mavren est, quant à lui, un commandant réprouvé envoyé dans cette région. [32]"
+    },
+    {
+      "numero": 290,
+      "texte": ""
+    },
+    {
+      "numero": 291,
+      "texte": "The Burning Crusade ouvre une nouvelle étape. Dans les Terres fantômes, les Réprouvés et les elfes de sang combattent un adversaire commun. La quête The Forsaken présente le grand exécuteur Mavren comme le représentant d’une aide militaire contre Dar’Khan, qui commande des forces du Fléau depuis Mortholme. Il justifie cette présence par l’ennemi partagé et par les liens de Sylvanas avec Quel’Thalas. [32]"
+    },
+    {
+      "numero": 292,
+      "texte": ""
+    },
+    {
+      "numero": 293,
+      "texte": "Cette coopération donne une forme concrète au rapprochement des deux peuples. Des troupes sont engagées hors du cœur territorial de Fossoyeuse, au bénéfice d’une communauté qui cherche à reprendre la maîtrise de son pays. Les Réprouvés ne sont donc pas uniquement les défenseurs d’une enclave : ils deviennent aussi des fournisseurs d’assistance militaire."
+    },
+    {
+      "numero": 294,
+      "texte": ""
+    },
+    {
+      "numero": 295,
+      "texte": "Les dialogues de Tranquillien montrent cependant une coopération discutée. Dame Auriferous réclame les renforts promis et refuse d’engager toutes les forces contre Mortholme tant que d’autres ennemis menacent les positions voisines. Elle rappelle également que la majorité des vies exposées sont celles des elfes de sang. L’aide réprouvée ne supprime ni l’autorité locale ni les divergences sur l’ordre des opérations. [33]"
+    },
+    {
+      "numero": 296,
+      "texte": ""
+    },
+    {
+      "numero": 297,
+      "texte": "Cette négociation quotidienne rend l’alliance plus intelligible qu’une simple fraternité dans la souffrance. La destruction de leurs anciens foyers rapproche les partenaires ; le maintien de la coopération dépend aussi des effectifs disponibles, des dangers immédiats et de la manière de partager les risques."
+    },
+    {
+      "numero": 298,
+      "texte": ""
+    },
+    {
+      "numero": 299,
+      "texte": "### De l’aide militaire à la reconnaissance politique"
+    },
+    {
+      "numero": 300,
+      "texte": ""
+    },
+    {
+      "numero": 301,
+      "texte": "Le mot « reconnaissance » prend ici un sens diplomatique précis. Un peuple peut tenir sa ville et disposer de soldats sans être admis comme partenaire par les autres gouvernements. Obtenir une place dans la Horde lui donne des interlocuteurs qui acceptent de traiter avec ses représentants. La lettre remise à un chef de guerre n’est donc pas seulement un courrier : elle fait le lien entre des preuves de coopération militaire et une décision d’alliance."
+    },
+    {
+      "numero": 302,
+      "texte": ""
+    },
+    {
+      "numero": 303,
+      "texte": "Le rapprochement participe à l’entrée des elfes de sang dans la Horde. Dans la version de The Burning Crusade de Meeting the Warchief, Sylvanas confie une lettre destinée à Thrall et se présente comme une défenseuse de la place de Lune-d’Argent auprès de ses alliés. Elle agit ici en intermédiaire entre une communauté aidée sur le terrain et les autorités de la coalition. [34]"
+    },
+    {
+      "numero": 304,
+      "texte": ""
+    },
+    {
+      "numero": 305,
+      "texte": "La succession des deux adhésions doit rester claire. Les Réprouvés sont déjà membres de la Horde lorsque les elfes de sang viennent la rejoindre. Leur relation ultérieure ne peut donc expliquer, à elle seule, l’admission initiale de Fossoyeuse. Elle marque un élargissement de ses relations et une occasion de peser sur la composition de son alliance."
+    },
+    {
+      "numero": 306,
+      "texte": ""
+    },
+    {
+      "numero": 307,
+      "texte": "Pour Sylvanas, cette fonction de médiation ajoute une dimension diplomatique à l’autorité militaire. Elle peut mobiliser des forces et soutenir une candidature, mais doit également convaincre un interlocuteur qui n’est pas son subordonné. La capacité de négocier devient ainsi l’un des moyens de prolonger l’autonomie conquise à Lordaeron."
+    },
+    {
+      "numero": 308,
+      "texte": ""
+    },
+    {
+      "numero": 309,
+      "texte": "Le conflit contre Dar’Khan interdit enfin de décrire The Burning Crusade comme une période où le Fléau aurait été laissé sans adversaire en Azeroth. Le déplacement d’une grande part de l’action vers l’Outreterre ne met pas fin aux combats locaux. Pour les Réprouvés, la menace persiste ; ce qui change est l’étendue des coopérations par lesquelles ils peuvent y répondre."
+    },
+    {
+      "numero": 310,
+      "texte": ""
+    },
+    {
+      "numero": 311,
+      "texte": "## Partie V Vers la guerre du Norfendre"
+    },
+    {
+      "numero": 312,
+      "texte": ""
+    },
+    {
+      "numero": 313,
+      "texte": "### Une menace qui revient au premier plan"
+    },
+    {
+      "numero": 314,
+      "texte": ""
+    },
+    {
+      "numero": 315,
+      "texte": "Le prélancement est une période de transition durant laquelle le jeu met en scène les événements annonçant l’extension suivante. Dans le cas de Wrath, la menace du Fléau touche de nouveau les lieux fréquentés par les populations et les aventuriers. Le lecteur doit distinguer cette nouvelle crise de la première peste de Lordaeron : elle survient dans un monde où les Réprouvés sont déjà une puissance organisée et où les principales coalitions existent sous leur forme nouvelle."
+    },
+    {
+      "numero": 316,
+      "texte": ""
+    },
+    {
+      "numero": 317,
+      "texte": "Le passage au Norfendre change aussi la direction de la guerre. Jusqu’ici, une grande part des opérations décrites consiste à défendre un établissement, reprendre des ressources ou combattre un bastion voisin. La mobilisation contre le Roi-Liche vise le centre extérieur d’où provient la menace. Elle exige de transporter des forces et de soutenir une campagne loin des bases habituelles."
+    },
+    {
+      "numero": 318,
+      "texte": ""
+    },
+    {
+      "numero": 319,
+      "texte": "Les événements précédant Wrath of the Lich King replacent le Fléau au centre de la mobilisation. Une épidémie transforme des habitants en zombies tandis que des offensives touchent plusieurs régions. La crise associe une menace à l’intérieur des espaces habités et des attaques qui imposent une réponse militaire. La fin de l’épidémie ne signifie pas, à elle seule, la fin de l’invasion. [35]"
+    },
+    {
+      "numero": 320,
+      "texte": ""
+    },
+    {
+      "numero": 321,
+      "texte": "Pour les Réprouvés, il ne s’agit pas de découvrir un adversaire jusque-là oublié. La lutte contre le Roi-Liche appartient à leur histoire depuis l’affranchissement. La nouveauté réside dans la place prise par cette menace parmi les autres puissances et dans la préparation d’une campagne dirigée vers son centre au Norfendre."
+    },
+    {
+      "numero": 322,
+      "texte": ""
+    },
+    {
+      "numero": 323,
+      "texte": "Ce changement peut être établi sans reconstruire une longue stratégie secrète d’Arthas. Les attaques montrent une capacité d’action ; elles ne révèlent pas nécessairement le calendrier de tous ses préparatifs. À ce stade, l’histoire peut décrire la mobilisation observable et les réactions qu’elle suscite, sans prêter au Roi-Liche une explication complète de chaque événement."
+    },
+    {
+      "numero": 324,
+      "texte": ""
+    },
+    {
+      "numero": 325,
+      "texte": "### Putress et la recherche d’un remède"
+    },
+    {
+      "numero": 326,
+      "texte": ""
+    },
+    {
+      "numero": 327,
+      "texte": "Shattrath est une ville d’Outreterre où les aventuriers de différentes appartenances se croisent. Le fait d’y rencontrer Putress situe son travail dans un espace plus large que Fossoyeuse. Son titre de grand apothicaire signale une fonction de direction dans la recherche. Faranell, autre responsable des apothicaires, travaille à Fossoyeuse ; Chaney est un correspondant installé aux Pitons-du-Tonnerre. Les déplacements d’échantillons rendent visible la relation entre ces personnes et ces lieux. [36], [37], [38]"
+    },
+    {
+      "numero": 328,
+      "texte": ""
+    },
+    {
+      "numero": 329,
+      "texte": "À Shattrath, Putress dirige des recherches contre l’épidémie de zombies. Desperate Research oriente les personnages vers son camp et présente son travail comme un espoir de salut. Lorsqu’il s’adresse à un Réprouvé, Putress associe cette participation à la recherche du respect que son peuple estime mériter. L’utilité scientifique devient ainsi un argument de reconnaissance politique. [36]"
+    },
+    {
+      "numero": 330,
+      "texte": ""
+    },
+    {
+      "numero": 331,
+      "texte": "La transmission des résultats fait intervenir plusieurs lieux de la Horde. Une quête demande d’apporter aux Pitons-du-Tonnerre un cerveau infecté contenant à la fois la maladie et une préparation destinée à la combattre. Une autre relie Putress à Faranell, à Fossoyeuse. Ces échanges attestent un réseau de recherche et de circulation des échantillons au moment du prélude. [37], [38]"
+    },
+    {
+      "numero": 332,
+      "texte": ""
+    },
+    {
+      "numero": 333,
+      "texte": "Il importe de distinguer cette recherche d’un remède du projet offensif de nouvelle peste engagé auparavant. Les deux mobilisent les compétences des apothicaires, mais n’ont pas la même fonction immédiate. Les confondre empêcherait de comprendre pourquoi des pratiques inquiétantes peuvent coexister avec un service jugé nécessaire face à une crise commune."
+    },
+    {
+      "numero": 334,
+      "texte": ""
+    },
+    {
+      "numero": 335,
+      "texte": "Putress appartient ici au présent de l’événement. Son rôle visible ne permet pas de lui attribuer automatiquement toutes les initiatives des premières années, pas plus qu’il ne permet de raconter déjà ses actions futures. La contribution des apothicaires à la lutte contre la contagion doit être évaluée dans la situation où elle est alors présentée."
+    },
+    {
+      "numero": 336,
+      "texte": ""
+    },
+    {
+      "numero": 337,
+      "texte": "### Acherus et une autre rupture avec le Fléau"
+    },
+    {
+      "numero": 338,
+      "texte": ""
+    },
+    {
+      "numero": 339,
+      "texte": "Un chevalier de la mort est un combattant qui emploie les pouvoirs de la non-mort, notamment par ses armes et sa magie. Le titre ne désigne pas tous les soldats morts-vivants. Arthas en était déjà un lorsqu’il servait Ner’zhul ; l’ouverture de Wrath présente un nouveau groupe de ces combattants. Acherus est leur nécropole, une forteresse volante comparable par sa nature générale à Naxxramas, mais distincte d’elle. Les deux noms renvoient à des lieux et à des commandements différents. [39], [41]"
+    },
+    {
+      "numero": 340,
+      "texte": ""
+    },
+    {
+      "numero": 341,
+      "texte": "L’Aube d’argent est une organisation engagée contre le Fléau. Elle est distincte de la Croisade écarlate : les deux portent des noms liés à la lumière ou à la couleur, mais ne sont pas interchangeables. La chapelle de l’Espoir de Lumière, dans les Maleterres de l’Est, est une place importante de cette résistance. Tirion Fordring est un paladin ; Darion Mograine commande les chevaliers de la mort engagés dans l’offensive qui les conduit à cette chapelle. [40]"
+    },
+    {
+      "numero": 342,
+      "texte": ""
+    },
+    {
+      "numero": 343,
+      "texte": "L’ouverture de Wrath présente également une nouvelle force de chevaliers de la mort au service du Roi-Liche. Depuis Acherus, ils participent aux attaques contre les positions écarlates avant d’être engagés contre l’Aube d’argent. Leur existence n’est pas l’apparition des premiers chevaliers de la mort : elle prolonge une histoire déjà ancienne, dont Arthas lui-même est une figure. [39]"
+    },
+    {
+      "numero": 344,
+      "texte": ""
+    },
+    {
+      "numero": 345,
+      "texte": "À la chapelle de l’Espoir de Lumière, l’affrontement avec Tirion Fordring conduit à une rupture. Le Roi-Liche révèle qu’il a utilisé ses combattants pour attirer Tirion. Darion Mograine se retourne contre lui et, après son retrait, proclame l’engagement des chevaliers de la Lame d’ébène à le combattre. Une autre organisation de morts-vivants affranchis rejoint ainsi la lutte. [40]"
+    },
+    {
+      "numero": 346,
+      "texte": ""
+    },
+    {
+      "numero": 347,
+      "texte": "La rupture se comprend à partir du piège révélé : les chevaliers croyaient participer à une opération militaire, mais leur maître les a employés pour faire venir Tirion. Leur sacrifice compte moins pour lui que la capture de cet adversaire. Lorsque Darion se retourne contre le Roi-Liche, la Lame d’ébène devient le nom de l’ordre indépendant qui en résulte. « Lame » renvoie ici à une organisation de combattants, et non à une épée particulière. [40]"
+    },
+    {
+      "numero": 348,
+      "texte": ""
+    },
+    {
+      "numero": 349,
+      "texte": "Le rapprochement avec les Réprouvés est possible sur un point précis : d’anciens serviteurs construisent une capacité d’action contre leur maître. Leurs trajectoires restent cependant distinctes. La Lame d’ébène est un ordre de combattants ; les Réprouvés constituent déjà une communauté territoriale organisée autour de Fossoyeuse. La première ne peut être présentée comme la simple continuation de la seconde, ni comme une réconciliation avec le Fléau."
+    },
+    {
+      "numero": 350,
+      "texte": ""
+    },
+    {
+      "numero": 351,
+      "texte": "### Le départ et les enjeux de la campagne"
+    },
+    {
+      "numero": 352,
+      "texte": ""
+    },
+    {
+      "numero": 353,
+      "texte": "Au moment où les expéditions se dirigent vers le Norfendre, les Réprouvés disposent de moyens qu’ils ne possédaient pas lors de leur émancipation : une capitale, des responsables locaux, une implantation défendue, des chercheurs et des partenaires. Leur participation à la Horde les inscrit dans une mobilisation plus vaste que les conflits des premières années. [41]"
+    },
+    {
+      "numero": 354,
+      "texte": ""
+    },
+    {
+      "numero": 355,
+      "texte": "La campagne peut répondre à plusieurs attentes. Frapper le Roi-Liche vise un adversaire collectif et une menace durable ; atteindre Arthas rejoint aussi le désir de revanche de Sylvanas. La convergence de ces objectifs facilite l’engagement, sans démontrer qu’ils sont toujours interchangeables. Une dirigeante peut vouloir la destruction de son ennemi tandis que ses sujets cherchent également à préserver les acquis de leur existence nouvelle."
+    },
+    {
+      "numero": 356,
+      "texte": ""
+    },
+    {
+      "numero": 357,
+      "texte": "L’ouverture d’un front extérieur ajoute donc une question à celle de la survie. Comment engager les forces du peuple sans réduire son avenir à l’accomplissement d’une vengeance ? La borne de cette étude ne permet pas de répondre par les événements ultérieurs. Elle permet de constater que la question existe déjà, parce que les Réprouvés sont devenus assez organisés pour avoir autre chose à défendre que leur seul refus de servir."
+    },
+    {
+      "numero": 358,
+      "texte": ""
+    },
+    {
+      "numero": 359,
+      "texte": "## Conclusion Une autonomie construite dans la guerre"
+    },
+    {
+      "numero": 360,
+      "texte": ""
+    },
+    {
+      "numero": 361,
+      "texte": "Entre Warcraft III et le début de Wrath of the Lich King, les Réprouvés passent de l’affranchissement à l’exercice d’un pouvoir durable. La défaillance de l’emprise du Roi-Liche ouvre une possibilité ; Sylvanas la transforme en rassemblement militaire, puis en implantation territoriale. Fossoyeuse fournit un centre à cette organisation. L’alliance avec la Horde et la coopération avec les elfes de sang élargissent ensuite les moyens dont elle dispose."
+    },
+    {
+      "numero": 362,
+      "texte": ""
+    },
+    {
+      "numero": 363,
+      "texte": "Cette évolution n’est ni une libération sans violence ni une simple reproduction du Fléau. Les Réprouvés retrouvent une capacité d’action propre et constituent des relations qui ne se réduisent pas à l’obéissance nécromantique. Leur pouvoir emploie pourtant la possession, la menace, les attaques contre des établissements civils et l’expérimentation sur des captifs. Ces pratiques font partie de leur histoire dès le corpus initial ; elles doivent être étudiées avec les persécutions qu’ils subissent."
+    },
+    {
+      "numero": 364,
+      "texte": ""
+    },
+    {
+      "numero": 365,
+      "texte": "Leur identité collective se nourrit également d’expériences singulières. Les souvenirs de la vie passée, les pertes, les rancœurs et les attachements ne disparaissent pas de manière uniforme. Les institutions donnent à ces individus un cadre commun, mais la parole de Sylvanas ou d’un apothicaire ne peut être tenue pour la pensée de tout un peuple."
+    },
+    {
+      "numero": 366,
+      "texte": ""
+    },
+    {
+      "numero": 367,
+      "texte": "L’autonomie réprouvée repose finalement sur plusieurs acquisitions : échapper au maître, tenir des lieux, organiser des activités et être reconnu comme partenaire. Aucune ne rend les autres inutiles. La guerre du Norfendre s’ouvre alors que ces acquis existent, mais que leur équilibre reste incertain. Les Réprouvés y entrent comme une puissance constituée, dont la sécurité, la mémoire et les ambitions ne se confondent plus entièrement avec l’instant de sa libération."
+    },
+    {
+      "numero": 368,
+      "texte": ""
+    },
+    {
+      "numero": 369,
+      "texte": ""
+    },
+    {
+      "numero": 370,
+      "texte": "## Repères à retrouver pendant la lecture"
+    },
+    {
+      "numero": 371,
+      "texte": ""
+    },
+    {
+      "numero": 372,
+      "texte": "### Les étapes dans l’ordre"
+    },
+    {
+      "numero": 373,
+      "texte": ""
+    },
+    {
+      "numero": 374,
+      "texte": "| Étape | Événement | Ce qui change pour la suite |"
+    },
+    {
+      "numero": 375,
+      "texte": "| --- | --- | --- |"
+    },
+    {
+      "numero": 376,
+      "texte": "| Avant la chute d’Arthas | Ner’zhul devient le Roi-Liche ; Kel’Thuzad prépare l’action du Fléau. | L’invasion est organisée avant que le prince soit asservi. |"
+    },
+    {
+      "numero": 377,
+      "texte": "| Reign of Chaos | Lordaeron et Quel’Thalas sont ravagés ; Sylvanas devient une banshee. | Les futurs Réprouvés perdent leur vie et leurs anciens cadres d’existence. |"
+    },
+    {
+      "numero": 378,
+      "texte": "| Fin de Reign of Chaos | L’offensive d’Archimonde échoue au mont Hyjal. | La Légion ne fait pas disparaître toute résistance, mais le Fléau demeure. |"
+    },
+    {
+      "numero": 379,
+      "texte": "| The Frozen Throne | Sylvanas échappe à l’emprise du Roi-Liche et s’empare de la capitale. | Les Réprouvés acquièrent une direction et une base territoriale. |"
+    },
+    {
+      "numero": 380,
+      "texte": "| Fin de The Frozen Throne | Arthas atteint le Trône de glace et s’unit à Ner’zhul. | Arthas porte désormais lui-même le titre de Roi-Liche. |"
+    },
+    {
+      "numero": 381,
+      "texte": "| World of Warcraft originel | Fossoyeuse fonctionne comme capitale ; les Réprouvés appartiennent à la Horde. | Leur autonomie s’appuie sur des institutions, un territoire et des alliances. |"
+    },
+    {
+      "numero": 382,
+      "texte": "| The Burning Crusade | Coopération dans les Terres fantômes et soutien aux elfes de sang. | Les Réprouvés interviennent aussi comme partenaires militaires et diplomatiques. |"
+    },
+    {
+      "numero": 383,
+      "texte": "| Ouverture de Wrath | Nouvelle crise du Fléau, rupture d’Acherus et mobilisation vers le Norfendre. | Les conflits locaux s’inscrivent dans une campagne contre le centre du pouvoir ennemi. |"
+    },
+    {
+      "numero": 384,
+      "texte": ""
+    },
+    {
+      "numero": 385,
+      "texte": "### Quelques distinctions essentielles"
+    },
+    {
+      "numero": 386,
+      "texte": ""
+    },
+    {
+      "numero": 387,
+      "texte": "| Terme | Sens dans cette étude |"
+    },
+    {
+      "numero": 388,
+      "texte": "| --- | --- |"
+    },
+    {
+      "numero": 389,
+      "texte": "| Mort-vivant | Condition d’un être qui agit encore après sa mort ; elle ne détermine pas à elle seule son camp. |"
+    },
+    {
+      "numero": 390,
+      "texte": "| Fléau | Armée et organisation dominées par le Roi-Liche. |"
+    },
+    {
+      "numero": 391,
+      "texte": "| Réprouvés | Communauté de morts-vivants affranchis rassemblée sous Sylvanas. |"
+    },
+    {
+      "numero": 392,
+      "texte": "| Légion ardente | Puissance démoniaque à l’origine du projet du Fléau ; ses intérêts et ceux du Roi-Liche finissent par diverger. |"
+    },
+    {
+      "numero": 393,
+      "texte": "| Roi-Liche | Ner’zhul au début du récit ; le titre est ensuite porté par Arthas après la fin de The Frozen Throne. |"
+    },
+    {
+      "numero": 394,
+      "texte": "| Lordaeron | Royaume humain détruit ; le nom peut aussi renvoyer à sa capitale et à un espace septentrional plus large. |"
+    },
+    {
+      "numero": 395,
+      "texte": "| Fossoyeuse | Capitale réprouvée située sous l’ancienne capitale humaine. |"
+    },
+    {
+      "numero": 396,
+      "texte": "| Libre arbitre | Capacité de vouloir et de choisir ; elle ne signifie pas que tout ordre politique garantit la liberté de ses membres. |"
+    },
+    {
+      "numero": 397,
+      "texte": "| Lame d’ébène | Ordre issu de la rupture des chevaliers de la mort d’Acherus avec le Roi-Liche. |"
+    },
+    {
+      "numero": 398,
+      "texte": ""
+    },
+    {
+      "numero": 399,
+      "texte": "Ces repères reprennent les explications du récit. Ils peuvent servir de point de retour sans interrompre la lecture des chapitres."
+    },
+    {
+      "numero": 400,
+      "texte": ""
+    },
+    {
+      "numero": 401,
+      "texte": "## Sources et périmètre de lecture"
+    },
+    {
+      "numero": 402,
+      "texte": ""
+    },
+    {
+      "numero": 403,
+      "texte": "Les numéros du texte renvoient aux sources ci-dessous. Le corpus retenu comprend les versions originales de Warcraft III et The Frozen Throne, World of Warcraft, The Burning Crusade et les événements ouvrant Wrath of the Lich King. L’analyse s’arrête avant le Portail du courroux et la bataille pour Fossoyeuse."
+    },
+    {
+      "numero": 404,
+      "texte": ""
+    },
+    {
+      "numero": 405,
+      "texte": "Les pages de Warcraft Wiki servent principalement d’accès aux transcriptions des missions, des dialogues et des quêtes de Blizzard. Elles sont entretenues aujourd’hui : seules les versions et les passages correspondant au corpus retenu sont utilisés. Les changements ultérieurs de personnages, de niveaux ou de déroulement ne sont pas intégrés. Les pages de synthèse sur les donjons et l’événement de 2008 sont des références secondaires ; elles ne remplacent pas les textes d’origine pour attribuer une intention à un personnage. Les développements sur le pouvoir, la mémoire et les alliances constituent l’interprétation proposée dans ce manuscrit."
+    },
+    {
+      "numero": 406,
+      "texte": ""
+    },
+    {
+      "numero": 407,
+      "texte": "1. [The Birth of the Lich King — livre historique du jeu][1]"
+    },
+    {
+      "numero": 408,
+      "texte": "2. [Kel’Thuzad and the Forming of the Scourge — livre historique du jeu][2]"
+    },
+    {
+      "numero": 409,
+      "texte": "3. [The Culling — campagne humaine de Reign of Chaos][3]"
+    },
+    {
+      "numero": 410,
+      "texte": "4. [Frostmourne — fin de la campagne humaine de Reign of Chaos, suivie de la cinématique Arthas’ Betrayal][4]"
+    },
+    {
+      "numero": 411,
+      "texte": "5. [The Fall of Silvermoon — campagne morte-vivante de Reign of Chaos][5]"
+    },
+    {
+      "numero": 412,
+      "texte": "6. [History of the Blood Elves — présentation officielle de The Burning Crusade conservée en transcription][6]"
+    },
+    {
+      "numero": 413,
+      "texte": "7. [Civil War in the Plaguelands — récit historique de la période][7]"
+    },
+    {
+      "numero": 414,
+      "texte": "8. [The Flight from Lordaeron — The Frozen Throne][8]"
+    },
+    {
+      "numero": 415,
+      "texte": "9. [Sylvanas’ Farewell — interlude de The Frozen Throne][9]"
+    },
+    {
+      "numero": 416,
+      "texte": "10. [The Dark Lady — The Frozen Throne][10]"
+    },
+    {
+      "numero": 417,
+      "texte": "11. [Dreadlord’s Fall — The Frozen Throne][11]"
+    },
+    {
+      "numero": 418,
+      "texte": "12. [A New Power in Lordaeron — The Frozen Throne][12]"
+    },
+    {
+      "numero": 419,
+      "texte": "13. [Manuel original de World of Warcraft — présentation des Réprouvés et de la Horde][13]"
+    },
+    {
+      "numero": 420,
+      "texte": "14. [Rude Awakening — dialogue original de Sarvis][14]"
+    },
+    {
+      "numero": 421,
+      "texte": "15. [The Mindless Ones — quête du Glas, en Tirisfal][15]"
+    },
+    {
+      "numero": 422,
+      "texte": "16. [Night Web’s Hollow — ressources et mine de Tirisfal][16]"
+    },
+    {
+      "numero": 423,
+      "texte": "17. [The Scarlet Crusade — propos d’Arren][17]"
+    },
+    {
+      "numero": 424,
+      "texte": "18. [The Red Messenger — renseignements écarlates][18]"
+    },
+    {
+      "numero": 425,
+      "texte": "19. [Battle of Hillsbrad — première étape, texte original][19]"
+    },
+    {
+      "numero": 426,
+      "texte": "20. [Battle of Hillsbrad, étape 4 — conseil et registre][20]"
+    },
+    {
+      "numero": 427,
+      "texte": "21. [Battle of Hillsbrad, étape 5 — mine et travailleurs][21]"
+    },
+    {
+      "numero": 428,
+      "texte": "22. [Scholomance — quête originale identifiant une place forte du Fléau][22]"
+    },
+    {
+      "numero": 429,
+      "texte": "23. [Stratholme dans le jeu original — donjon et présence de Balnazzar][23]"
+    },
+    {
+      "numero": 430,
+      "texte": "24. [The Crown of Will — Mug’thol et la possession][24]"
+    },
+    {
+      "numero": 431,
+      "texte": "25. [The Crown of Will, étape 4 — châtiment de Mug’thol][25]"
+    },
+    {
+      "numero": 432,
+      "texte": "26. [A New Plague — commande et objectifs de la recherche][26]"
+    },
+    {
+      "numero": 433,
+      "texte": "27. [A New Plague, étape 2 — ambitions de diffusion][27]"
+    },
+    {
+      "numero": 434,
+      "texte": "28. [A New Plague, étape 4 — expérience sur un captif][28]"
+    },
+    {
+      "numero": 435,
+      "texte": "29. [The Haunted Mills — Coleman et les Agamand][29]"
+    },
+    {
+      "numero": 436,
+      "texte": "30. [A Husband’s Revenge — récit de Raleigh][30]"
+    },
+    {
+      "numero": 437,
+      "texte": "31. [Journey to Undercity — collier et réaction de Sylvanas][31]"
+    },
+    {
+      "numero": 438,
+      "texte": "32. [The Forsaken — propos de Mavren dans les Terres fantômes][32]"
+    },
+    {
+      "numero": 439,
+      "texte": "33. [Tranquillien — dialogues de la coopération locale][33]"
+    },
+    {
+      "numero": 440,
+      "texte": "34. [Meeting the Warchief — version de The Burning Crusade avec Thrall, conservée dans la page renommée Meeting the Orcs][34]"
+    },
+    {
+      "numero": 441,
+      "texte": "35. [Zombie Infestation — reconstitution de l’événement de prélancement de 2008][35]"
+    },
+    {
+      "numero": 442,
+      "texte": "36. [Desperate Research — appel de Putress][36]"
+    },
+    {
+      "numero": 443,
+      "texte": "37. [Thunder Bluff — remise d’un échantillon à Chaney][37]"
+    },
+    {
+      "numero": 444,
+      "texte": "38. [The Undercity — remise de l’échantillon à Faranell][38]"
+    },
+    {
+      "numero": 445,
+      "texte": "39. [The Might of the Scourge — ouverture du parcours d’Acherus][39]"
+    },
+    {
+      "numero": 446,
+      "texte": "40. [The Light of Dawn — affrontement et fondation de la Lame d’ébène][40]"
+    },
+    {
+      "numero": 447,
+      "texte": "41. [Manuel original de Wrath of the Lich King — contexte de la campagne du Norfendre et chevaliers de la mort][41]"
+    },
+    {
+      "numero": 448,
+      "texte": ""
+    },
+    {
+      "numero": 449,
+      "texte": "42. [The Siege of Dalaran — mission originale de Reign of Chaos][42]"
+    },
+    {
+      "numero": 450,
+      "texte": "43. [Under the Burning Sky — invocation et prise de commandement d’Archimonde][43]"
+    },
+    {
+      "numero": 451,
+      "texte": "44. [Twilight of the Gods — coopération contre Archimonde au mont Hyjal][44]"
+    },
+    {
+      "numero": 452,
+      "texte": "45. [Legacy of the Damned — parcours de la campagne de The Frozen Throne][45]"
+    },
+    {
+      "numero": 453,
+      "texte": "46. [The Ascension — cinématique finale originale de The Frozen Throne][46]"
+    },
+    {
+      "numero": 454,
+      "texte": "47. [Manuel de The Burning Crusade — présentation de l’Outreterre et des nouveaux alliés][47]"
+    },
+    {
+      "numero": 455,
+      "texte": "48. [Apothecarium — localisation et fonction de l’établissement dans le jeu original ; les développements ultérieurs de cette page ne sont pas utilisés][48]"
+    },
+    {
+      "numero": 456,
+      "texte": ""
+    },
+    {
+      "numero": 457,
+      "texte": "Compléments : [Icecrown and the Frozen Throne](https://warcraft.wiki.gg/wiki/Icecrown_and_the_Frozen_Throne), pour l’implantation du Roi-Liche ; [Naxxramas dans le jeu original](https://warcraft.wiki.gg/wiki/Naxxramas_%28Classic%29), pour la persistance militaire du Fléau."
+    },
+    {
+      "numero": 458,
+      "texte": ""
+    },
+    {
+      "numero": 459,
+      "texte": "[1]: https://warcraft.wiki.gg/wiki/The_Birth_of_the_Lich_King"
+    },
+    {
+      "numero": 460,
+      "texte": "[2]: https://warcraft.wiki.gg/wiki/Kel%27Thuzad_and_the_Forming_of_the_Scourge"
+    },
+    {
+      "numero": 461,
+      "texte": "[3]: https://warcraft.wiki.gg/wiki/The_Culling_%28WC3_Human%29"
+    },
+    {
+      "numero": 462,
+      "texte": "[4]: https://warcraft.wiki.gg/wiki/Frostmourne_%28WC3_Human%29"
+    },
+    {
+      "numero": 463,
+      "texte": "[5]: https://warcraft.wiki.gg/wiki/The_Fall_of_Silvermoon_%28WC3_Undead%29"
+    },
+    {
+      "numero": 464,
+      "texte": "[6]: https://warcraft.wiki.gg/wiki/The_Burning_Crusade_Townhall/History_of_the_Blood_Elves"
+    },
+    {
+      "numero": 465,
+      "texte": "[7]: https://warcraft.wiki.gg/wiki/Civil_War_in_the_Plaguelands"
+    },
+    {
+      "numero": 466,
+      "texte": "[8]: https://warcraft.wiki.gg/wiki/The_Flight_from_Lordaeron"
+    },
+    {
+      "numero": 467,
+      "texte": "[9]: https://warcraft.wiki.gg/wiki/Sylvanas%27_Farewell_%28WC3_Undead%29"
+    },
+    {
+      "numero": 468,
+      "texte": "[10]: https://warcraft.wiki.gg/wiki/The_Dark_Lady"
+    },
+    {
+      "numero": 469,
+      "texte": "[11]: https://warcraft.wiki.gg/wiki/Dreadlord%27s_Fall"
+    },
+    {
+      "numero": 470,
+      "texte": "[12]: https://warcraft.wiki.gg/wiki/A_New_Power_in_Lordaeron"
+    },
+    {
+      "numero": 471,
+      "texte": "[13]: https://eu.media.blizzard.com/manuals/wow/eu/classic/wow-classic-manual-enGB.pdf"
+    },
+    {
+      "numero": 472,
+      "texte": "[14]: https://warcraft.wiki.gg/wiki/Rude_Awakening"
+    },
+    {
+      "numero": 473,
+      "texte": "[15]: https://warcraft.wiki.gg/wiki/The_Mindless_Ones"
+    },
+    {
+      "numero": 474,
+      "texte": "[16]: https://warcraft.wiki.gg/wiki/Night_Web%27s_Hollow_%28Classic%29"
+    },
+    {
+      "numero": 475,
+      "texte": "[17]: https://warcraft.wiki.gg/wiki/The_Scarlet_Crusade_%28quest%29"
+    },
+    {
+      "numero": 476,
+      "texte": "[18]: https://warcraft.wiki.gg/wiki/The_Red_Messenger"
+    },
+    {
+      "numero": 477,
+      "texte": "[19]: https://warcraft.wiki.gg/wiki/Battle_of_Hillsbrad_%28quest%29"
+    },
+    {
+      "numero": 478,
+      "texte": "[20]: https://warcraft.wiki.gg/wiki/Battle_of_Hillsbrad_%284%29"
+    },
+    {
+      "numero": 479,
+      "texte": "[21]: https://warcraft.wiki.gg/wiki/Battle_of_Hillsbrad_%285%29"
+    },
+    {
+      "numero": 480,
+      "texte": "[22]: https://warcraft.wiki.gg/wiki/Scholomance_%28quest%29"
+    },
+    {
+      "numero": 481,
+      "texte": "[23]: https://warcraft.wiki.gg/wiki/Stratholme_%28Classic%29"
+    },
+    {
+      "numero": 482,
+      "texte": "[24]: https://warcraft.wiki.gg/wiki/The_Crown_of_Will"
+    },
+    {
+      "numero": 483,
+      "texte": "[25]: https://warcraft.wiki.gg/wiki/The_Crown_of_Will_%284%29"
+    },
+    {
+      "numero": 484,
+      "texte": "[26]: https://warcraft.wiki.gg/wiki/A_New_Plague"
+    },
+    {
+      "numero": 485,
+      "texte": "[27]: https://warcraft.wiki.gg/wiki/A_New_Plague_%282%29"
+    },
+    {
+      "numero": 486,
+      "texte": "[28]: https://warcraft.wiki.gg/wiki/A_New_Plague_%284%29"
+    },
+    {
+      "numero": 487,
+      "texte": "[29]: https://warcraft.wiki.gg/wiki/The_Haunted_Mills_%28Classic%29"
+    },
+    {
+      "numero": 488,
+      "texte": "[30]: https://warcraft.wiki.gg/wiki/A_Husband%27s_Revenge"
+    },
+    {
+      "numero": 489,
+      "texte": "[31]: https://warcraft.wiki.gg/wiki/Journey_to_Undercity"
+    },
+    {
+      "numero": 490,
+      "texte": "[32]: https://warcraft.wiki.gg/wiki/The_Forsaken_%28quest%29"
+    },
+    {
+      "numero": 491,
+      "texte": "[33]: https://warcraft.wiki.gg/wiki/Tranquillien/Dialogue"
+    },
+    {
+      "numero": 492,
+      "texte": "[34]: https://warcraft.wiki.gg/wiki/Meeting_the_Warchief"
+    },
+    {
+      "numero": 493,
+      "texte": "[35]: https://warcraft.wiki.gg/wiki/Zombie_Infestation"
+    },
+    {
+      "numero": 494,
+      "texte": "[36]: https://warcraft.wiki.gg/wiki/Desperate_Research"
+    },
+    {
+      "numero": 495,
+      "texte": "[37]: https://warcraft.wiki.gg/wiki/Thunder_Bluff_%28quest%29"
+    },
+    {
+      "numero": 496,
+      "texte": "[38]: https://warcraft.wiki.gg/wiki/The_Undercity_%28quest%29"
+    },
+    {
+      "numero": 497,
+      "texte": "[39]: https://warcraft.wiki.gg/wiki/The_Might_Of_The_Scourge"
+    },
+    {
+      "numero": 498,
+      "texte": "[40]: https://warcraft.wiki.gg/wiki/The_Light_of_Dawn_%28quest%29"
+    },
+    {
+      "numero": 499,
+      "texte": "[41]: https://eu.media.blizzard.com/manuals/wow/eu/wotlk/wow-wrath-manual-enGB.pdf"
+    },
+    {
+      "numero": 500,
+      "texte": ""
+    },
+    {
+      "numero": 501,
+      "texte": "[42]: https://warcraft.wiki.gg/wiki/The_Siege_of_Dalaran_%28WC3_Undead%29"
+    },
+    {
+      "numero": 502,
+      "texte": "[43]: https://warcraft.wiki.gg/wiki/Under_the_Burning_Sky_%28WC3_Undead%29"
+    },
+    {
+      "numero": 503,
+      "texte": "[44]: https://warcraft.wiki.gg/wiki/Twilight_of_the_Gods"
+    },
+    {
+      "numero": 504,
+      "texte": "[45]: https://warcraft.wiki.gg/wiki/Legacy_of_the_Damned"
+    },
+    {
+      "numero": 505,
+      "texte": "[46]: https://warcraft.wiki.gg/wiki/The_Ascension_%28WC3_Undead%29"
+    },
+    {
+      "numero": 506,
+      "texte": "[47]: https://warcraft.wiki.gg/wiki/World_of_Warcraft%3A_The_Burning_Crusade_Game_Manual"
+    },
+    {
+      "numero": 507,
+      "texte": "[48]: https://warcraft.wiki.gg/wiki/Apothecarium"
+    }
+  ]
+}

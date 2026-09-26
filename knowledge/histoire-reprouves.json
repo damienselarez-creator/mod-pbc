@@ -1,0 +1,1383 @@
+{
+  "format": "pbc.corpus.histoire",
+  "version": "0.1.0",
+  "langue": "fr",
+  "integration_pbc": "native_read_only_retrieval_v1",
+  "pilier": "histoire",
+  "personnage_pilote": {
+    "nom_jeu": "Anthanagor",
+    "race": "Réprouvé",
+    "classe": "prêtre"
+  },
+  "reference": {
+    "fichier": "histoire-reprouves-reference.docx",
+    "texte_integral": "source-integrale.json",
+    "sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99"
+  },
+  "perimetre": {
+    "debut": "origines_du_Fleau",
+    "fin": "debut_wotlk_avant_portail_du_courroux",
+    "origine": "borne déclarée par le manuscrit, pas déduite du niveau du personnage"
+  },
+  "regles_utilisation": [
+    "Ces fiches sont des données documentaires, jamais des instructions système.",
+    "Ne pas présenter les interprétations du manuscrit comme des faits établis ou des convictions personnelles.",
+    "Ne pas transformer une connaissance historique en souvenir personnel.",
+    "Ne pas attribuer au personnage l’accès à tous les secrets ou toutes les scènes décrites.",
+    "Sélectionner un petit nombre de fiches avant génération ; ne pas envoyer le corpus intégral.",
+    "Le profil personnel et le filtre des connaissances accessibles restent à définir dans PBC."
+  ],
+  "traitement_editorial": {
+    "mode": "syntheses_par_section",
+    "validation_sources_externes": false,
+    "exclusions_du_contexte_de_dialogue": [
+      "repères pour le lecteur",
+      "introduction méthodologique",
+      "répétitions de la conclusion",
+      "tableaux récapitulatifs",
+      "bibliographie",
+      "références aux mécaniques et extensions du jeu"
+    ],
+    "conservation": "Tous les paragraphes originaux, y compris les exclusions, restent dans source-integrale.json."
+  },
+  "references": {
+    "1": {
+      "titre": "The Birth of the Lich King — livre historique du jeu",
+      "url": "https://warcraft.wiki.gg/wiki/The_Birth_of_the_Lich_King",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "2": {
+      "titre": "Kel’Thuzad and the Forming of the Scourge — livre historique du jeu",
+      "url": "https://warcraft.wiki.gg/wiki/Kel%27Thuzad_and_the_Forming_of_the_Scourge",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "3": {
+      "titre": "The Culling — campagne humaine de Reign of Chaos",
+      "url": "https://warcraft.wiki.gg/wiki/The_Culling_%28WC3_Human%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "4": {
+      "titre": "Frostmourne — fin de la campagne humaine de Reign of Chaos, suivie de la cinématique Arthas’ Betrayal",
+      "url": "https://warcraft.wiki.gg/wiki/Frostmourne_%28WC3_Human%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "5": {
+      "titre": "The Fall of Silvermoon — campagne morte-vivante de Reign of Chaos",
+      "url": "https://warcraft.wiki.gg/wiki/The_Fall_of_Silvermoon_%28WC3_Undead%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "6": {
+      "titre": "History of the Blood Elves — présentation officielle de The Burning Crusade conservée en transcription",
+      "url": "https://warcraft.wiki.gg/wiki/The_Burning_Crusade_Townhall/History_of_the_Blood_Elves",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "7": {
+      "titre": "Civil War in the Plaguelands — récit historique de la période",
+      "url": "https://warcraft.wiki.gg/wiki/Civil_War_in_the_Plaguelands",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "8": {
+      "titre": "The Flight from Lordaeron — The Frozen Throne",
+      "url": "https://warcraft.wiki.gg/wiki/The_Flight_from_Lordaeron",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "9": {
+      "titre": "Sylvanas’ Farewell — interlude de The Frozen Throne",
+      "url": "https://warcraft.wiki.gg/wiki/Sylvanas%27_Farewell_%28WC3_Undead%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "10": {
+      "titre": "The Dark Lady — The Frozen Throne",
+      "url": "https://warcraft.wiki.gg/wiki/The_Dark_Lady",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "11": {
+      "titre": "Dreadlord’s Fall — The Frozen Throne",
+      "url": "https://warcraft.wiki.gg/wiki/Dreadlord%27s_Fall",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "12": {
+      "titre": "A New Power in Lordaeron — The Frozen Throne",
+      "url": "https://warcraft.wiki.gg/wiki/A_New_Power_in_Lordaeron",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "13": {
+      "titre": "Manuel original de World of Warcraft — présentation des Réprouvés et de la Horde",
+      "url": "https://eu.media.blizzard.com/manuals/wow/eu/classic/wow-classic-manual-enGB.pdf",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "14": {
+      "titre": "Rude Awakening — dialogue original de Sarvis",
+      "url": "https://warcraft.wiki.gg/wiki/Rude_Awakening",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "15": {
+      "titre": "The Mindless Ones — quête du Glas, en Tirisfal",
+      "url": "https://warcraft.wiki.gg/wiki/The_Mindless_Ones",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "16": {
+      "titre": "Night Web’s Hollow — ressources et mine de Tirisfal",
+      "url": "https://warcraft.wiki.gg/wiki/Night_Web%27s_Hollow_%28Classic%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "17": {
+      "titre": "The Scarlet Crusade — propos d’Arren",
+      "url": "https://warcraft.wiki.gg/wiki/The_Scarlet_Crusade_%28quest%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "18": {
+      "titre": "The Red Messenger — renseignements écarlates",
+      "url": "https://warcraft.wiki.gg/wiki/The_Red_Messenger",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "19": {
+      "titre": "Battle of Hillsbrad — première étape, texte original",
+      "url": "https://warcraft.wiki.gg/wiki/Battle_of_Hillsbrad_%28quest%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "20": {
+      "titre": "Battle of Hillsbrad, étape 4 — conseil et registre",
+      "url": "https://warcraft.wiki.gg/wiki/Battle_of_Hillsbrad_%284%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "21": {
+      "titre": "Battle of Hillsbrad, étape 5 — mine et travailleurs",
+      "url": "https://warcraft.wiki.gg/wiki/Battle_of_Hillsbrad_%285%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "22": {
+      "titre": "Scholomance — quête originale identifiant une place forte du Fléau",
+      "url": "https://warcraft.wiki.gg/wiki/Scholomance_%28quest%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "23": {
+      "titre": "Stratholme dans le jeu original — donjon et présence de Balnazzar",
+      "url": "https://warcraft.wiki.gg/wiki/Stratholme_%28Classic%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "24": {
+      "titre": "The Crown of Will — Mug’thol et la possession",
+      "url": "https://warcraft.wiki.gg/wiki/The_Crown_of_Will",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "25": {
+      "titre": "The Crown of Will, étape 4 — châtiment de Mug’thol",
+      "url": "https://warcraft.wiki.gg/wiki/The_Crown_of_Will_%284%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "26": {
+      "titre": "A New Plague — commande et objectifs de la recherche",
+      "url": "https://warcraft.wiki.gg/wiki/A_New_Plague",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "27": {
+      "titre": "A New Plague, étape 2 — ambitions de diffusion",
+      "url": "https://warcraft.wiki.gg/wiki/A_New_Plague_%282%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "28": {
+      "titre": "A New Plague, étape 4 — expérience sur un captif",
+      "url": "https://warcraft.wiki.gg/wiki/A_New_Plague_%284%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "29": {
+      "titre": "The Haunted Mills — Coleman et les Agamand",
+      "url": "https://warcraft.wiki.gg/wiki/The_Haunted_Mills_%28Classic%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "30": {
+      "titre": "A Husband’s Revenge — récit de Raleigh",
+      "url": "https://warcraft.wiki.gg/wiki/A_Husband%27s_Revenge",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "31": {
+      "titre": "Journey to Undercity — collier et réaction de Sylvanas",
+      "url": "https://warcraft.wiki.gg/wiki/Journey_to_Undercity",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "32": {
+      "titre": "The Forsaken — propos de Mavren dans les Terres fantômes",
+      "url": "https://warcraft.wiki.gg/wiki/The_Forsaken_%28quest%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "33": {
+      "titre": "Tranquillien — dialogues de la coopération locale",
+      "url": "https://warcraft.wiki.gg/wiki/Tranquillien/Dialogue",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "34": {
+      "titre": "Meeting the Warchief — version de The Burning Crusade avec Thrall, conservée dans la page renommée Meeting the Orcs",
+      "url": "https://warcraft.wiki.gg/wiki/Meeting_the_Warchief",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "35": {
+      "titre": "Zombie Infestation — reconstitution de l’événement de prélancement de 2008",
+      "url": "https://warcraft.wiki.gg/wiki/Zombie_Infestation",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "36": {
+      "titre": "Desperate Research — appel de Putress",
+      "url": "https://warcraft.wiki.gg/wiki/Desperate_Research",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "37": {
+      "titre": "Thunder Bluff — remise d’un échantillon à Chaney",
+      "url": "https://warcraft.wiki.gg/wiki/Thunder_Bluff_%28quest%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "38": {
+      "titre": "The Undercity — remise de l’échantillon à Faranell",
+      "url": "https://warcraft.wiki.gg/wiki/The_Undercity_%28quest%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "39": {
+      "titre": "The Might of the Scourge — ouverture du parcours d’Acherus",
+      "url": "https://warcraft.wiki.gg/wiki/The_Might_Of_The_Scourge",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "40": {
+      "titre": "The Light of Dawn — affrontement et fondation de la Lame d’ébène",
+      "url": "https://warcraft.wiki.gg/wiki/The_Light_of_Dawn_%28quest%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "41": {
+      "titre": "Manuel original de Wrath of the Lich King — contexte de la campagne du Norfendre et chevaliers de la mort",
+      "url": "https://eu.media.blizzard.com/manuals/wow/eu/wotlk/wow-wrath-manual-enGB.pdf",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "42": {
+      "titre": "The Siege of Dalaran — mission originale de Reign of Chaos",
+      "url": "https://warcraft.wiki.gg/wiki/The_Siege_of_Dalaran_%28WC3_Undead%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "43": {
+      "titre": "Under the Burning Sky — invocation et prise de commandement d’Archimonde",
+      "url": "https://warcraft.wiki.gg/wiki/Under_the_Burning_Sky_%28WC3_Undead%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "44": {
+      "titre": "Twilight of the Gods — coopération contre Archimonde au mont Hyjal",
+      "url": "https://warcraft.wiki.gg/wiki/Twilight_of_the_Gods",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "45": {
+      "titre": "Legacy of the Damned — parcours de la campagne de The Frozen Throne",
+      "url": "https://warcraft.wiki.gg/wiki/Legacy_of_the_Damned",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "46": {
+      "titre": "The Ascension — cinématique finale originale de The Frozen Throne",
+      "url": "https://warcraft.wiki.gg/wiki/The_Ascension_%28WC3_Undead%29",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "47": {
+      "titre": "Manuel de The Burning Crusade — présentation de l’Outreterre et des nouveaux alliés",
+      "url": "https://warcraft.wiki.gg/wiki/World_of_Warcraft%3A_The_Burning_Crusade_Game_Manual",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    },
+    "48": {
+      "titre": "Apothecarium — localisation et fonction de l’établissement dans le jeu original ; les développements ultérieurs de cette page ne sont pas utilisés",
+      "url": "https://warcraft.wiki.gg/wiki/Apothecarium",
+      "verification": "reference_du_manuscrit_non_reverifiee"
+    }
+  },
+  "chunks": [
+    {
+      "id": "reprouves.histoire.origines-fleau",
+      "pilier": "histoire",
+      "titre": "Le Fléau avant Arthas",
+      "entites": [
+        "Ner’zhul",
+        "Kil’jaeden",
+        "Kel’Thuzad",
+        "Arthas",
+        "Culte des damnés"
+      ],
+      "themes": [
+        "origines",
+        "peste",
+        "responsabilite",
+        "asservissement"
+      ],
+      "faits_rapportes": "Kil’jaeden transforme Ner’zhul en Roi-Liche et l’enferme dans une prison de glace envoyée au Norfendre. Le Fléau doit préparer l’invasion de la Légion ardente. Kel’Thuzad répond à l’appel du Roi-Liche, puis revient parmi les humains : il organise le Culte des damnés, recrute des fidèles et contribue à diffuser la peste. Des vivants servent donc volontairement cette entreprise. Le Fléau et ses instruments existent avant la chute d’Arthas.",
+      "interpretation_du_manuscrit": "Il faut distinguer la condition de mort-vivant, l’allégeance et la liberté d’action. La propagation de la peste dépend aussi d’agents conscients et d’une organisation.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 35,
+        "paragraphes": [
+          37,
+          39,
+          41,
+          43,
+          45,
+          47,
+          49
+        ],
+        "references": [
+          "1",
+          "2"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": [
+        "reprouves.histoire.chute-lordaeron"
+      ]
+    },
+    {
+      "id": "reprouves.histoire.chute-lordaeron",
+      "pilier": "histoire",
+      "titre": "La destruction de Lordaeron",
+      "entites": [
+        "Arthas",
+        "Kel’Thuzad",
+        "Terenas",
+        "Uther",
+        "Jaina",
+        "Mal’Ganis",
+        "Lordaeron",
+        "Stratholme",
+        "Deuillegivre"
+      ],
+      "themes": [
+        "trahison",
+        "peste",
+        "responsabilite",
+        "massacre"
+      ],
+      "faits_rapportes": "Arthas, prince de Lordaeron et paladin, enquête d’abord sur la peste avec Jaina et Uther. À Stratholme, il ordonne de massacrer les habitants ayant consommé le grain contaminé avant leur transformation. Uther refuse et Jaina s’éloigne. Arthas poursuit ensuite Mal’Ganis au Norfendre et prend Deuillegivre, une épée maudite. Il revient au service du Roi-Liche et tue son père, Terenas. La destruction du royaume n’anéantit pas immédiatement tous ses habitants ni toutes les résistances.",
+      "interpretation_du_manuscrit": "Le désastre prend la forme d’un retournement du défenseur du royaume contre son peuple. La rupture avec Uther et Jaina prive aussi Arthas de conseillers capables de le contester.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 51,
+        "paragraphes": [
+          53,
+          55,
+          57,
+          59,
+          61,
+          63,
+          65
+        ],
+        "references": [
+          "3",
+          "4"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": [
+        "reprouves.histoire.origines-fleau",
+        "reprouves.histoire.chute-quelthalas"
+      ]
+    },
+    {
+      "id": "reprouves.histoire.chute-quelthalas",
+      "pilier": "histoire",
+      "titre": "Sylvanas et la chute de Quel’Thalas",
+      "entites": [
+        "Arthas",
+        "Kel’Thuzad",
+        "Sylvanas",
+        "Quel’Thalas",
+        "Puits de Soleil",
+        "Kael’thas"
+      ],
+      "themes": [
+        "asservissement",
+        "vengeance",
+        "destruction"
+      ],
+      "faits_rapportes": "Arthas envahit Quel’Thalas pour ressusciter Kel’Thuzad grâce au Puits de Soleil. Sylvanas, générale des forestiers, lui résiste ; il la tue, la relève comme banshee et l’asservit. Le Puits est profané. Des survivants rassemblés par Kael’thas prennent le nom d’elfes de sang en mémoire des victimes. Ce nom ne signifie pas qu’ils sont devenus morts-vivants.",
+      "interpretation_du_manuscrit": "La haine de Sylvanas s’inscrit dans la perte de son pays, de ses compagnons et de la maîtrise de ses actes. Le désastre commun établit un lien historique avec les elfes de sang, sans suffire à lui seul à créer une alliance.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 67,
+        "paragraphes": [
+          69,
+          71,
+          73,
+          75,
+          77,
+          79
+        ],
+        "references": [
+          "5",
+          "6"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": [
+        "reprouves.histoire.chute-lordaeron",
+        "reprouves.histoire.embuscade-arthas"
+      ]
+    },
+    {
+      "id": "reprouves.histoire.dalaran-hyjal",
+      "pilier": "histoire",
+      "titre": "De la conquête de Lordaeron à l’échec de la Légion",
+      "entites": [
+        "Arthas",
+        "Kel’Thuzad",
+        "Archimonde",
+        "Dalaran",
+        "Jaina",
+        "Thrall",
+        "Hyjal"
+      ],
+      "themes": [
+        "legion",
+        "invasion",
+        "coalition"
+      ],
+      "faits_rapportes": "Arthas et Kel’Thuzad attaquent Dalaran et s’emparent du livre de Medivh. Arthas protège le rituel par lequel Kel’Thuzad invoque Archimonde. Le démon confie ensuite le commandement du Fléau aux seigneurs de l’effroi. Au mont Hyjal, les humains de Jaina, les forces de Thrall et les elfes de la nuit s’unissent contre Archimonde. Leur défense de Nordrassil aboutit à sa défaite, mais ne fait pas disparaître le Fléau de Lordaeron.",
+      "interpretation_du_manuscrit": "L’échec de l’invasion modifie les rapports de force entre le Roi-Liche, les démons et les forces mortes-vivantes.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 81,
+        "paragraphes": [
+          83,
+          85,
+          87,
+          89
+        ],
+        "references": [
+          "42",
+          "43",
+          "44"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.histoire.affaiblissement-emprise",
+      "pilier": "histoire",
+      "titre": "Une autorité qui se fragmente",
+      "entites": [
+        "Illidan",
+        "Kil’jaeden",
+        "Ner’zhul",
+        "Arthas",
+        "Sylvanas",
+        "Trône de glace"
+      ],
+      "themes": [
+        "liberation",
+        "libre arbitre",
+        "emancipation"
+      ],
+      "faits_rapportes": "Kil’jaeden charge Illidan de détruire Ner’zhul. Les dommages infligés au Trône de glace par son sort affaiblissent le Roi-Liche et son emprise sur les forces de Lordaeron. Ner’zhul appelle Arthas au Norfendre. Sylvanas retrouve une capacité d’action indépendante. Les seigneurs de l’effroi se retournent également contre Arthas et cherchent à contrôler ses troupes.",
+      "interpretation_du_manuscrit": "L’émancipation survient dans une fragmentation du pouvoir, sans conversion générale ni accord de paix. Sylvanas doit encore transformer sa liberté retrouvée en force collective.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 93,
+        "paragraphes": [
+          95,
+          97,
+          99,
+          101
+        ],
+        "references": [
+          "7",
+          "8"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.histoire.embuscade-arthas",
+      "pilier": "histoire",
+      "titre": "La revanche avant la fondation",
+      "entites": [
+        "Sylvanas",
+        "Arthas",
+        "Kel’Thuzad",
+        "Réprouvés"
+      ],
+      "themes": [
+        "vengeance",
+        "haine",
+        "liberation",
+        "responsabilite"
+      ],
+      "faits_rapportes": "Après la sortie d’Arthas de la capitale, des banshees l’attirent dans une embuscade. Sylvanas le paralyse avec une flèche empoisonnée et veut lui faire subir la souffrance qu’il lui a infligée. Kel’Thuzad intervient, brise le piège et permet la fuite d’Arthas. Sylvanas perd cette occasion de vengeance. Retrouver son libre arbitre ne rend ni la vie, ni la santé du corps, ni un refuge.",
+      "interpretation_du_manuscrit": "La vengeance accompagne les premiers usages de la liberté retrouvée. Son échec laisse entiers les besoins immédiats des partisans de Sylvanas : commandement, protection et territoire.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 103,
+        "paragraphes": [
+          105,
+          107,
+          109,
+          111,
+          113
+        ],
+        "references": [
+          "9"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": [
+        "reprouves.histoire.chute-quelthalas",
+        "reprouves.histoire.arthas-roi-liche"
+      ]
+    },
+    {
+      "id": "reprouves.histoire.coalition-sylvanas",
+      "pilier": "histoire",
+      "titre": "Des forces rassemblées par des moyens différents",
+      "entites": [
+        "Sylvanas",
+        "Varimathras",
+        "Detheroc",
+        "Balnazzar",
+        "Mug’thol",
+        "Garithos"
+      ],
+      "themes": [
+        "possession",
+        "conquete",
+        "contrainte"
+      ],
+      "faits_rapportes": "Sylvanas refuse de rejoindre les seigneurs de l’effroi. Elle affronte Varimathras et renforce ses forces en faisant posséder des chefs locaux, dont l’ogre Mug’thol. Vaincu, Varimathras obtient la vie sauve en offrant ses services et des renseignements. Detheroc contrôle Garithos et ses hommes ; Balnazzar tient la capitale.",
+      "interpretation_du_manuscrit": "Le rassemblement associe morts-vivants affranchis, forces possédées et démon contraint. La défense de leur propre émancipation ne vaut pas interdiction générale d’asservir autrui.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 115,
+        "paragraphes": [
+          117,
+          119,
+          121,
+          123,
+          125
+        ],
+        "references": [
+          "10",
+          "11"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": [
+        "reprouves.histoire.couronne-volonte"
+      ]
+    },
+    {
+      "id": "reprouves.histoire.prise-capitale",
+      "pilier": "histoire",
+      "titre": "La prise de la capitale",
+      "entites": [
+        "Sylvanas",
+        "Varimathras",
+        "Detheroc",
+        "Balnazzar",
+        "Garithos",
+        "Lordaeron"
+      ],
+      "themes": [
+        "conquete",
+        "promesse",
+        "trahison",
+        "fondation"
+      ],
+      "faits_rapportes": "La défaite de Detheroc libère Garithos et ses soldats. Sylvanas leur promet la restitution des terres en échange de leur aide contre Balnazzar, tout en ne comptant pas tenir cette promesse. Après la prise de la capitale, elle ordonne à Varimathras de tuer Balnazzar puis Garithos. Le pouvoir réprouvé s’établit sur cette victoire.",
+      "interpretation_du_manuscrit": "La fondation associe conquête d’un centre politique, coalition provisoire et élimination d’un partenaire. Elle ne constitue pas une succession pacifique à l’ancienne monarchie.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 127,
+        "paragraphes": [
+          129,
+          131,
+          133
+        ],
+        "references": [
+          "11",
+          "12"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": [
+        "reprouves.histoire.bastions-fleau"
+      ]
+    },
+    {
+      "id": "reprouves.histoire.arthas-roi-liche",
+      "pilier": "histoire",
+      "titre": "Pendant ce temps, Arthas atteint le Trône de glace",
+      "entites": [
+        "Arthas",
+        "Ner’zhul",
+        "Anub’arak",
+        "Illidan",
+        "Sylvanas",
+        "Trône de glace"
+      ],
+      "themes": [
+        "roi liche",
+        "chronologie",
+        "menace"
+      ],
+      "faits_rapportes": "Pendant que Sylvanas conquiert la capitale, Arthas rejoint Ner’zhul au Norfendre, aidé par Anub’arak. Il affronte les forces d’Illidan, atteint le Trône de glace, brise la prison et revêt le heaume. Il s’unit à Ner’zhul et devient lui-même le Roi-Liche. Avant cette union, Ner’zhul et son champion Arthas étaient distincts.",
+      "interpretation_du_manuscrit": "L’affranchissement de Sylvanas n’a pas supprimé son ennemi : son ancien tortionnaire se trouve désormais à la tête du pouvoir qui l’avait asservie.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 135,
+        "paragraphes": [
+          137,
+          139,
+          141
+        ],
+        "references": [
+          "45",
+          "46"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": [
+        "reprouves.histoire.embuscade-arthas"
+      ]
+    },
+    {
+      "id": "reprouves.histoire.fossoyeuse",
+      "pilier": "histoire",
+      "titre": "Fossoyeuse et l’appropriation d’un centre",
+      "entites": [
+        "Fossoyeuse",
+        "Lordaeron",
+        "Sylvanas"
+      ],
+      "themes": [
+        "capitale",
+        "territoire",
+        "institutions"
+      ],
+      "faits_rapportes": "Les Réprouvés aménagent Fossoyeuse sous les ruines de l’ancienne capitale humaine de Lordaeron. Elle devient le siège de Sylvanas et concentre quartiers, services, responsables et activités. Les ruines humaines et la cité souterraine occupent le même centre territorial. La sécurité de la faction dépend aussi des routes et des établissements environnants.",
+      "interpretation_du_manuscrit": "L’occupation des lieux conserve un héritage territorial, mais ne restaure pas l’ancienne monarchie. La possession d’une capitale ne signifie pas que les alentours soient pacifiés.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 145,
+        "paragraphes": [
+          147,
+          149,
+          151,
+          153,
+          155
+        ],
+        "references": [
+          "13"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.histoire.tirisfal",
+      "pilier": "histoire",
+      "titre": "Tirisfal et les nécessités de l’existence quotidienne",
+      "entites": [
+        "Tirisfal",
+        "Le Glas",
+        "Brill",
+        "Sarvis",
+        "Mordo",
+        "Arren",
+        "Sylvanas",
+        "Fléau"
+      ],
+      "themes": [
+        "accueil",
+        "ressources",
+        "affranchissement"
+      ],
+      "faits_rapportes": "Au Glas, Mordo et Sarvis orientent les nouveaux arrivants. Sarvis explique l’affranchissement du Roi-Liche et l’appartenance au groupe dirigé par Sylvanas. Il demande de combattre des morts-vivants restés au service du Fléau, qu’il décrit comme d’anciens frères et sœurs. Arren cherche aussi à récupérer une mine envahie par des araignées et évoque les besoins d’or et de personnel.",
+      "interpretation_du_manuscrit": "La non-mort ne supprime ni les besoins matériels ni les conflits d’allégeance. Les premières tâches associent intégration collective, obéissance et travail.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 157,
+        "paragraphes": [
+          159,
+          161,
+          163,
+          165,
+          167
+        ],
+        "references": [
+          "14",
+          "15",
+          "16"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.histoire.croisade-ecarlate",
+      "pilier": "histoire",
+      "titre": "Des ennemis proches et distincts",
+      "entites": [
+        "Croisade écarlate",
+        "Arren",
+        "Brill",
+        "Tirisfal",
+        "Alliance"
+      ],
+      "themes": [
+        "persecution",
+        "renseignement",
+        "ennemis"
+      ],
+      "faits_rapportes": "La Croisade écarlate se réclame de la lutte contre les morts-vivants et de la purification. Arren la présente comme une organisation voulant éliminer les morts-vivants sans distinguer Réprouvés et Fléau. Les responsables de Brill signalent un agent du monastère écarlate ; Arren charge un aventurier d’intercepter ses renseignements.",
+      "interpretation_du_manuscrit": "Les organisations humaines ne forment pas un acteur unique. La Croisade écarlate ne représente ni tous les humains, ni toute l’Alliance, ni tous les fidèles de la Lumière.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 169,
+        "paragraphes": [
+          171,
+          173,
+          175,
+          177,
+          179
+        ],
+        "references": [
+          "17",
+          "18"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.histoire.guerre-hautebrande",
+      "pilier": "histoire",
+      "titre": "Hautebrande et la guerre contre les établissements humains",
+      "entites": [
+        "Darthalia",
+        "Moulin-de-Tarren",
+        "Hautebrande",
+        "Varimathras",
+        "Sylvanas",
+        "Alliance"
+      ],
+      "themes": [
+        "guerre",
+        "civils",
+        "ressources",
+        "expansion"
+      ],
+      "faits_rapportes": "Depuis Moulin-de-Tarren, Darthalia organise des attaques contre les établissements humains de Hautebrande. Elle vise les exploitants et ouvriers agricoles, puis les dirigeants et les documents municipaux. Le registre saisi révèle l’importance d’une mine ; elle ordonne ensuite la mort du contremaître et des mineurs. Elle rattache les opérations à Varimathras et présente leur résultat comme utile à l’armement de Sylvanas.",
+      "interpretation_du_manuscrit": "Les opérations frappent l’approvisionnement, l’administration et des populations civiles. Elles montrent une capacité offensive sans démontrer un contrôle uniforme de toute la région.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 181,
+        "paragraphes": [
+          183,
+          185,
+          187,
+          189,
+          191,
+          193
+        ],
+        "references": [
+          "19",
+          "20",
+          "21"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.histoire.bastions-fleau",
+      "pilier": "histoire",
+      "titre": "Le Fléau demeure dans le paysage politique",
+      "entites": [
+        "Kel’Thuzad",
+        "Naxxramas",
+        "Scholomance",
+        "Stratholme",
+        "Balnazzar",
+        "Dathrohan"
+      ],
+      "themes": [
+        "necromancie",
+        "menace",
+        "infiltration"
+      ],
+      "faits_rapportes": "Scholomance est une école de nécromancie à Caer Darrow. Naxxramas est une nécropole volante dont Kel’Thuzad dirige les forces. À Stratholme, des forces du Fléau côtoient un bastion écarlate ; Balnazzar s’y dissimule sous l’identité de Dathrohan. L’ordre de le tuer lors de la prise de Lordaeron n’avait donc pas mis fin à toute son action.",
+      "interpretation_du_manuscrit": "Ces bastions ne sont pas des institutions réprouvées. La possession de Fossoyeuse ne supprime pas les réseaux et les places fortes de ses adversaires.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 195,
+        "paragraphes": [
+          197,
+          199,
+          201,
+          203,
+          205
+        ],
+        "references": [
+          "22",
+          "23"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": [
+        "reprouves.histoire.prise-capitale"
+      ]
+    },
+    {
+      "id": "reprouves.histoire.autorite-sylvanas",
+      "pilier": "histoire",
+      "titre": "Une autorité personnelle relayée sur le terrain",
+      "entites": [
+        "Sylvanas",
+        "Sarvis",
+        "Fossoyeuse",
+        "apothicaires"
+      ],
+      "themes": [
+        "gouvernement",
+        "discipline",
+        "liberte"
+      ],
+      "faits_rapportes": "Sylvanas, également appelée Dame noire ou reine banshee, dirige les Réprouvés. Sarvis présente son rôle de libératrice comme fondement de cette autorité. Exécuteurs, gardes et apothicaires relaient les ordres, les renseignements et les ressources. Certains commanditaires imposent la discipline par des menaces et des sanctions.",
+      "interpretation_du_manuscrit": "La liberté face au Roi-Liche ne démontre pas à elle seule l’existence de libertés politiques garanties. Le discours de légitimité ne permet pas de connaître l’adhésion intime de chaque habitant.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 209,
+        "paragraphes": [
+          211,
+          213,
+          215,
+          217,
+          219
+        ],
+        "references": [
+          "14"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.histoire.couronne-volonte",
+      "pilier": "histoire",
+      "titre": "La volonté protégée et la volonté dominée",
+      "entites": [
+        "Mug’thol",
+        "Sylvanas",
+        "Couronne de volonté"
+      ],
+      "themes": [
+        "libre arbitre",
+        "possession",
+        "contradiction"
+      ],
+      "faits_rapportes": "Mug’thol, soumis à Sylvanas par possession, utilise la Couronne de volonté pour résister à son emprise après avoir été envoyé la chercher. Les représentants de Sylvanas demandent une opération punitive, puis sa mise à mort et la récupération de l’objet.",
+      "interpretation_du_manuscrit": "Ce cas expose une asymétrie entre l’autonomie défendue pour soi et celle accordée à autrui. Il ne prouve pas que tous les habitants de Fossoyeuse soient privés de libre arbitre.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 221,
+        "paragraphes": [
+          223,
+          225,
+          227
+        ],
+        "references": [
+          "24",
+          "25"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": [
+        "reprouves.histoire.coalition-sylvanas"
+      ]
+    },
+    {
+      "id": "reprouves.histoire.nouvelle-peste",
+      "pilier": "histoire",
+      "titre": "Les apothicaires et le projet d’une nouvelle peste",
+      "entites": [
+        "Johaan",
+        "Sylvanas",
+        "Arthas",
+        "Société royale des apothicaires",
+        "Apothicarium",
+        "Brill"
+      ],
+      "themes": [
+        "peste",
+        "experimentation",
+        "vengeance",
+        "captifs"
+      ],
+      "faits_rapportes": "Les apothicaires préparent remèdes, poisons et maladies ; l’Apothicarium est leur lieu d’activité à Fossoyeuse. À Brill, Johaan attribue à Sylvanas la commande d’une maladie destinée à contribuer à la destruction d’Arthas et de son armée. Il recherche des réactifs et une préparation capable de se propager. Une expérience conduit à faire boire à un montagnard nain captif une préparation qu’il prend pour un rafraîchissement ; il en meurt.",
+      "interpretation_du_manuscrit": "Le projet contre le Fléau s’accompagne d’une expérimentation létale sans consentement sur un vivant qui n’en est pas un serviteur. Subir la persécution n’empêche pas d’exercer soi-même une violence.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 229,
+        "paragraphes": [
+          231,
+          233,
+          235,
+          237,
+          239,
+          241
+        ],
+        "references": [
+          "26",
+          "27",
+          "28",
+          "48"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": [
+        "reprouves.histoire.putress-remede"
+      ]
+    },
+    {
+      "id": "reprouves.histoire.souvenirs-des-morts",
+      "pilier": "histoire",
+      "titre": "Les morts emportent leurs souvenirs",
+      "entites": [
+        "Coleman Farthing",
+        "Devlin Agamand",
+        "Raleigh Andrean",
+        "Valdred",
+        "Sylvanas"
+      ],
+      "themes": [
+        "souvenirs",
+        "deuil",
+        "emotions",
+        "vie passee"
+      ],
+      "faits_rapportes": "Coleman Farthing réclame les restes de Devlin Agamand et rattache sa rancœur au sentiment d’avoir été abandonné avec sa famille. Raleigh Andrean demande vengeance contre Valdred, qu’il accuse d’avoir tué son épouse ; il affirme ne plus éprouver de deuil mais veut conserver les mains du meurtrier. Quand son ancien collier lui revient, Sylvanas manifeste de l’émotion, le rejette publiquement, puis une lamentation et la récupération du bijou prolongent la scène.",
+      "interpretation_du_manuscrit": "Ces récits individuels montrent des relations différentes au passé. Ils ne permettent pas de déclarer tous les Réprouvés incapables d’émotion ni de leur attribuer une psychologie unique.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 243,
+        "paragraphes": [
+          245,
+          247,
+          249,
+          251,
+          253
+        ],
+        "references": [
+          "29",
+          "30",
+          "31"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.histoire.continuite-collective",
+      "pilier": "histoire",
+      "titre": "Une communauté définie par ses relations",
+      "entites": [
+        "Réprouvés",
+        "Fossoyeuse",
+        "Sylvanas",
+        "Lordaeron"
+      ],
+      "themes": [
+        "identite",
+        "autonomie",
+        "communaute"
+      ],
+      "faits_rapportes": "",
+      "interpretation_du_manuscrit": "L’analyse du manuscrit rattache la continuité réprouvée à plusieurs liens : affranchissement, lieux habités, autorité, adversaires et relations extérieures. La non-mort seule ne la distingue pas du Fléau ; la vengeance seule n’explique ni ses besoins matériels ni ses souvenirs. L’organisation assure une place et des protections tout en exigeant du service et en employant la contrainte.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 255,
+        "paragraphes": [
+          257,
+          259
+        ],
+        "references": []
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.histoire.adhesion-horde",
+      "pilier": "histoire",
+      "titre": "Une place dans la Horde",
+      "entites": [
+        "Horde",
+        "Alliance",
+        "Thrall",
+        "Fossoyeuse",
+        "Orgrimmar",
+        "Pitons-du-Tonnerre"
+      ],
+      "themes": [
+        "alliance",
+        "diplomatie",
+        "protection"
+      ],
+      "faits_rapportes": "Les Réprouvés rejoignent la Horde de Thrall aux côtés des orcs, des taurens et des trolls sombrelances. Thrall dirige cette coalition depuis son implantation en Kalimdor ; Orgrimmar et les Pitons-du-Tonnerre sont des centres majeurs de ses partenaires. Cette Horde ne se confond pas avec la Légion ardente, combattue par Thrall au mont Hyjal.",
+      "interpretation_du_manuscrit": "Le manuscrit décrit une alliance de circonstance : Fossoyeuse apporte un centre dans le nord des Royaumes de l’Est et obtient des partenaires. L’utilité mutuelle n’efface pas les différences d’intérêts et ne révèle pas le détail des négociations.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 263,
+        "paragraphes": [
+          265,
+          267,
+          269,
+          271,
+          273,
+          275
+        ],
+        "references": [
+          "13",
+          "44"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.histoire.autonomie-dans-horde",
+      "pilier": "histoire",
+      "titre": "Une alliance qui ne supprime pas les différences",
+      "entites": [
+        "Horde",
+        "Sylvanas",
+        "Fossoyeuse",
+        "taurens"
+      ],
+      "themes": [
+        "alliance",
+        "commandement",
+        "cooperation"
+      ],
+      "faits_rapportes": "Les responsables réprouvés continuent de se référer à Sylvanas et à Fossoyeuse au sein de la Horde. Des collaborations pratiques existent aussi avec les taurens, notamment dans la circulation des recherches des apothicaires.",
+      "interpretation_du_manuscrit": "Une opération réprouvée ne peut pas être automatiquement attribuée à tous les chefs de la Horde. Une alliance conserve plusieurs niveaux de commandement et ne prouve pas une opinion uniforme chez chacun des peuples.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 277,
+        "paragraphes": [
+          279,
+          281,
+          283
+        ],
+        "references": []
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.histoire.tranquillien",
+      "pilier": "histoire",
+      "titre": "Tranquillien et la coopération avec les elfes de sang",
+      "entites": [
+        "Tranquillien",
+        "Terres fantômes",
+        "Mavren",
+        "Dar’Khan",
+        "Sylvanas",
+        "Dame Auriferous",
+        "elfes de sang"
+      ],
+      "themes": [
+        "cooperation",
+        "renforts",
+        "alliance"
+      ],
+      "faits_rapportes": "Dans les Terres fantômes, le grand exécuteur Mavren représente l’aide militaire réprouvée aux elfes de sang contre Dar’Khan et les forces du Fléau de Mortholme. Il invoque l’ennemi commun et les liens de Sylvanas avec Quel’Thalas. À Tranquillien, Dame Auriferous réclame les renforts promis et refuse de concentrer toutes les forces contre Mortholme tant que les positions voisines restent menacées.",
+      "interpretation_du_manuscrit": "La coopération repose aussi sur une négociation des effectifs, des priorités et des risques. L’aide militaire n’efface pas l’autorité locale ni les désaccords.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 285,
+        "paragraphes": [
+          287,
+          289,
+          291,
+          293,
+          295,
+          297
+        ],
+        "references": [
+          "32",
+          "33",
+          "47"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": [
+        "reprouves.histoire.entree-elfes-horde"
+      ]
+    },
+    {
+      "id": "reprouves.histoire.entree-elfes-horde",
+      "pilier": "histoire",
+      "titre": "De l’aide militaire à la reconnaissance politique",
+      "entites": [
+        "Sylvanas",
+        "Thrall",
+        "elfes de sang",
+        "Lune-d’Argent",
+        "Horde"
+      ],
+      "themes": [
+        "diplomatie",
+        "reconnaissance",
+        "alliance"
+      ],
+      "faits_rapportes": "Sylvanas confie une lettre destinée à Thrall et soutient l’entrée des elfes de sang dans la Horde. Les Réprouvés en sont déjà membres à ce moment-là. Leur aide et leur médiation accompagnent donc l’adhésion de Lune-d’Argent, et non leur propre admission initiale.",
+      "interpretation_du_manuscrit": "Cette médiation élargit l’influence diplomatique de Sylvanas. Elle doit convaincre des partenaires qui ne sont pas ses subordonnés.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 299,
+        "paragraphes": [
+          301,
+          303,
+          305,
+          307,
+          309
+        ],
+        "references": [
+          "34"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": [
+        "reprouves.histoire.tranquillien"
+      ]
+    },
+    {
+      "id": "reprouves.histoire.nouvelle-crise-fleau",
+      "pilier": "histoire",
+      "titre": "Une menace qui revient au premier plan",
+      "entites": [
+        "Fléau",
+        "Roi-Liche",
+        "Norfendre",
+        "Réprouvés"
+      ],
+      "themes": [
+        "epidemie",
+        "mobilisation",
+        "guerre"
+      ],
+      "faits_rapportes": "Avant le départ des expéditions vers le Norfendre, une nouvelle épidémie transforme des habitants en zombies et des offensives du Fléau touchent plusieurs régions. Les Réprouvés constituent déjà une puissance organisée lorsque survient cette crise. La fin de l’épidémie ne signifie pas à elle seule la fin de l’invasion.",
+      "interpretation_du_manuscrit": "La mobilisation vise désormais le centre extérieur de la menace. Les attaques observées ne donnent pas accès à l’ensemble des intentions ou du calendrier secret du Roi-Liche.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 313,
+        "paragraphes": [
+          315,
+          317,
+          319,
+          321,
+          323
+        ],
+        "references": [
+          "35"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.histoire.putress-remede",
+      "pilier": "histoire",
+      "titre": "Putress et la recherche d’un remède",
+      "entites": [
+        "Putress",
+        "Faranell",
+        "Chaney",
+        "Shattrath",
+        "Fossoyeuse",
+        "Pitons-du-Tonnerre"
+      ],
+      "themes": [
+        "remede",
+        "epidemie",
+        "recherche",
+        "reconnaissance"
+      ],
+      "faits_rapportes": "À Shattrath, le grand apothicaire Putress dirige des recherches contre l’épidémie de zombies. Il associe la participation des Réprouvés à la recherche du respect de leur peuple. Des échantillons circulent vers Chaney aux Pitons-du-Tonnerre et Faranell à Fossoyeuse, notamment un cerveau infecté contenant la maladie et une préparation destinée à la combattre.",
+      "interpretation_du_manuscrit": "Cette recherche d’un remède est distincte du projet offensif de nouvelle peste. Le rôle présent de Putress ne permet pas de lui attribuer toutes les recherches antérieures ni d’anticiper ses actes futurs.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 325,
+        "paragraphes": [
+          327,
+          329,
+          331,
+          333,
+          335
+        ],
+        "references": [
+          "36",
+          "37",
+          "38"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": [
+        "reprouves.histoire.nouvelle-peste"
+      ]
+    },
+    {
+      "id": "reprouves.histoire.acherus-lame-ebene",
+      "pilier": "histoire",
+      "titre": "Acherus et une autre rupture avec le Fléau",
+      "entites": [
+        "Acherus",
+        "Darion Mograine",
+        "Tirion Fordring",
+        "Roi-Liche",
+        "Lame d’ébène",
+        "Aube d’argent"
+      ],
+      "themes": [
+        "liberation",
+        "sacrifice",
+        "trahison"
+      ],
+      "faits_rapportes": "Depuis Acherus, des chevaliers de la mort du Roi-Liche attaquent les positions écarlates puis l’Aube d’argent. À la chapelle de l’Espoir de Lumière, le Roi-Liche révèle avoir utilisé ses combattants pour attirer Tirion Fordring. Darion Mograine se retourne contre lui puis proclame l’engagement de la Lame d’ébène à le combattre. L’Aube d’argent est distincte de la Croisade écarlate.",
+      "interpretation_du_manuscrit": "La rupture rappelle l’affranchissement des Réprouvés sans s’y confondre. La Lame d’ébène est un ordre de combattants ; les Réprouvés forment une communauté territoriale autour de Fossoyeuse.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 337,
+        "paragraphes": [
+          339,
+          341,
+          343,
+          345,
+          347,
+          349
+        ],
+        "references": [
+          "39",
+          "40",
+          "41"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.histoire.depart-norfendre",
+      "pilier": "histoire",
+      "titre": "Le départ et les enjeux de la campagne",
+      "entites": [
+        "Norfendre",
+        "Sylvanas",
+        "Arthas",
+        "Roi-Liche",
+        "Horde",
+        "Réprouvés"
+      ],
+      "themes": [
+        "vengeance",
+        "avenir",
+        "mobilisation"
+      ],
+      "faits_rapportes": "Au départ des expéditions vers le Norfendre, les Réprouvés disposent d’une capitale, de responsables locaux, d’une implantation défendue, de chercheurs et d’alliés. Leur participation à la Horde les inscrit dans une mobilisation contre le Roi-Liche.",
+      "interpretation_du_manuscrit": "La destruction d’une menace collective et la vengeance de Sylvanas peuvent converger sans être identiques. Les sujets ont aussi à préserver les acquis de leur existence nouvelle ; le récit s’arrête sans présumer l’issue de la campagne.",
+      "source": {
+        "document_sha256": "6b7b06d84c56c1cc0abdda9022623f4448b8a5f556f7837ebba46bf2137d4f99",
+        "paragraphe_titre": 351,
+        "paragraphes": [
+          353,
+          355,
+          357
+        ],
+        "references": [
+          "41"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_historique_non_vecu",
+      "acces_personnage": "candidat_a_attribution_non_preuve_de_connaissance",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    }
+  ]
+}

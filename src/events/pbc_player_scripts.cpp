@@ -6,6 +6,7 @@
 #include "pbc_locales.h"
 #include "pbc_item_helpers.h"
 #include "pbc_quest_helpers.h"
+#include "pbc_quest_reactions.h"
 #include "pbc_group_helpers.h"
 #include "pbc_event_dispatch.h"
 #include "pbc_poll.h"
@@ -56,15 +57,15 @@ static void HandleChatMessage(Player* sender, uint32 type, uint32 lang,
     if (!PBC_PTR_VALID(sender)) return;
     if (type == CHAT_MSG_AFK || type == CHAT_MSG_DND) return;
     if (IsBlacklisted(lang, rawMsg)) return;
+    // Do not feed automated speech back into PBC, including whispers.
+    if (PBC_IsDialogueBot(sender)) return;
 
     const std::string msg = PBC_SanitizeChatMessage(rawMsg);
 
     // --- Whisper path ---
     if (type == CHAT_MSG_WHISPER)
     {
-        if (!PBC_PTR_VALID(whisperTarget)
-            || !whisperTarget->GetSession()
-            || !whisperTarget->GetSession()->IsBot())
+        if (!PBC_IsDialogueBot(whisperTarget) || whisperTarget == sender)
             return;
 
         PBC_DispatchWhisperEvent(sender, whisperTarget, msg);
@@ -308,7 +309,10 @@ void PBC_PlayerEvents::OnPlayerCompleteQuest(Player* player, Quest const* quest)
     ev.questUserPrompt    = userPrompt;
     ev.anchorObjGuid      = player->GetGUID();
 
-    if (!PBC_RollGroupBotsIntoEvent(ev, player, g_PBC_ReplyChanceQuestCompleted, "quest-completed"))
+    auto reaction = PBC_GetQuestReaction(quest, true, g_PBC_ReplyChanceQuestCompleted);
+    ev.questReactionInstruction = reaction.instruction;
+    ev.questReactionContext = userPrompt;
+    if (!PBC_RollGroupBotsIntoEvent(ev, player, reaction.chance, "quest-completed", reaction.fixedChance))
         return;
 
     AddTrackedPlayersToEvent(ev, player);

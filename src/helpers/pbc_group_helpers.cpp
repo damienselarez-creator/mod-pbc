@@ -6,6 +6,26 @@
 #include "ObjectAccessor.h"
 #include "GridNotifiers.h"
 #include "CellImpl.h"
+#include "Playerbots.h"
+#include "pbc_selfbot_policy.h"
+
+bool PBC_IsActiveSelfbot(Player* player)
+{
+    if (!player || !player->IsInWorld())
+        return false;
+    WorldSession* session = player->GetSession();
+    if (!session)
+        return false;
+    PlayerbotAI* ai = GET_PLAYERBOT_AI(player);
+    return PBC_SelfbotEligible(session->IsBot(), !session->IsSocketClosed(), session->IsLoggingOut(),
+        ai && IsSelfBot(ai->GetBot()));
+}
+
+bool PBC_IsDialogueBot(Player* player)
+{
+    return player && player->IsInWorld() && player->GetSession()
+        && (player->GetSession()->IsBot() || PBC_IsActiveSelfbot(player));
+}
 
 // ---------------------------------------------------------------------------
 // PBC_FindGroupBots
@@ -26,7 +46,7 @@ std::vector<Player*> PBC_FindGroupBots(Player* player)
         if (!member->IsInWorld()) continue;
         WorldSession* sess = member->GetSession();
         if (!PBC_PTR_VALID(sess)) continue;
-        if (!sess->IsBot()) continue;
+        if (!PBC_IsDialogueBot(member)) continue;
         bots.push_back(member);
     }
     return bots;
@@ -108,7 +128,7 @@ std::vector<Player*> PBC_FindSubGroupBots(Player* player)
         if (!PBC_PTR_VALID(member) || member == player) continue;
         if (!member->IsInWorld()) continue;
         WorldSession* sess = member->GetSession();
-        if (!PBC_PTR_VALID(sess) || !sess->IsBot()) continue;
+        if (!PBC_PTR_VALID(sess) || !PBC_IsDialogueBot(member)) continue;
         if (grp->GetMemberGroup(member->GetGUID()) != mySubGroup) continue;
         bots.push_back(member);
     }
@@ -135,7 +155,7 @@ std::vector<Player*> PBC_FindGroupBotsExcluding(Player* player,
         if (!member->IsInWorld()) continue;
         WorldSession* sess = member->GetSession();
         if (!PBC_PTR_VALID(sess)) continue;
-        if (!sess->IsBot()) continue;
+        if (!PBC_IsDialogueBot(member)) continue;
         if (excludedGuids.count(member->GetGUID().GetCounter())) continue;
         bots.push_back(member);
     }
@@ -155,7 +175,7 @@ std::vector<Player*> PBC_FindNearbyBots(Player* source, float range)
     {
         if (!PBC_PTR_VALID(p) || p == source) return;
         if (!p->IsInWorld()) return;
-        if (!p->GetSession() || !p->GetSession()->IsBot()) return;
+        if (!PBC_IsDialogueBot(p)) return;
         if (p->IsWithinDist(source, range))
             bots.push_back(p);
     };

@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+project(pbc_selfbot_tests LANGUAGES CXX)
+enable_testing()
+add_executable(selfbot_test selfbot_test.cpp)
+target_compile_features(selfbot_test PRIVATE cxx_std_17)
+target_include_directories(selfbot_test PRIVATE ../../src/helpers)
+add_test(NAME selfbot_eligibility_quests_and_handoff COMMAND selfbot_test)

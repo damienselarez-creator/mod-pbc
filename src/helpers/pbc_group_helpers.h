@@ -9,6 +9,10 @@
 
 class Player;
 
+// Main-thread checks: a selfbot keeps its human session and must have its own active AI.
+bool PBC_IsActiveSelfbot(Player* player);
+bool PBC_IsDialogueBot(Player* player);
+
 // ---------------------------------------------------------------------------
 // Group / bot-finding helpers  (main-thread only)
 //

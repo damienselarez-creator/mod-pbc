@@ -1,5 +1,7 @@
 #include "pbc_config.h"
+#include "pbc_quest_reactions.h"
 #include "pbc_character.h"
+#include "pbc_lore.h"
 #include "pbc_database.h"
 #include "pbc_llm.h"
 #include "pbc_http.h"
@@ -525,7 +527,18 @@ void PBC_LoadConfig(bool /*isStartup*/)
         return;
     }
 
+    PBC_LoadQuestReactionConfig();
+
     // Log connection summary
+    std::string loreStatus;
+    bool loreLoaded = PBC_LoadLore(
+        sConfigMgr->GetOption<std::string>("PBC.HistoryCorpusPath", ""),
+        sConfigMgr->GetOption<std::string>("PBC.HistoryCharacterGuids", ""),
+        sConfigMgr->GetOption<std::string>("PBC.HistoryAllowedChunks", ""),
+        sConfigMgr->GetOption<uint32_t>("PBC.HistoryMaxChunks", 4),
+        sConfigMgr->GetOption<uint32_t>("PBC.HistoryMaxBytes", 6000), loreStatus);
+    PBC_Log(loreLoaded ? PBC_LogLevel::PBC_DEFAULT : PBC_LogLevel::PBC_ERROR, "History: {}", loreStatus);
+
     {
         std::lock_guard<std::mutex> lock(g_PBC_ConnectionsMutex);
         auto logConn = [](const char* slotName)

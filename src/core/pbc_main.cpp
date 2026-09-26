@@ -5,6 +5,7 @@
 #include "pbc_player_scripts.h"
 #include "pbc_group_scripts.h"
 #include "pbc_quest_scripts.h"
+#include "pbc_adventure.h"
 
 void Addmod_pbcScripts()
 {
@@ -17,6 +18,7 @@ void Addmod_pbcScripts()
     new PBC_AllGameObjectQuestScript();
     new PBC_AllItemQuestScript();
     new PBC_CommandScript();
+    AddPBCAdventureScripts();
 }
 
 // Compatibility wrapper for checkouts that still live in the old

@@ -156,6 +156,17 @@ PBC.ReplyChanceMessage = 100
 #     Default:     45
 PBC.RollPenaltyOnAnswer = 45
 
+# Optional read-only historical corpus. Empty path disables retrieval.
+# Loaded at startup / .chars reload; bad reload preserves the previous corpus and policy.
+# Explicit comma-separated database GUIDs and chunk IDs are required (no wildcard).
+# Documentary knowledge is appended only to dialogue prompts, never to memory condensation.
+# Byte budget includes labels and complete JSON chunks; it is not an exact token count.
+PBC.HistoryCorpusPath = ""
+PBC.HistoryCharacterGuids = ""
+PBC.HistoryAllowedChunks = ""
+PBC.HistoryMaxChunks = 4
+PBC.HistoryMaxBytes = 6000
+
 # PBC.ReplyChanceItem
 #     Description: The percent chance (0-100) that a character would react when the party
 #                  finds a rare (blue) or higher quality weapon or armor item.
@@ -308,3 +319,11 @@ PBC.HistoryJournalPath = "./pbc-journal"
 
 # Optional trusted CA bundle for HTTPS. Verification is always enabled.
 PBC.HttpCaFile = ""
+
+# Special quest reactions: exact per-companion rolls, independent of speech decay.
+# Dungeon and elite quests: acceptance / reward.
+PBC.ReplyChanceQuestTakenElite = 50
+PBC.ReplyChanceQuestCompletedElite = 60
+# Raid (including 10/25) and world-boss objectives: acceptance / reward.
+PBC.ReplyChanceQuestTakenRaid = 75
+PBC.ReplyChanceQuestCompletedRaid = 80

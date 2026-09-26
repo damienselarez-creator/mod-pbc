@@ -1,3 +1,4 @@
+#include "pbc_selfbot_policy.h"
 #include "pbc_quest_helpers.h"
 #include "pbc_utils.h"
 #include "pbc_locales.h"
@@ -347,12 +348,8 @@ bool PBC_QuestEventGuard(Player* player)
     if (!PBC_PTR_VALID(player)) return false;
 
     Group* grp = player->GetGroup();
-    if (!grp) return false;
-    if (grp->GetLeaderGUID() != player->GetGUID()) return false;
-
     WorldSession* sess = player->GetSession();
-    bool leaderIsReal = PBC_PTR_VALID(sess) && !sess->IsBot();
-    if (!leaderIsReal && !PBC_BotIsGroupedWithRealPlayer(player)) return false;
-
-    return true;
+    bool observerPresent = (sess && !sess->IsBot()) || PBC_BotIsGroupedWithRealPlayer(player);
+    return PBC_QuestActorEligible(PBC_IsActiveSelfbot(player), grp != nullptr,
+        grp && grp->GetLeaderGUID() == player->GetGUID(), observerPresent);
 }

@@ -70,7 +70,8 @@ void PBC_TrackGroupKill(Player* killer, Creature* killed)
         if (!m || !m->IsInWorld()) continue;
         WorldSession* ms = m->GetSession();
         if (!PBC_PTR_VALID(ms)) continue;
-        if (ms->IsBot()) hasBot = true; else hasReal = true;
+        if (PBC_IsDialogueBot(m)) hasBot = true;
+        if (!ms->IsBot()) hasReal = true;
     }
     if (!hasReal || !hasBot) return;
 
@@ -142,9 +143,9 @@ void PBC_PollPartyState()
             if (!member || !member->IsInWorld()) continue;
             WorldSession* ms = member->GetSession();
             if (!PBC_PTR_VALID(ms)) continue;
-            if (ms->IsBot())
+            if (PBC_IsDialogueBot(member))
                 hasBot = true;
-            else
+            if (!ms->IsBot())
                 hasReal = true;
         }
         if (!hasReal || !hasBot) continue;
@@ -168,7 +169,7 @@ void PBC_PollPartyState()
                 continue;
 
             WorldSession* ms = member->GetSession();
-            if (PBC_PTR_VALID(ms) && ms->IsBot())
+            if (PBC_PTR_VALID(ms) && PBC_IsDialogueBot(member))
                 info.bots.push_back(member);
 
             bool inFlight = member->IsInFlight();

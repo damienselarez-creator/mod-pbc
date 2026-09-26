@@ -1,0 +1,1077 @@
+{
+  "format": "pbc.corpus.documentaire",
+  "version": "0.1.0",
+  "langue": "fr",
+  "pilier": "documentaire",
+  "piliers": [
+    "socioculturel"
+  ],
+  "personnage_pilote": {
+    "nom_jeu": "Antanagor",
+    "guid": 4,
+    "race": "Réprouvé",
+    "classe": "prêtre"
+  },
+  "reference": {
+    "fichier": "Les_prêtres_réprouvés.docx",
+    "sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+    "extraction_integrale": "source.md"
+  },
+  "perimetre": {
+    "debut": "chute_lordaeron",
+    "fin": "debut_wotlk_avant_portail_du_courroux"
+  },
+  "traitement_editorial": {
+    "mode": "syntheses_thematiques",
+    "validation_sources_externes": false,
+    "exclusions": [
+      "doctrines du jeu de rôle non attribuées",
+      "explications postérieures de la douleur non importées",
+      "bibliographie hors contexte de dialogue"
+    ],
+    "distinction": "faits rapportés, interprétations, identité personnelle et quêtes vécues restent distincts"
+  },
+  "references": {
+    "1": "https://warcraft.wiki.gg/wiki/Rude_Awakening",
+    "2": "https://warcraft.wiki.gg/wiki/The_Mindless_Ones",
+    "3": "https://warcraft.wiki.gg/wiki/In_Favor_of_Darkness",
+    "4": "https://warcraft.wiki.gg/wiki/Garments_of_Darkness",
+    "5": "https://warcraft.wiki.gg/wiki/Touch_of_Weakness_%28Undercity%29",
+    "6": "https://warcraft.wiki.gg/wiki/Devouring_Plague_%28Undercity%29",
+    "7": "https://warcraft.wiki.gg/wiki/Touch_of_Weakness_%28Orgrimmar%29",
+    "8": "https://warcraft.wiki.gg/wiki/Devouring_Plague_%28Orgrimmar%29",
+    "9": "https://warcraft.wiki.gg/wiki/Touch_of_Weakness_%28Thunder_Bluff%29",
+    "10": "https://warcraft.wiki.gg/wiki/Devouring_Plague_%28Thunder_Bluff%29",
+    "11": "https://warcraft.wiki.gg/wiki/The_Scourge_Cauldrons_%28Horde%29",
+    "12": "https://warcraft.wiki.gg/wiki/Shadow_Priestess_Vandis",
+    "13": "https://warcraft.wiki.gg/wiki/Target%3A_Felstone_Field_%28Horde%29",
+    "14": "https://warcraft.wiki.gg/wiki/Mission_Accomplished%21_%28Horde%29",
+    "15": "https://warcraft.wiki.gg/wiki/Cenarion_Aid",
+    "16": "https://warcraft.wiki.gg/wiki/Of_Coursers_We_Know",
+    "17": "https://warcraft.wiki.gg/wiki/The_Ichor_of_Undeath",
+    "18": "https://warcraft.wiki.gg/wiki/Blood_of_Morphaz_%28quest%29",
+    "19": "https://warcraft.wiki.gg/wiki/The_Balance_of_Light_and_Shadow_%28quest%29",
+    "20": "https://warcraft.wiki.gg/wiki/Mind_Control",
+    "21": "https://warcraft.wiki.gg/wiki/Touch_of_Weakness",
+    "22": "https://warcraft.wiki.gg/wiki/Devouring_Plague",
+    "23": "https://warcraft.wiki.gg/wiki/Cult_of_Forgotten_Shadow",
+    "24": "https://warcraft.wiki.gg/wiki/Ask_CDev",
+    "25": "https://warcraft.wiki.gg/wiki/The_Haunted_Mills_%28Classic%29",
+    "26": "https://warcraft.wiki.gg/wiki/A_Husband%27s_Revenge",
+    "27": "https://warcraft.wiki.gg/wiki/Journey_to_Undercity",
+    "28": "https://warcraft.wiki.gg/wiki/The_Scarlet_Crusade_%28quest%29",
+    "29": "https://warcraft.wiki.gg/wiki/A_New_Plague",
+    "30": "https://warcraft.wiki.gg/wiki/Graverobbers",
+    "31": "https://warcraft.wiki.gg/wiki/The_Scourge_Cauldrons_%28Alliance%29",
+    "32": "https://warcraft.wiki.gg/wiki/Father_Lankester",
+    "33": "https://warcraft.wiki.gg/wiki/Father_Cobb",
+    "34": "https://warcraft.wiki.gg/wiki/The_Dark_Lady",
+    "35": "https://warcraft.wiki.gg/wiki/A_New_Plague_%284%29",
+    "36": "https://warcraft.wiki.gg/wiki/The_Light_of_Dawn_%28quest%29",
+    "37": "https://warcraft.wiki.gg/wiki/Desperate_Research",
+    "38": "https://warcraft.wiki.gg/wiki/A_Lack_of_Fear",
+    "39": "https://warcraft.wiki.gg/wiki/Apothecarium",
+    "40": "https://warcraft.wiki.gg/wiki/A_Recipe_For_Death",
+    "41": "https://warcraft.wiki.gg/wiki/A_Recipe_For_Death_%282%29",
+    "42": "https://warcraft.wiki.gg/wiki/Elixir_of_Suffering_%28quest%29",
+    "43": "https://warcraft.wiki.gg/wiki/Elixir_of_Pain_%28quest%29",
+    "44": "https://warcraft.wiki.gg/wiki/The_Undercity_%28quest%29"
+  },
+  "chunks": [
+    {
+      "id": "reprouves.socioculturel.reconstruction",
+      "pilier": "socioculturel",
+      "titre": "La vocation après la catastrophe",
+      "entites": [
+        "Lordaeron",
+        "Réprouvés"
+      ],
+      "themes": [
+        "foi",
+        "formation",
+        "communauté",
+        "religion"
+      ],
+      "faits_rapportes": "",
+      "interpretation_du_manuscrit": "Le manuscrit analyse la vocation sacerdotale comme une continuité de fonctions, de titres et de transmission après la catastrophe. Une souffrance collective ne détermine ni une croyance unique ni la psychologie de chaque prêtre.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          19,
+          35
+        ],
+        "references": []
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.accueil-sarvis",
+      "pilier": "socioculturel",
+      "titre": "Sarvis et l’accueil au Glas",
+      "entites": [
+        "Sarvis",
+        "Mordo",
+        "Le Glas",
+        "Sylvanas"
+      ],
+      "themes": [
+        "accueil",
+        "chapelle",
+        "appartenance"
+      ],
+      "faits_rapportes": "Mordo dirige le nouvel affranchi vers Sarvis à la chapelle du Glas. Sarvis rapporte la libération à Sylvanas et présente les Réprouvés et leurs ennemis.",
+      "interpretation_du_manuscrit": "Cet accueil donne une appartenance et une orientation politique. Il ne prouve pas qu’Antanagor a personnellement rencontré ces personnages.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          39,
+          47
+        ],
+        "references": [
+          "1"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.frontiere-communaute",
+      "pilier": "socioculturel",
+      "titre": "Reconnaître les affranchis",
+      "entites": [
+        "Sarvis",
+        "Roi-Liche",
+        "Le Glas"
+      ],
+      "themes": [
+        "volonté",
+        "liberté",
+        "Fléau"
+      ],
+      "faits_rapportes": "Sarvis ordonne de combattre des morts-vivants qu’il désigne comme d’anciens frères et sœurs demeurés esclaves du Roi-Liche.",
+      "interpretation_du_manuscrit": "La condition morte-vivante et un passé commun ne suffisent pas à définir l’appartenance. Le manuscrit souligne la dureté de cette frontière.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          49,
+          57
+        ],
+        "references": [
+          "2"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.duesten-beryl",
+      "pilier": "socioculturel",
+      "titre": "La transmission entre maîtres",
+      "entites": [
+        "Duesten",
+        "Beryl",
+        "Brill",
+        "Le Glas"
+      ],
+      "themes": [
+        "apprentissage",
+        "Lumière",
+        "Ombre",
+        "formation"
+      ],
+      "faits_rapportes": "Duesten oriente les novices vers Beryl. Son enseignement associe mémoire de la corruption et de l’abandon à l’apprentissage de la lumière et des ténèbres.",
+      "interpretation_du_manuscrit": "La compétence se transmet entre maîtres et se mesure dans le service. La foi ne remplace pas l’aptitude à secourir autrui.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          61,
+          69
+        ],
+        "references": [
+          "3"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.robe-garde-kel",
+      "pilier": "socioculturel",
+      "titre": "Le soin de Kel et la robe du novice",
+      "entites": [
+        "Beryl",
+        "Kel",
+        "Brill"
+      ],
+      "themes": [
+        "robe",
+        "reconnaissance",
+        "soin",
+        "épreuve"
+      ],
+      "faits_rapportes": "Beryl demande au novice de guérir puis fortifier le garde Kel, blessé en défendant les habitants. Elle remet ensuite une robe, dont le port n’est pas obligatoire.",
+      "interpretation_du_manuscrit": "Le vêtement matérialise la reconnaissance d’un service. Ce parcours documenté n’est pas une quête déjà accomplie par Antanagor ou Granock.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          71,
+          79
+        ],
+        "references": [
+          "4"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.lumiere-ombre",
+      "pilier": "socioculturel",
+      "titre": "Les pouvoirs et la responsabilité de leur usage",
+      "entites": [
+        "Lumière",
+        "Ombre",
+        "prêtres"
+      ],
+      "themes": [
+        "protection",
+        "soin",
+        "combat",
+        "jugement"
+      ],
+      "faits_rapportes": "Le document décrit l’emploi sacerdotal de pouvoirs de soin, de protection et d’affaiblissement des adversaires.",
+      "interpretation_du_manuscrit": "La nature lumineuse ou obscure d’un pouvoir ne détermine pas à elle seule la justice de son usage. Le manuscrit invite à distinguer bénéficiaire, cible, intention et autorité.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          83,
+          91
+        ],
+        "references": []
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.corps-personne",
+      "pilier": "socioculturel",
+      "titre": "Préserver un corps et une personne",
+      "entites": [
+        "Réprouvés",
+        "prêtres"
+      ],
+      "themes": [
+        "corps",
+        "blessure",
+        "soins",
+        "autonomie",
+        "dépendance"
+      ],
+      "faits_rapportes": "Les Réprouvés peuvent être blessés et détruits ; leur condition ne les dispense pas de soins.",
+      "interpretation_du_manuscrit": "Soigner peut reconnaître un compagnon et préserver sa capacité d’agir, mais aussi le remettre au service d’un commandement. Le soin ne restitue ni la vie ancienne ni les relations perdues.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          95,
+          113
+        ],
+        "references": []
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.aelthalyste",
+      "pilier": "socioculturel",
+      "titre": "Aelthalyste et les relais de formation",
+      "entites": [
+        "Aelthalyste",
+        "Miles Welsh",
+        "Fossoyeuse",
+        "Pitons-du-Tonnerre"
+      ],
+      "themes": [
+        "banshee",
+        "maîtres",
+        "formation",
+        "transmission"
+      ],
+      "faits_rapportes": "Aelthalyste, banshee et maîtresse à Fossoyeuse, reçoit les élèves. Les anciens parcours du Toucher de faiblesse et de la Peste dévorante sont relayés notamment par Miles Welsh.",
+      "interpretation_du_manuscrit": "L’autorité repose sur un savoir reconnu et un réseau. Ces parcours décrivent une formation ancienne ; ils ne garantissent pas la disponibilité actuelle des capacités dans WotLK.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          117,
+          125
+        ],
+        "references": [
+          "5",
+          "6",
+          "9",
+          "10"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.titres-autorites",
+      "pilier": "socioculturel",
+      "titre": "Titres et autorités sacerdotales",
+      "entites": [
+        "Père Lankester",
+        "Père Cobb",
+        "Beryl",
+        "Aelthalyste",
+        "Vandis"
+      ],
+      "themes": [
+        "père",
+        "enseignement",
+        "autorité",
+        "institutions"
+      ],
+      "faits_rapportes": "Lankester et Cobb forment des prêtres à Fossoyeuse et aux Pitons-du-Tonnerre. Beryl, Aelthalyste et Vandis instruisent, évaluent ou coordonnent.",
+      "interpretation_du_manuscrit": "Les titres hérités rendent les fonctions reconnaissables. Ces exemples ne prouvent pas l’existence d’une Église centralisée ou d’une hiérarchie universelle.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          127,
+          135
+        ],
+        "references": [
+          "32",
+          "33"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.societe-apothicaires",
+      "pilier": "socioculturel",
+      "titre": "Connaissance et pouvoir des apothicaires",
+      "entites": [
+        "Société royale des apothicaires",
+        "Johaan",
+        "Sylvanas",
+        "Fossoyeuse"
+      ],
+      "themes": [
+        "maladies",
+        "recherche",
+        "non-mort",
+        "peste"
+      ],
+      "faits_rapportes": "Johaan présente la nouvelle peste comme une commande adressée à la Société royale des apothicaires. Les apothicaires travaillent sur remèdes, poisons, maladies et réactifs.",
+      "interpretation_du_manuscrit": "Le manuscrit analyse le passage de la catastrophe subie à la recherche organisée. La coopération avec les prêtres n’implique pas l’identité de leurs fonctions ou de leurs convictions.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          139,
+          147
+        ],
+        "references": [
+          "29"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.reseau-apothicaires",
+      "pilier": "socioculturel",
+      "titre": "Des laboratoires reliés aux territoires",
+      "entites": [
+        "Faranell",
+        "Johaan",
+        "Renferrel",
+        "Lydon",
+        "Apothicarium",
+        "Moulin-de-Tarren"
+      ],
+      "themes": [
+        "collecte",
+        "réactifs",
+        "recherche",
+        "territoire"
+      ],
+      "faits_rapportes": "Faranell travaille à Fossoyeuse, Johaan à Brill, Renferrel dans les Pins-Argentés et Lydon à Moulin-de-Tarren. Renferrel fait acheminer des matières à Faranell pour ses recherches offensives.",
+      "interpretation_du_manuscrit": "Collecter, observer et transmettre devient une manière de servir. Les échanges transportent aussi les objectifs politiques des commanditaires.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          149,
+          157
+        ],
+        "references": [
+          "39",
+          "40",
+          "42"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.journal-berard",
+      "pilier": "socioculturel",
+      "titre": "Les écrits de Berard",
+      "entites": [
+        "Berard",
+        "Arugal",
+        "Faranell",
+        "Renferrel"
+      ],
+      "themes": [
+        "journal",
+        "écrits",
+        "transmission",
+        "personne"
+      ],
+      "faits_rapportes": "Faranell demande la récupération du journal de Berard, tombé sous la domination d’Arugal, pour le transmettre à Renferrel.",
+      "interpretation_du_manuscrit": "Le savoir peut être conservé alors que son auteur est considéré comme perdu. Le manuscrit y voit une tension entre valeur des résultats et valeur de la personne.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          159,
+          165
+        ],
+        "references": [
+          "41"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.lydon-souffrance",
+      "pilier": "socioculturel",
+      "titre": "La cruauté organisée dans la recherche",
+      "entites": [
+        "Lydon",
+        "Moulin-de-Tarren",
+        "Hautebrande",
+        "Sylvanas"
+      ],
+      "themes": [
+        "souffrance",
+        "recherche",
+        "morale",
+        "cruauté"
+      ],
+      "faits_rapportes": "Lydon réclame des ingrédients pour frapper les humains de Hautebrande et exprime sa satisfaction devant la souffrance recherchée.",
+      "interpretation_du_manuscrit": "La division du travail peut éloigner chacun des conséquences de sa contribution. Ce cas ne décrit pas les opinions de tous les Réprouvés ni celles d’Antanagor.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          167,
+          175
+        ],
+        "references": [
+          "42",
+          "43"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.patient-specimen",
+      "pilier": "socioculturel",
+      "titre": "Le corps entre patient et spécimen",
+      "entites": [
+        "Putress",
+        "Faranell",
+        "Fossoyeuse"
+      ],
+      "themes": [
+        "patient",
+        "spécimen",
+        "remède",
+        "reconnaissance"
+      ],
+      "faits_rapportes": "Pendant la nouvelle épidémie, Putress envoie à Faranell une tête de zombie partiellement traitée pour poursuivre les expériences.",
+      "interpretation_du_manuscrit": "Un corps peut être traité comme compagnon, soldat, ennemi ou matériau. La recherche de protection et de reconnaissance collective peut s’accompagner d’instrumentalisation.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          177,
+          185
+        ],
+        "references": [
+          "44"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.vandis-chaudrons",
+      "pilier": "socioculturel",
+      "titre": "Vandis coordonne la lutte contre les chaudrons",
+      "entites": [
+        "Vandis",
+        "Derrington",
+        "Dithers",
+        "Rempart",
+        "Felstone",
+        "MacDonnell"
+      ],
+      "themes": [
+        "chaudrons",
+        "peste",
+        "coordination",
+        "guerre"
+      ],
+      "faits_rapportes": "Derrington présente Vandis comme sa seconde. Elle coordonne les opérations contre les chaudrons avec Dithers, les prélèvements et les réactifs. MacDonnell tient un rôle comparable côté Alliance.",
+      "interpretation_du_manuscrit": "Le rôle sacerdotal comprend une responsabilité opérationnelle. La connaissance de cette campagne ne signifie pas que les compagnons y ont participé.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          189,
+          205
+        ],
+        "references": [
+          "11",
+          "12",
+          "13",
+          "31"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.reconnaissance-publique",
+      "pilier": "socioculturel",
+      "titre": "Le service reconnu publiquement",
+      "entites": [
+        "Derrington",
+        "Horde",
+        "Réprouvés"
+      ],
+      "themes": [
+        "gratitude",
+        "honneur",
+        "récompense",
+        "mémoire"
+      ],
+      "faits_rapportes": "Après la réussite de l’opération contre les chaudrons, Derrington proclame sa gratitude et honore publiquement le service rendu.",
+      "interpretation_du_manuscrit": "Une récompense peut établir des conduites reconnues par la communauté et conserver la mémoire d’un effort collectif.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          207,
+          211
+        ],
+        "references": [
+          "14"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.armes-soins",
+      "pilier": "socioculturel",
+      "titre": "Les moyens de protéger et de nuire",
+      "entites": [
+        "Toucher de faiblesse",
+        "Peste dévorante",
+        "prêtres",
+        "apothicaires"
+      ],
+      "themes": [
+        "sorts",
+        "maladie",
+        "protection",
+        "morale"
+      ],
+      "faits_rapportes": "Les anciens enseignements présentent des pouvoirs qui affaiblissent ou infligent une maladie magique aux adversaires.",
+      "interpretation_du_manuscrit": "Le manuscrit rapproche les enjeux du sort et de la préparation sans confondre leur fabrication. Protéger les siens ne règle pas à lui seul la question des moyens acceptables.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          215,
+          221
+        ],
+        "references": [
+          "21",
+          "22"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.controle-volonte",
+      "pilier": "socioculturel",
+      "titre": "La volonté retrouvée et la contrainte",
+      "entites": [
+        "Contrôle mental",
+        "Sylvanas",
+        "Réprouvés"
+      ],
+      "themes": [
+        "volonté",
+        "contrainte",
+        "possession",
+        "liberté"
+      ],
+      "faits_rapportes": "Le Contrôle mental impose temporairement une volonté à une cible susceptible d’y être soumise. Sylvanas emploie aussi la possession dans sa lutte pour Lordaeron.",
+      "interpretation_du_manuscrit": "La contrainte temporaire diffère de l’asservissement durable, mais demeure une atteinte à l’autonomie. Le manuscrit expose une tension, pas une position morale imposée à Antanagor.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          223,
+          231
+        ],
+        "references": [
+          "20",
+          "34"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.limites-defense",
+      "pilier": "socioculturel",
+      "titre": "La défense peut-elle tout justifier ?",
+      "entites": [
+        "Johaan",
+        "Brill",
+        "prisonnier nain"
+      ],
+      "themes": [
+        "consentement",
+        "expérience",
+        "morale",
+        "survie"
+      ],
+      "faits_rapportes": "Un captif nain absorbe une préparation de Johaan en la prenant pour une boisson et en meurt.",
+      "interpretation_du_manuscrit": "La persécution subie ne fait pas disparaître la violence exercée. Les justifications communautaires ne prouvent ni l’adhésion ni l’innocence de chaque prêtre.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          233,
+          239
+        ],
+        "references": [
+          "35"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.attachements-deuil",
+      "pilier": "socioculturel",
+      "titre": "Des mémoires et des attachements divers",
+      "entites": [
+        "Coleman Farthing",
+        "Agamand",
+        "Raleigh Andrean",
+        "Sylvanas",
+        "collier"
+      ],
+      "themes": [
+        "deuil",
+        "souvenirs",
+        "attachement",
+        "ressentiment"
+      ],
+      "faits_rapportes": "Coleman et Raleigh expriment des griefs liés à leurs proches. Le retour du collier de Sylvanas donne lieu à une réaction affective et une lamentation.",
+      "interpretation_du_manuscrit": "Ces exemples montrent une diversité des rapports au passé. La parole religieuse pourrait apaiser ou entretenir le ressentiment ; le manuscrit n’en fait pas une pratique universelle attestée.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          243,
+          267
+        ],
+        "references": [
+          "25",
+          "26",
+          "27"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.lieux-funeraires",
+      "pilier": "socioculturel",
+      "titre": "Cryptes, chapelles et sépultures",
+      "entites": [
+        "Tirisfal",
+        "Fléau",
+        "gnolls"
+      ],
+      "themes": [
+        "crypte",
+        "cimetière",
+        "tombe",
+        "corps",
+        "mémoire"
+      ],
+      "faits_rapportes": "Des gnolls pillent des fosses communes de Tirisfal pour renforcer le Fléau ; les Réprouvés cherchent à les arrêter.",
+      "interpretation_du_manuscrit": "La protection des sépultures croise mémoire des morts et défense des habitants. La crypte peut aussi devenir le début d’une existence affranchie.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          271,
+          279
+        ],
+        "references": [
+          "30"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.horde-maitres",
+      "pilier": "socioculturel",
+      "titre": "Coopérer entre traditions de la Horde",
+      "entites": [
+        "Ur’kyo",
+        "Aelthalyste",
+        "Orgrimmar",
+        "Pitons-du-Tonnerre",
+        "Horde"
+      ],
+      "themes": [
+        "traditions",
+        "alliance",
+        "formation",
+        "trolls"
+      ],
+      "faits_rapportes": "Ur’kyo oriente des prêtres réprouvés vers Aelthalyste et reconnaît la réciprocité de leurs relations d’enseignement.",
+      "interpretation_du_manuscrit": "Une reconnaissance entre maîtres permet de coopérer sans partager une religion unique. Plusieurs appartenances peuvent coexister chez un même prêtre.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          283,
+          299
+        ],
+        "references": [
+          "7",
+          "8"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.cercle-cenarien",
+      "pilier": "socioculturel",
+      "titre": "Une aide au-delà du peuple réprouvé",
+      "entites": [
+        "Ogtinc",
+        "Cercle cénarien",
+        "Morphaz",
+        "Gangrebois",
+        "Azshara"
+      ],
+      "themes": [
+        "druides",
+        "ichor",
+        "remède",
+        "coopération",
+        "réparation"
+      ],
+      "faits_rapportes": "Le parcours d’Ogtinc rassemble des matières animales, de l’ichor de non-mort et le sang de Morphaz pour une préparation réparatrice destinée à Gangrebois.",
+      "interpretation_du_manuscrit": "Coopérer peut mobiliser des croyances différentes et distribuer inégalement les actes difficiles. Cette possibilité de service n’est pas une aventure déjà vécue par Antanagor.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          303,
+          319
+        ],
+        "references": [
+          "15",
+          "16",
+          "17",
+          "18"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.eris-stratholme",
+      "pilier": "socioculturel",
+      "titre": "Secourir les victimes de Stratholme",
+      "entites": [
+        "Eris Havenfire",
+        "Stratholme",
+        "Nordrassil",
+        "Bénédiction",
+        "Anathème"
+      ],
+      "themes": [
+        "protection",
+        "victimes",
+        "mémoire",
+        "secours"
+      ],
+      "faits_rapportes": "Eris demande au prêtre de protéger les victimes fuyant Stratholme dans une épreuve liée à leur destin. Un fragment de Nordrassil intervient ensuite dans le bâton Bénédiction ou Anathème.",
+      "interpretation_du_manuscrit": "La mémoire de Lordaeron peut appeler le secours de victimes humaines. Ce récit reste documentaire et ne devient pas un souvenir personnel.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          321,
+          327
+        ],
+        "references": [
+          "19"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.fidelite-crise",
+      "pilier": "socioculturel",
+      "titre": "Fidélité politique et ouverture du Norfendre",
+      "entites": [
+        "Sylvanas",
+        "Croisade écarlate",
+        "Putress",
+        "Acherus",
+        "Lame d’ébène",
+        "Norfendre"
+      ],
+      "themes": [
+        "fidélité",
+        "guerre",
+        "alliance",
+        "mobilisation"
+      ],
+      "faits_rapportes": "La Croisade écarlate menace les Réprouvés. À l’ouverture de WotLK, Putress mène des recherches contre l’épidémie et les chevaliers d’Acherus rompent avec le Roi-Liche.",
+      "interpretation_du_manuscrit": "Le manuscrit relie service sacerdotal, institutions et mobilisation, sans supposer une opinion individuelle uniforme ni anticiper le Portail du Courroux.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          331,
+          347
+        ],
+        "references": [
+          "28",
+          "29",
+          "36",
+          "37"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.limites-lumiere",
+      "pilier": "socioculturel",
+      "titre": "Limites sur la douleur et la Lumière",
+      "entites": [
+        "Lumière",
+        "prêtres",
+        "Réprouvés"
+      ],
+      "themes": [
+        "douleur",
+        "interdiction",
+        "foi",
+        "physiologie"
+      ],
+      "faits_rapportes": "",
+      "interpretation_du_manuscrit": "Le manuscrit exclut de sa reconstruction les explications de développeurs postérieures au début de WotLK. Il ne fonde pas toute vocation réprouvée sur une douleur obligatoire et n’atteste pas de police religieuse interdisant universellement les soins de Lumière.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          367,
+          375
+        ],
+        "references": [
+          "24"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.limites-ombre-rites",
+      "pilier": "socioculturel",
+      "titre": "Doctrines complémentaires et rites non documentés",
+      "entites": [
+        "Ombre oubliée",
+        "Rohan",
+        "Forgefer"
+      ],
+      "themes": [
+        "culte",
+        "rites",
+        "ordination",
+        "religion",
+        "doctrine"
+      ],
+      "faits_rapportes": "",
+      "interpretation_du_manuscrit": "Les doctrines systématisées dans le jeu de rôle sur table restent un corpus distinct, non attribué automatiquement aux prêtres des jeux. Le manuscrit n’atteste ni calendrier sacerdotal universel, ni mariage, ni funérailles ou ordination standardisés. Il distingue ressemblances religieuses, pratiques montrées et interprétation.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          379,
+          417
+        ],
+        "references": [
+          "23",
+          "38"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    },
+    {
+      "id": "reprouves.socioculturel.limites-periode-sorts",
+      "pilier": "socioculturel",
+      "titre": "Distinguer la formation ancienne des règles de WotLK",
+      "entites": [
+        "Toucher de faiblesse",
+        "Peste dévorante",
+        "WotLK"
+      ],
+      "themes": [
+        "chronologie",
+        "formation",
+        "sorts",
+        "prélancement"
+      ],
+      "faits_rapportes": "Selon la méthode du manuscrit, la mise à jour 3.0.2 retire le Toucher de faiblesse et ouvre la Peste dévorante à tous les prêtres.",
+      "interpretation_du_manuscrit": "Les parcours anciens éclairent une tradition sans prouver une exclusivité actuelle ni une conversion collective. Les références du manuscrit n’ont pas été revérifiées indépendamment lors de cette intégration.",
+      "source": {
+        "document_sha256": "62831a92ff34e78b389f6b0851b362d0e657e18e3ab48cc89b26d1c1b77b810e",
+        "extraction": "source.md",
+        "lignes": [
+          419,
+          429
+        ],
+        "references": [
+          "21",
+          "22"
+        ]
+      },
+      "statut": "synthese_du_manuscrit",
+      "nature_memoire": "savoir_socioculturel_non_vecu",
+      "acces_personnage": "attribue_a_antanagor_guid_4_sans_biographie_implicite",
+      "borne_corpus": "debut_wotlk_avant_portail_du_courroux",
+      "chunks_lies": []
+    }
+  ]
+}

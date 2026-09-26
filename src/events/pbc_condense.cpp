@@ -1,4 +1,5 @@
 #include "pbc_condense.h"
+#include "pbc_adventure.h"
 #include "pbc_config.h"
 #include "pbc_character.h"
 #include "pbc_database.h"
@@ -53,6 +54,8 @@ bool PBC_CondenseInline(PBC_CharacterSnapshot& snap,
                         const std::string& sysPrompt,
                         const std::string& userPromptTmpl, int timeoutCapSec)
 {
+    if (PBC_AdventureManaged(snap.charGuidRaw))
+        return false;
     if (sysPrompt.empty() || userPromptTmpl.empty())
     {
         PBC_Log(PBC_LogLevel::PBC_DEBUG, "CondenseInline: prompts not configured, skipping for character={}", snap.charName);

@@ -1,4 +1,7 @@
+#include "pbc_group_helpers.h"
 #include "pbc_character.h"
+#include "pbc_lore.h"
+#include "pbc_adventure.h"
 #include "pbc_config.h"
 #include "pbc_database.h"
 #include "pbc_http.h"
@@ -94,6 +97,8 @@ PBC_VarMap PBC_BuildVarMapFromSnapshot(const PBC_CharacterSnapshot& snap, const 
 void PBC_TriggerCondensation(Player* bot)
 {
     if (!bot) return;
+    if (PBC_AdventureManaged(bot->GetGUID().GetCounter()))
+        return;
 
     PBC_Log(PBC_LogLevel::PBC_DEBUG, "TriggerCondensation: queuing condensation for character={}", bot->GetName());
 
@@ -489,6 +494,9 @@ uint64_t PBC_AppendHistoryMessage(uint64_t authorGuid, uint8_t type,
         }
     }
 
+    // The adventure journal is independent of dialogue SQL/LLM availability.
+    PBC_AdventureHistory(authorGuid, type, message, owners);
+
     // DB write
     uint64_t newId = DB_InsertHistoryMessage(authorGuid, type, message, owners, durable);
     if (newId == 0)
@@ -786,16 +794,32 @@ static void ReplaceSnapshotVars(std::string& out, const PBC_CharacterSnapshot& s
     PBC_ReplaceToken(out, "context",        snap.context);
 
     // Chat history from the snapshot's local (thread-local) copy
-    { std::ostringstream histOss; for (const auto& line : snap.history) histOss << line << "\n"; PBC_ReplaceToken(out, "chat_history", histOss.str()); }
+    std::ostringstream history;
+    bool adventure = PBC_AdventureManaged(snap.charGuidRaw);
+    size_t start = adventure && snap.history.size() > 40 ? snap.history.size() - 40 : 0;
+    size_t bytes = 0;
+    for (size_t i = snap.history.size(); i > start; --i)
+    {
+        bytes += snap.history[i - 1].size();
+        if (adventure && bytes > 12000)
+        {
+            start = i;
+            break;
+        }
+    }
+    for (size_t i = start; i < snap.history.size(); ++i)
+        history << snap.history[i] << "\n";
+    PBC_ReplaceToken(out, "chat_history", history.str());
 
     // Memories from DB (thread-safe)
-    PBC_ReplaceToken(out, "memories", PBC_GetMemoriesBlock(snap.charGuidRaw));
+    PBC_ReplaceToken(out, "memories", adventure ? "" : PBC_GetMemoriesBlock(snap.charGuidRaw));
 }
 
 
 PBC_CharacterSnapshot PBC_SnapshotCharacter(Player* bot)
 {
     PBC_CharacterSnapshot snap;
+    snap.requiresActiveSelfbot = PBC_IsActiveSelfbot(bot);
     snap.relationshipGeneration = relationshipGeneration.load();
     snap.charObjGuid  = bot->GetGUID();
     snap.charGuidRaw  = bot->GetGUID().GetCounter();
@@ -853,7 +877,10 @@ PBC_CharacterSnapshot PBC_SnapshotCharacter(Player* bot)
 
                 snap.partyMemberNames.push_back(member->GetName());
                 if (!ms->IsBot())
+                {
                     snap.hasRealPlayerInGroup = true;
+                    snap.adventureGroupPlayers.push_back(member->GetGUID().GetCounter());
+                }
             }
         }
     }
@@ -957,6 +984,11 @@ std::string PBC_BuildUserPromptFromSnapshot(const PBC_CharacterSnapshot& snap,
     PBC_ReplaceToken(out, "relationships", PBC_GetRelationshipsBlock(snap));
 
     PBC_CleanUnknownTokens(out);
+    // Append after template expansion: documentary braces must remain literal data.
+    // Never insert the corpus into condensation, memories or relationship storage.
+    out += PBC_GetLoreBlock(snap.charGuidRaw, eventLine);
+    out += PBC_AdventureContext(snap.charGuidRaw, snap.whisperTargetGuid.GetCounter(),
+        snap.adventureGroupPlayers, eventLine);
     return out;
 }
 

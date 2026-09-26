@@ -110,6 +110,7 @@ extern std::mutex g_PBC_DataMutex;
 // The event thread works exclusively with these — never touches live Player*.
 struct PBC_CharacterSnapshot
 {
+    bool requiresActiveSelfbot = false;
     uint64_t relationshipGeneration = 0;
     ObjectGuid  charObjGuid;
     uint64_t    charGuidRaw = 0;
@@ -144,6 +145,7 @@ struct PBC_CharacterSnapshot
 
     // Names of all other party members (excluding this character).
     std::vector<std::string> partyMemberNames;
+    std::vector<uint64_t> adventureGroupPlayers;
 
     // True if at least one group member is a real (non-bot) player.
     bool hasRealPlayerInGroup = false;
@@ -219,6 +221,8 @@ struct PBC_LastEventRecord
 {
     // Event metadata (copied from the original PBC_EventItem)
     std::string eventLine;
+    std::string questReactionInstruction;
+    std::string questReactionContext;
     PBC_EventSource source;
     uint32_t chatType = 0;
     bool canCreateEvents = false;
@@ -285,6 +289,8 @@ struct PBC_EventItem
     // QuestSummarization extra fields
     std::string questSystemPrompt;
     std::string questUserPrompt;
+    std::string questReactionInstruction;
+    std::string questReactionContext;
 
     // CombatSummarization extra fields
     std::string combatSystemPrompt;
@@ -325,6 +331,7 @@ struct PBC_EventItem
 // Chat-send action posted from event thread to main thread.
 struct PBC_PendingAction
 {
+    bool requiresActiveSelfbot = false;
     std::chrono::steady_clock::time_point expiresAt = std::chrono::steady_clock::now() + std::chrono::seconds(60);
     ObjectGuid  charGuid;
     ObjectGuid  targetGuid;     // Non-empty = whisper target

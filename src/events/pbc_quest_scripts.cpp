@@ -5,6 +5,7 @@
 #include "pbc_utils.h"
 #include "pbc_locales.h"
 #include "pbc_quest_helpers.h"
+#include "pbc_quest_reactions.h"
 #include "pbc_group_helpers.h"
 #include "pbc_event_dispatch.h"
 #include "pbc_log.h"
@@ -43,7 +44,8 @@ static void HandleQuestTaken(Player* player, Quest const* quest,
     std::string questTitle          = PBC_StripWowTextCodes(PBC_GetQuestTitle(quest->GetQuestId()));
     std::string questDescription    = PBC_StripWowTextCodes(PBC_GetQuestDetails(quest->GetQuestId()));
     std::string questLogDescription = PBC_StripWowTextCodes(PBC_GetQuestObjectives(quest->GetQuestId()));
-    std::string questCompletionLog  = PBC_StripWowTextCodes(PBC_GetQuestCompletedText(quest->GetQuestId()));
+    // Acceptance must not reveal completion text before it is reached.
+    std::string questCompletionLog;
     std::string questGiverWithGender = PBC_GetQuestStarterNamesWithGender(quest->GetQuestId());
 
     PBC_Log(PBC_LogLevel::PBC_DEBUG, "HandleQuestTaken: leader={} quest='{}' (id={}) giver='{}' type='{}'",
@@ -62,7 +64,10 @@ static void HandleQuestTaken(Player* player, Quest const* quest,
     ev.questUserPrompt    = userPrompt;
     ev.anchorObjGuid      = player->GetGUID();
 
-    if (!PBC_RollGroupBotsIntoEvent(ev, player, g_PBC_ReplyChanceQuestTaken, "quest-taken"))
+    auto reaction = PBC_GetQuestReaction(quest, false, g_PBC_ReplyChanceQuestTaken);
+    ev.questReactionInstruction = reaction.instruction;
+    ev.questReactionContext = userPrompt;
+    if (!PBC_RollGroupBotsIntoEvent(ev, player, reaction.chance, "quest-taken", reaction.fixedChance))
         return;
 
     AddTrackedPlayersToEvent(ev, player);

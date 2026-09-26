@@ -1,3 +1,4 @@
+#include "pbc_selfbot_policy.h"
 #include "pbc_world.h"
 #include "pbc_config.h"
 #include "pbc_character.h"
@@ -367,6 +368,11 @@ void PBC_WorldScript::OnUpdate(uint32_t diff)
             if (!action.text.empty())
             {
                 Player* bot = ObjectAccessor::FindPlayer(action.charGuid);
+                if (!PBC_SelfbotReplyAllowed(action.requiresActiveSelfbot, PBC_IsActiveSelfbot(bot)))
+                {
+                    local.pop();
+                    continue;
+                }
 
                 // Narrator system message (e.g. "thinks..." notification or a
                 // leading *text* block from the LLM reply) — send to all real
@@ -478,7 +484,8 @@ void PBC_WorldScript::OnUpdate(uint32_t diff)
                 for (auto& snap : nextEvent.respondingChars)
                 {
                     Player* bot = ObjectAccessor::FindPlayer(snap.charObjGuid);
-                    if (!bot || !bot->IsInWorld())
+                    if (!bot || !bot->IsInWorld()
+                        || (snap.requiresActiveSelfbot && !PBC_IsActiveSelfbot(bot)))
                     {
                         snap.charGuidRaw = 0;
                         continue;

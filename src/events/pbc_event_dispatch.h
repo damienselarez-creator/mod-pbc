@@ -58,7 +58,7 @@ void PBC_RollBotsWithPenalty(PBC_EventItem& ev,
 // bots — in which case the caller should abort the event.
 // ---------------------------------------------------------------------------
 bool PBC_RollGroupBotsIntoEvent(PBC_EventItem& ev, Player* player,
-                                 uint32_t chance, const char* debugLabel = "event");
+    uint32_t chance, char const* debugLabel = "event", bool fixedChance = false);
 
 // ---------------------------------------------------------------------------
 // Full message roll logic: checks for mentions, sorts mentioned bots by

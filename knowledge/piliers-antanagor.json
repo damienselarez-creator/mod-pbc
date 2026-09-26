@@ -1,0 +1,31 @@
+{
+    "personnage":  "Antanagor",
+    "guid":  4,
+    "main":  "Granock",
+    "main_guid":  2,
+    "piliers":  [
+                    {
+                        "id":  "histoire",
+                        "statut":  "actif",
+                        "fichier":  "histoire-reprouves.json",
+                        "chunks_autorises":  22
+                    },
+                    {
+                        "id":  "socioculturel",
+                        "statut":  "actif",
+                        "fichier":  "socioculture-pretres-reprouves.json",
+                        "chunks":  28
+                    },
+                    {
+                        "id":  "personnalite",
+                        "statut":  "fiche_initiale",
+                        "fichier":  "Antanagor.card.txt",
+                        "note":  "Caractérisation et psychologie à développer avec un document dédié."
+                    },
+                    {
+                        "id":  "vecu_quetes",
+                        "statut":  "memoire_selective_des_grandes_missions_a_implementer",
+                        "note":  "Retenir les grandes missions validees par Granock : fins de chaines importantes, rencontres marquantes, evenements majeurs et choix significatifs pour le compagnon. Consolider une chaine en un souvenir synthetique. Ne pas memoriser systematiquement les petites quetes ; distinguer participation d Antanagor et recit rapporte. Selection et persistance independantes du tirage aleatoire des repliques IA."
+                    }
+                ]
+}

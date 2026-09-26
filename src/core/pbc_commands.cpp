@@ -1,6 +1,7 @@
 #include "pbc_commands.h"
 #include "pbc_config.h"
 #include "pbc_character.h"
+#include "pbc_lore.h"
 #include "pbc_database.h"
 #include "pbc_llm.h"
 #include "pbc_http.h"
@@ -20,6 +21,15 @@
 #include <sstream>
 
 using namespace Acore::ChatCommands;
+
+// Read-only local retrieval diagnostic. No LLM call and no history mutation.
+static bool HandleCharsLoreTest(ChatHandler* handler, uint64 guid, Tail question)
+{
+    std::string block = PBC_GetLoreBlock(guid, std::string(question));
+    handler->PSendSysMessage("[PBC] History: {}", PBC_LoreStatus());
+    handler->PSendSysMessage("[PBC] {}", block.empty() ? "No accessible historical match." : block);
+    return true;
+}
 
 static Player* FindTarget(ChatHandler* handler, std::optional<std::string_view> nameArg)
 {
@@ -828,6 +838,7 @@ ChatCommandTable PBC_CommandScript::GetCommands() const
         { "roll-modifier",            HandleCharsRollModifier,            SEC_PLAYER,    Console::Yes },
         { "context",                  HandleCharsContext,                 SEC_PLAYER,    Console::Yes },
         { "connection-test",          HandleCharsConnectionTest,          SEC_GAMEMASTER, Console::Yes },
+        { "lore-test",                HandleCharsLoreTest,                SEC_GAMEMASTER, Console::Yes },
         { "web",                      HandleCharsWeb,                     SEC_PLAYER,    Console::No  },
         { "narrate",                  HandleCharsNarrate,                 SEC_PLAYER,    Console::No  },
         { "narrate-party",            HandleCharsNarrateParty,            SEC_PLAYER,    Console::No  },
