@@ -44,8 +44,7 @@ certifie pas que le binaire a été chargé.
 
 ## Conservation et limites de cette première version
 
-Dossier prévu sur le serveur : `C:\AzerothServer\data\pbc-adventures` (sauf
-surcharge de `PBC.AdventurePath`). `player-<GUID>.json` contient les chunks.
+Dossier par défaut : `data/pbc-adventures` relativement au répertoire de travail du serveur. Sous Linux en production, utiliser de préférence un chemin absolu persistant, par exemple `/var/lib/azerothcore/pbc-adventures`, via `PBC.AdventurePath`. `player-<GUID>.json` contient les chunks.
 Le sous-dossier `journal` conserve les événements et toutes les versions validées,
 avec contrôle d'intégrité. Ne pas effacer ses fichiers `.pending` : dans cette
 fonctionnalité, ils constituent les archives permanentes, et pas une file à purger.
