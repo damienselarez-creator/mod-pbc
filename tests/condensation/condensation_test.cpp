@@ -1,5 +1,6 @@
 #include "test_environment.h"
 #include "pbc_condense.h"
+#include "pbc_adventure.h"
 #include "pbc_memory_parser.h"
 #include "pbc_database.h"
 #include <cstdlib>
@@ -23,6 +24,7 @@ PBC_CharacterSnapshot Reset()
     calls = writes = 0;
     duringRequest = {}; duringDelete = {};
     connectionAvailable = true;
+    adventureManaged = false;
     response = {true, "[7] You helped Norka."};
     PBC_CharacterSnapshot snap;
     snap.history = {"Norka: Help!", "You: I am here."};
@@ -66,6 +68,11 @@ int main()
     Check(!PBC_CondenseInline(snap, "system", "user") && calls == 0, "missing connection");
     snap = Reset();
     Check(!PBC_CondenseInline(snap, "", "user") && calls == 0, "missing prompt");
+
+    snap = Reset();
+    adventureManaged = true;
+    Check(!PBC_CondenseInline(snap, "system", "user") && calls == 0,
+        "adventure-managed character bypasses legacy condensation");
 
     snap = Reset();
     snap.history.clear();
