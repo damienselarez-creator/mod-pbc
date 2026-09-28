@@ -315,7 +315,12 @@ PBC.Blacklist = t ,c ,items,autogear,talents,reset botAI,summon,release,revive,l
 
 # Durable history journal. Use one persistent directory per server/database.
 # Keep it with the matching database backups. Changing this path requires restart.
+# For production Linux deployments, prefer an absolute writable path outside the source tree.
 PBC.HistoryJournalPath = "./pbc-journal"
+
+# Persistent adventure-memory storage. Relative paths are resolved from the worldserver
+# working directory. For production Linux deployments, prefer an absolute writable path.
+PBC.AdventurePath = "data/pbc-adventures"
 
 # Optional trusted CA bundle for HTTPS. Verification is always enabled.
 PBC.HttpCaFile = ""

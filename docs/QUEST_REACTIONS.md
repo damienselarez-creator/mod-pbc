@@ -37,7 +37,7 @@ Le boss mondial est assimilé au raid également à l'acceptation (75 %).
 
 ## Configuration du serveur
 
-Dans `C:\AzerothServer\configs\modules\playerbots_characters.conf` :
+Dans le fichier de configuration chargé par `worldserver`, par exemple `configs/modules/playerbots_characters.conf` :
 
 ```ini
 PBC.ReplyChanceQuestTakenElite = 50
