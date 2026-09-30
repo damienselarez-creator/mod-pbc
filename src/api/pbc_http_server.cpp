@@ -9,6 +9,7 @@
 #include "pbc_config.h"
 #include "pbc_character.h"
 #include "pbc_log.h"
+#include "pbc_utils.h"
 
 #define httplib pbc_httplib
 #include <httplib.h>
@@ -373,10 +374,10 @@ bool PBC_HttpServerStart(const std::string& bindAddr, int port, int timeoutSec)
         {
             std::string frontendPath = g_PBC_HttpServerFrontendPath;
             std::error_code ec;
-            auto canonicalPath = std::filesystem::canonical(frontendPath, ec);
+            auto canonicalPath = std::filesystem::canonical(PBC_PathFromUtf8(frontendPath), ec);
             if (!ec && std::filesystem::is_directory(canonicalPath))
             {
-                std::string canonicalStr = canonicalPath.string();
+                std::string canonicalStr = PBC_PathToUtf8(canonicalPath);
                 svr->set_mount_point("/", canonicalStr);
 
                 svr->set_error_handler([canonicalStr](const httplib::Request& req, httplib::Response& res) {
@@ -390,16 +391,16 @@ bool PBC_HttpServerStart(const std::string& bindAddr, int port, int timeoutSec)
 
                     std::string indexPath = canonicalStr + "/index.html";
                     std::error_code ec2;
-                    auto resolvedIndex = std::filesystem::canonical(indexPath, ec2);
+                    auto resolvedIndex = std::filesystem::canonical(PBC_PathFromUtf8(indexPath), ec2);
                     if (ec2 || !std::filesystem::is_regular_file(resolvedIndex))
                         return;
 
-                    std::string resolvedStr = resolvedIndex.string();
+                    std::string resolvedStr = PBC_PathToUtf8(resolvedIndex);
                     if (resolvedStr.size() < canonicalStr.size() ||
                         resolvedStr.substr(0, canonicalStr.size()) != canonicalStr)
                         return;
 
-                    std::ifstream ifs(resolvedStr, std::ios::binary);
+                    std::ifstream ifs(resolvedIndex, std::ios::binary);
                     if (ifs.is_open())
                     {
                         std::string content((std::istreambuf_iterator<char>(ifs)),
