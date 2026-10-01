@@ -71,7 +71,7 @@ void PBC_TrackGroupKill(Player* killer, Creature* killed)
         WorldSession* ms = m->GetSession();
         if (!PBC_PTR_VALID(ms)) continue;
         if (PBC_IsDialogueBot(m)) hasBot = true;
-        if (!ms->IsBot()) hasReal = true;
+        if (!ms->IsHeadless()) hasReal = true;
     }
     if (!hasReal || !hasBot) return;
 
@@ -145,7 +145,7 @@ void PBC_PollPartyState()
             if (!PBC_PTR_VALID(ms)) continue;
             if (PBC_IsDialogueBot(member))
                 hasBot = true;
-            if (!ms->IsBot())
+            if (!ms->IsHeadless())
                 hasReal = true;
         }
         if (!hasReal || !hasBot) continue;

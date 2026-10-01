@@ -43,6 +43,31 @@ int main()
     try
     {
         {
+            PBC_AdventureStore all(root / "all-characters");
+            for (uint64_t guid : {3, 17, 999})
+            {
+                Check(all.BeginPersonal(guid, "Compagnon", "Fiche"), "Personal session did not open");
+                all.Record(guid, {{"kind", "quest_accepted"}, {"quest_id", guid}});
+            }
+            // Simulate interruption without a logout hook for any of the characters.
+        }
+        {
+            PBC_AdventureStore all(root / "all-characters");
+            all.CloseAllActive();
+            all.CloseAllActive();
+            Check(all.PendingPlayers().size() == 3, "Recovery did not retain every character's pending memory");
+            for (uint64_t guid : {3, 17, 999})
+            {
+                Check(!all.Active(guid), "Recovery left an interrupted session open");
+                auto batch = all.Batch(guid);
+                Check(batch.at("events").size() == 1, "Recovery mixed character histories");
+                Check(batch.at("events")[0].at("quest_id") == guid, "Another character's event leaked");
+                Check(all.BeginPersonal(guid, "Compagnon", "Fiche"), "Reconnect failed after recovery");
+                Check(all.Batch(guid) == batch, "Reconnect changed the pending memory batch");
+            }
+            all.CloseAllActive();
+        }
+        {
             PBC_AdventureStore personal(root / "personal");
             personal.Begin(5, 5, "Elvidia", "Elvidia", std::string(52490, 'x'));
             Reject([&] { personal.Begin(7, 5, "Other", "Elvidia", ""); });
@@ -71,9 +96,13 @@ int main()
             automatic.Record(2, {{"kind", "quest_accepted"}, {"quest_id", 10}});
             Check(automatic.CloseIfActive(2), "Legacy session was not sealed");
             Check(!automatic.CloseIfActive(2), "Duplicate close was not idempotent");
+            auto legacy = automatic.Batch(2);
+            Check(automatic.BeginPersonal(2, "Joueur", "Fiche"), "Legacy owner could not start personal memory");
+            Check(automatic.Batch(2) == legacy, "Personal transition lost legacy pending memory");
+            automatic.CloseIfActive(2);
             Check(automatic.BeginPersonal(4, "Antanagor", "Fiche"), "Automatic login failed");
             Check(!automatic.BeginPersonal(4, "Antanagor", "Fiche"), "Duplicate login opened another session");
-            Check(automatic.Owner(4) == 4 && automatic.Owners(4).size() == 2, "Legacy ownership lost");
+            Check(automatic.Owner(4) == 4 && automatic.Owners(4).size() == 1, "Personal ownership incorrect");
             automatic.Record(4, {{"kind", "quest_accepted"}, {"actor_guid", 2},
                 {"participation", "observer"}});
             automatic.CloseIfActive(4);

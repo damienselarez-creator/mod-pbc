@@ -15,6 +15,7 @@ public:
         std::string const& companionName, std::string const& card);
     bool BeginPersonal(uint64_t character, std::string const& name, std::string const& card);
     bool CloseIfActive(uint64_t character);
+    void CloseAllActive();
     std::vector<uint64_t> Owners(uint64_t companion) const;
     bool Record(uint64_t player, pbc_json event);
     std::string Close(uint64_t player);

@@ -44,10 +44,10 @@ if(TARGET modules)
     endif()
 
     # Include cpp-httplib (header-only)
-    # Bundled version (v0.43.1) in deps/yhirose/cpp-httplib/httplib.h provides HTTP server + WebSocket support.
+    # Bundled version (v0.58.0) in deps/yhirose/cpp-httplib/httplib.h provides HTTP server + WebSocket support.
     if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/deps/yhirose/cpp-httplib/httplib.h")
         target_include_directories(modules BEFORE PRIVATE ${CMAKE_CURRENT_LIST_DIR}/deps/yhirose/cpp-httplib)
-        message(STATUS "[mod-pbc] Using bundled cpp-httplib v0.43.1 (with WebSocket support)")
+        message(STATUS "[mod-pbc] Using bundled cpp-httplib v0.58.0 (with WebSocket support)")
     else()
         message(FATAL_ERROR "[mod-pbc] cpp-httplib not found.\n"
                           "  Please place httplib.h in deps/yhirose/cpp-httplib/httplib.h\n"

@@ -40,6 +40,20 @@ add_test(NAME transport_security COMMAND transport_test "${CMAKE_CURRENT_BINARY_
 set_tests_properties(llm_completion_contract transport_security transport_http PROPERTIES TIMEOUT 30)
 set_tests_properties(transport_security PROPERTIES SKIP_RETURN_CODE 77)
 
+add_executable(http_library_test http_library_test.cpp)
+target_compile_features(http_library_test PRIVATE cxx_std_17)
+target_compile_definitions(http_library_test PRIVATE CPPHTTPLIB_OPENSSL_SUPPORT)
+target_include_directories(http_library_test PRIVATE ../../deps/yhirose/cpp-httplib)
+target_link_libraries(http_library_test PRIVATE OpenSSL::SSL OpenSSL::Crypto Threads::Threads)
+if(WIN32)
+    target_link_libraries(http_library_test PRIVATE ws2_32 crypt32)
+endif()
+add_test(NAME http_library_header_and_chunk_regressions COMMAND http_library_test http)
+add_test(NAME http_library_websocket_roundtrip COMMAND http_library_test
+    "${CMAKE_CURRENT_BINARY_DIR}/cert.pem" "${CMAKE_CURRENT_BINARY_DIR}/key.pem")
+set_tests_properties(http_library_header_and_chunk_regressions http_library_websocket_roundtrip
+    PROPERTIES TIMEOUT 15)
+
 
 file(READ "${CMAKE_CURRENT_SOURCE_DIR}/../../src/events/pbc_event_dispatch.cpp" events)
 string(FIND "${events}" "bool PBC_EventExpired(" first)

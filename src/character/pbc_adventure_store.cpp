@@ -120,7 +120,9 @@ std::string PBC_AdventureStore::Begin(uint64_t player, uint64_t companion,
     Require(!Active(player), "A session is already open; use end first");
     Require(player == companion || !Owner(companion) || Owner(companion) == player,
         "Companion belongs to another adventure pair");
-    Require(!Companion(player) || Companion(player) == companion, "Player already paired with another companion");
+    // A closed legacy shared session must not prevent automatic personal memory on the next login.
+    Require(player == companion || !Companion(player) || Companion(player) == companion,
+        "Player already paired with another companion");
     Require(card.size() <= 64000, "Character card exceeds adventure limit");
     return Persist({{"op", "begin"}, {"player", player}, {"companion", companion},
         {"player_name", playerName}, {"companion_name", companionName}, {"card", card}}, player);
@@ -143,6 +145,12 @@ bool PBC_AdventureStore::CloseIfActive(uint64_t character)
         return false;
     Close(character);
     return true;
+}
+
+void PBC_AdventureStore::CloseAllActive()
+{
+    while (!active_.empty())
+        Close(active_.begin()->first);
 }
 
 std::vector<uint64_t> PBC_AdventureStore::Owners(uint64_t companion) const

@@ -132,7 +132,7 @@ void PBC_WorldScript::OnUpdate(uint32_t diff)
                 if (!player || !player->IsInWorld()) continue;
 
                 WorldSession* sess = player->GetSession();
-                if (!PBC_PTR_VALID(sess) || sess->IsBot()) continue;
+                if (!PBC_PTR_VALID(sess) || sess->IsHeadless()) continue;
 
                 uint64_t playerGuid = player->GetGUID().GetCounter();
                 int histTokens = PBC_EstimateHistoryTokens(playerGuid);
@@ -269,7 +269,7 @@ void PBC_WorldScript::OnUpdate(uint32_t diff)
             }
 
             WorldSession* ts = target->GetSession();
-            if (!ts || !ts->IsBot())
+            if (!ts || !ts->IsHeadless())
             {
                 PBC_Log(PBC_LogLevel::PBC_DEBUG, "API whisper: target is not a character, skipping");
                 localWhispers.pop();
@@ -335,7 +335,7 @@ void PBC_WorldScript::OnUpdate(uint32_t diff)
             }
 
             // Allow triggering bot characters and the player's own character.
-            bool isBot = ts->IsBot();
+            bool isBot = ts->IsHeadless();
 
             if (!isBot)
             {

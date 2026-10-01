@@ -578,7 +578,9 @@ void PBC_LoadConfig(bool /*isStartup*/)
 }
 
 // Try to read a file into target. Returns true if the file exists and is non-empty.
-static bool TryReadFile(const std::string& path, std::string& target)
+// Takes a std::filesystem::path so that non-ASCII paths are opened correctly on
+// Windows (a narrow std::string would be decoded using the ANSI code page).
+static bool TryReadFile(const std::filesystem::path& path, std::string& target)
 {
     std::ifstream f(path);
     if (!f)
@@ -588,7 +590,7 @@ static bool TryReadFile(const std::string& path, std::string& target)
     buf << f.rdbuf();
     if (buf.str().empty())
     {
-        PBC_Log(PBC_LogLevel::PBC_WARNING, "Prompt file is empty: {}", path);
+        PBC_Log(PBC_LogLevel::PBC_WARNING, "Prompt file is empty: {}", PBC_PathToUtf8(path));
         return false;
     }
 
@@ -613,7 +615,7 @@ static bool PBC_GetPrompt(const std::string& promptName,
     isCustom = false;
 
     // Directories to try: configured locale first, then enUS fallback
-    fs::path base(g_PBC_PromptsPath);
+    fs::path base = PBC_PathFromUtf8(g_PBC_PromptsPath);
     std::string localeName = GetNameByLocaleConstant(sWorld->GetDefaultDbcLocale());
 
     std::vector<fs::path> dirs;
@@ -628,23 +630,23 @@ static bool PBC_GetPrompt(const std::string& promptName,
     // In each directory, try custom first, then default
     for (auto const& dir : dirs)
     {
-        std::string customPath = (dir / (promptName + ".custom.txt")).string();
+        fs::path customPath = dir / (promptName + ".custom.txt");
         if (TryReadFile(customPath, promptText))
         {
             isCustom = true;
             PBC_Log(PBC_LogLevel::PBC_DEBUG, "Loaded custom prompt '{}' from '{}' ({} chars)",
-                     promptName, dir.string(), promptText.size());
+                     promptName, PBC_PathToUtf8(dir), promptText.size());
             return true;
         }
     }
 
     for (auto const& dir : dirs)
     {
-        std::string defaultPath = (dir / (promptName + ".default.txt")).string();
+        fs::path defaultPath = dir / (promptName + ".default.txt");
         if (TryReadFile(defaultPath, promptText))
         {
             PBC_Log(PBC_LogLevel::PBC_DEBUG, "Loaded default prompt '{}' from '{}' ({} chars)",
-                     promptName, dir.string(), promptText.size());
+                     promptName, PBC_PathToUtf8(dir), promptText.size());
             return true;
         }
     }
@@ -658,10 +660,10 @@ bool PBC_LoadPrompts()
 {
     // Verify enUS fallback directory exists
     namespace fs = std::filesystem;
-    fs::path enusDir = fs::path(g_PBC_PromptsPath) / "enUS";
+    fs::path enusDir = PBC_PathFromUtf8(g_PBC_PromptsPath) / "enUS";
     if (!fs::exists(enusDir) || !fs::is_directory(enusDir))
     {
-        PBC_Log(PBC_LogLevel::PBC_ERROR, "Fallback prompts directory not found: {}", enusDir.string());
+        PBC_Log(PBC_LogLevel::PBC_ERROR, "Fallback prompts directory not found: {}", PBC_PathToUtf8(enusDir));
         return false;
     }
 
@@ -715,7 +717,7 @@ void PBC_LoadCharacterCards()
 {
     g_PBC_CharacterCards.clear();
 
-    std::filesystem::path dir(g_PBC_CharacterCardsPath);
+    std::filesystem::path dir = PBC_PathFromUtf8(g_PBC_CharacterCardsPath);
     if (!std::filesystem::exists(dir) || !std::filesystem::is_directory(dir))
     {
         PBC_Log(PBC_LogLevel::PBC_WARNING, "Character cards directory not found: {}", g_PBC_CharacterCardsPath);
@@ -728,7 +730,7 @@ void PBC_LoadCharacterCards()
         if (!entry.is_regular_file()) continue;
         auto path = entry.path();
 
-        std::string filename = path.filename().string();
+        std::string filename = PBC_PathToUtf8(path.filename());
         const std::string cardSuffix = ".card.txt";
         if (filename.size() <= cardSuffix.size() ||
             filename.substr(filename.size() - cardSuffix.size()) != cardSuffix)
@@ -737,7 +739,7 @@ void PBC_LoadCharacterCards()
         std::string name = filename.substr(0, filename.size() - cardSuffix.size());
 
         std::ifstream f(path);
-        if (!f) { PBC_Log(PBC_LogLevel::PBC_WARNING, "Cannot open card file: {}", path.string()); continue; }
+        if (!f) { PBC_Log(PBC_LogLevel::PBC_WARNING, "Cannot open card file: {}", PBC_PathToUtf8(path)); continue; }
 
         std::stringstream buf;
         buf << f.rdbuf();

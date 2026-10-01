@@ -1,0 +1,61 @@
+{
+  "personnage": "Winifred Darkmoor",
+  "main": "Scrootch",
+  "main_guid": 2,
+  "relation_initiale": "compagnon_principal_designe_sans_passe_commun_invente",
+  "nom_jeu_attendu": "Winifred",
+  "guid": 3,
+  "race": "Réprouvée",
+  "classe": "démoniste",
+  "specialisation": "Affliction",
+  "strategie_playerbots": "affli",
+  "statut": "contenus_rediges_non_actives_en_jeu",
+  "methode": "textes_diegetiques_longs_puis_extraction_json",
+  "piliers": [
+    {
+      "pilier": "socioculturel",
+      "texte": "socioculture-reprouves.md",
+      "json": "socioculture-reprouves.json",
+      "fragments": 35,
+      "pdf": "/home/damien/Documents/ChatGPT/Warcraft/compagnons/winifred/documents/01-societe-reprouvee.pdf"
+    },
+    {
+      "pilier": "socioculturel",
+      "texte": "socioculture-demonistes-affliction-reprouves.md",
+      "json": "socioculture-demonistes-affliction-reprouves.json",
+      "fragments": 28,
+      "pdf": "/home/damien/Documents/ChatGPT/Warcraft/compagnons/winifred/documents/02-demonistes-affliction.pdf"
+    },
+    {
+      "pilier": "biographie",
+      "texte": "biographie-winifred.md",
+      "json": "biographie-winifred.json",
+      "fragments": 30,
+      "pdf": "/home/damien/Documents/ChatGPT/Warcraft/compagnons/winifred/documents/03-histoire-winifred.pdf"
+    },
+    {
+      "pilier": "psychologie",
+      "texte": "psychologie-winifred.md",
+      "json": "psychologie-winifred.json",
+      "fragments": 25,
+      "pdf": "/home/damien/Documents/ChatGPT/Warcraft/compagnons/winifred/documents/04-personnalite-winifred.pdf"
+    }
+  ],
+  "histoire_collective": {
+    "fichier": "histoire-reprouves.json",
+    "fragments_repris": 22,
+    "exclusions_heritees": [
+      "bastions-fleau",
+      "couronne-volonte",
+      "nouvelle-peste",
+      "prise-capitale",
+      "souvenirs-des-morts"
+    ]
+  },
+  "corpus_documentaire": "winifred-documentaire.json",
+  "fiche_pbc": "../characters/Winifred.card.txt",
+  "memoire_jeu": "Aucune quête ni relation au joueur inventée ; corpus personnels distincts des événements joués.",
+  "limite_lecteur": "PBC accepte désormais biographie et psychologie. GUID réel unique requis par fragment personnel ; le corpus préparé sans GUID est volontairement non chargeable.",
+  "libelle_specialisation_playerbots": "afflic",
+  "note_specialisation": "Le choix automatique du moteur avant niveau 10 est Démonologie ; cette intention Affliction ne modifie pas les stratégies actives."
+}

@@ -11,3 +11,8 @@ if(MSVC)
 endif()
 add_test(NAME historical_retrieval COMMAND lore_test "${CMAKE_CURRENT_SOURCE_DIR}/../../knowledge/histoire-reprouves.json")
 set_tests_properties(historical_retrieval PROPERTIES TIMEOUT 30)
+add_test(NAME winifred_retrieval COMMAND lore_test
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../knowledge/histoire-reprouves.json"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../knowledge/winifred-documentaire.json")
+set_tests_properties(winifred_retrieval PROPERTIES TIMEOUT 30 RUN_SERIAL TRUE)
+set_tests_properties(historical_retrieval PROPERTIES RUN_SERIAL TRUE)

@@ -91,7 +91,7 @@ static bool HandleCharsCondense(ChatHandler* handler, Optional<std::string_view>
         return false;
     }
 
-    bool isBot = targetSess->IsBot();
+    bool isBot = targetSess->IsHeadless();
     bool isOwnCharacter = false;
 
     if (!isBot && handler->GetSession())
@@ -328,7 +328,7 @@ static bool HandleCharsRelationshipUpdate(ChatHandler* handler,
         handler->PSendSysMessage("[PBC] Character '{}' not found or not online.", charNameArg);
         return false;
     }
-    if (!bot->GetSession() || !bot->GetSession()->IsBot())
+    if (!bot->GetSession() || !bot->GetSession()->IsHeadless())
     {
         handler->PSendSysMessage("[PBC] '{}' is not a playerbot.", bot->GetName());
         return false;
@@ -604,7 +604,7 @@ static bool HandleCharsNarrate(ChatHandler* handler,
         return false;
     }
 
-    bool isBot = targetSess->IsBot();
+    bool isBot = targetSess->IsHeadless();
     bool isOwnCharacter = false;
 
     if (!isBot && handler->GetSession())
@@ -660,7 +660,7 @@ static bool HandleCharsTrigger(ChatHandler* handler, std::string_view charNameAr
         return false;
     }
 
-    bool isBot = ts->IsBot();
+    bool isBot = ts->IsHeadless();
     bool isOwnCharacter = false;
 
     if (!isBot && handler->GetSession())
@@ -724,7 +724,7 @@ static bool HandleCharsNarrateParty(ChatHandler* handler, Tail messageArg)
         Player* member = ref->GetSource();
         if (!member || !member->IsInWorld()) continue;
         WorldSession* sess = member->GetSession();
-        if (!sess || !sess->IsBot()) continue;
+        if (!sess || !sess->IsHeadless()) continue;
 
         owners.push_back(member->GetGUID().GetCounter());
         ++count;

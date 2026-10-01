@@ -24,6 +24,7 @@
 #include <memory>
 #include <mutex>
 #include <set>
+#include <shared_mutex>
 #include <sstream>
 #include <thread>
 
@@ -57,7 +58,7 @@ Une accusation de PNJ est un propos attribue, pas une verite. companion_present=
 de cette action ; une presence seule ne prouve pas un soin ou un combat precis. Les faits sourcees sont autoritaires.
 Les textes de quete sont des propos/objectifs proposes, pas des actes prouves. quest_objectives_ready ne signifie
 pas quest_rewarded. quest_abandoned ne prouve pas un echec moral. Les textes ne prouvent pas un choix libre du joueur.
-La fiche character guide la voix ; pour Antanagor le cynisme et le sarcasme defusent la mort, avec loyaute.
+La fiche character guide la voix propre a ce personnage ; ne lui attribue pas la personnalite d'un autre.
 regard et relation sont des interpretations prudentes APRES session, jamais de fausses citations.
 Laisse relation vide sans indice precis. N'invente pas de promesse ; un engagement exige une parole explicite.
 Les choix repetes peuvent nuancer la confiance, sans remplacer l'identite ni donner des points par quete.
@@ -83,7 +84,7 @@ Player* PresentCompanion(Player* player)
         return nullptr;
     if (store->Companion(Guid(player)) == Guid(player))
         return player->IsInWorld() ? player : nullptr;
-    if (player->GetSession()->IsBot())
+    if (player->GetSession()->IsHeadless())
         return nullptr;
     auto companion = ObjectAccessor::FindPlayer(ObjectGuid(store->Companion(Guid(player))));
     if (!companion || !companion->IsInWorld() || !player->GetGroup()
@@ -112,9 +113,10 @@ void SaveExport(uint64_t player)
 
 void BeginAutomatic(Player* player)
 {
-    if (!store || !g_PBC_Enable || !player || !automaticCharacters.count(Guid(player)))
+    if (!store || !g_PBC_Enable || !player || !player->GetSession())
         return;
     uint64_t guid = Guid(player);
+    automaticCharacters.insert(guid);
     if (store->BeginPersonal(guid, player->GetName(), PBC_GetCharacterCard(player)))
     {
         store->Record(guid, {{"kind", "session_started"}, {"mode", "personal"},
@@ -140,6 +142,7 @@ void EndAutomatic(uint64_t guid)
         PBC_Log(PBC_LogLevel::PBC_DEFAULT, "Adventure auto: session closed for {}; synthesis queued", guid);
     }
     onlineCharacters.erase(guid);
+    automaticCharacters.erase(guid);
 }
 
 void RunWorker()
@@ -235,7 +238,7 @@ void Capture(Player* player, pbc_json event, bool requirePresence = true)
             observation["participation"] = actor ? "actor" : "observer";
             observation["companion_present"] = true;
             observation["mode"] = "personal";
-            observation["control"] = character->GetSession()->IsBot() ? "companion" :
+            observation["control"] = character->GetSession()->IsHeadless() ? "companion" :
                 (PBC_IsActiveSelfbot(character) ? "selfbot" : "manual");
             observation["zone_id"] = player->GetZoneId();
             observation["area_id"] = player->GetAreaId();
@@ -358,7 +361,15 @@ public:
         std::lock_guard<std::mutex> lock(mutex);
         if (!store || stopping || !g_PBC_Enable)
             return;
-        for (auto guid : automaticCharacters)
+        // Discover headless bots too, even when their login bypasses the normal player hook.
+        // Release the registry lock before resolving players or building their character cards.
+        {
+            std::shared_lock<std::shared_mutex> playersLock(*HashMapHolder<Player>::GetLock());
+            for (auto const& entry : ObjectAccessor::GetPlayers())
+                automaticCharacters.insert(entry.first.GetCounter());
+        }
+        auto characters = automaticCharacters;
+        for (auto guid : characters)
         {
             try
             {
@@ -370,6 +381,8 @@ public:
                 }
                 else if (onlineCharacters.count(guid))
                     EndAutomatic(guid);
+                else
+                    automaticCharacters.erase(guid);
             }
             catch (std::exception const& error)
             {
@@ -387,26 +400,15 @@ public:
             directory = sConfigMgr->GetOption<std::string>("PBC.AdventurePath", "data/pbc-adventures");
             store = std::make_unique<PBC_AdventureStore>(directory / "journal");
             stopping = false;
-            auto configured = sConfigMgr->GetOption<std::string>("PBC.AdventureAutoCharacters", "");
-            std::replace(configured.begin(), configured.end(), ',', ' ');
-            std::istringstream identifiers(configured);
-            uint64_t guid;
-            while (identifiers >> guid)
-                if (guid)
-                    automaticCharacters.insert(guid);
-            if (!identifiers.eof())
-                throw std::runtime_error("Invalid AdventureAutoCharacters");
-            // Seal sessions left open by a crash, and legacy shared sessions for these companions.
-            for (auto character : automaticCharacters)
-                for (auto owner : store->Owners(character))
-                    store->CloseIfActive(owner);
+            // Every character participates automatically; no per-GUID activation list.
+            // Recover all sessions, including characters that do not reconnect after a crash.
+            store->CloseAllActive();
             events.ScheduleEvent(1, std::chrono::milliseconds(1000));
             for (auto player : store->PendingPlayers())
                 jobs.insert(player);
             worker = std::thread(RunWorker);
             wake.notify_one();
-            PBC_Log(PBC_LogLevel::PBC_DEFAULT, "Adventure journal ready; automatic characters={}",
-                automaticCharacters.size());
+            PBC_Log(PBC_LogLevel::PBC_DEFAULT, "Adventure journal ready; automatic memory for all characters");
         }
         catch (std::exception const& error)
         {
@@ -419,18 +421,15 @@ public:
     {
         {
             std::lock_guard<std::mutex> lock(mutex);
-            if (store)
-                for (auto guid : automaticCharacters)
-                {
-                    try
-                    {
-                        store->CloseIfActive(guid);
-                    }
-                    catch (std::exception const& error)
-                    {
-                        PBC_Log(PBC_LogLevel::PBC_ERROR, "Adventure shutdown close failed: {}", error.what());
-                    }
-                }
+            try
+            {
+                if (store)
+                    store->CloseAllActive();
+            }
+            catch (std::exception const& error)
+            {
+                PBC_Log(PBC_LogLevel::PBC_ERROR, "Adventure shutdown close failed: {}", error.what());
+            }
             stopping = true;
         }
         wake.notify_one();
@@ -444,7 +443,7 @@ using namespace Acore::ChatCommands;
 bool Command(ChatHandler* handler, Tail argument)
 {
     Player* player = handler->GetSession() ? handler->GetSession()->GetPlayer() : nullptr;
-    if (!player || player->GetSession()->IsBot())
+    if (!player || player->GetSession()->IsHeadless())
         return false;
     std::string input(argument);
     auto space = input.find(' ');
@@ -471,7 +470,7 @@ bool Command(ChatHandler* handler, Tail argument)
                 (rest.empty() ? handler->getSelectedPlayer() : ObjectAccessor::FindPlayerByName(rest));
             if (personal && !PBC_IsActiveSelfbot(player))
                 throw std::runtime_error("Activate your selfbot first, then use .adventure begin self");
-            if (!personal && (!bot || !bot->GetSession() || !bot->GetSession()->IsBot() || !player->GetGroup()
+            if (!personal && (!bot || !bot->GetSession() || !bot->GetSession()->IsHeadless() || !player->GetGroup()
                 || bot->GetGroup() != player->GetGroup()))
                 throw std::runtime_error("Select an online companion in your group, or give its exact name");
             auto id = store->Begin(guid, Guid(bot), player->GetName(), bot->GetName(), PBC_GetCharacterCard(bot));

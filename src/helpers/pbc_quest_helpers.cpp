@@ -349,7 +349,7 @@ bool PBC_QuestEventGuard(Player* player)
 
     Group* grp = player->GetGroup();
     WorldSession* sess = player->GetSession();
-    bool observerPresent = (sess && !sess->IsBot()) || PBC_BotIsGroupedWithRealPlayer(player);
+    bool observerPresent = (sess && !sess->IsHeadless()) || PBC_BotIsGroupedWithRealPlayer(player);
     return PBC_QuestActorEligible(PBC_IsActiveSelfbot(player), grp != nullptr,
         grp && grp->GetLeaderGUID() == player->GetGUID(), observerPresent);
 }

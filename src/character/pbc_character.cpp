@@ -812,7 +812,8 @@ static void ReplaceSnapshotVars(std::string& out, const PBC_CharacterSnapshot& s
     PBC_ReplaceToken(out, "chat_history", history.str());
 
     // Memories from DB (thread-safe)
-    PBC_ReplaceToken(out, "memories", adventure ? "" : PBC_GetMemoriesBlock(snap.charGuidRaw));
+    // Keep previously condensed memories available when automatic adventure memory takes over.
+    PBC_ReplaceToken(out, "memories", PBC_GetMemoriesBlock(snap.charGuidRaw));
 }
 
 
@@ -876,7 +877,7 @@ PBC_CharacterSnapshot PBC_SnapshotCharacter(Player* bot)
                 if (!ms) continue;
 
                 snap.partyMemberNames.push_back(member->GetName());
-                if (!ms->IsBot())
+                if (!ms->IsHeadless())
                 {
                     snap.hasRealPlayerInGroup = true;
                     snap.adventureGroupPlayers.push_back(member->GetGUID().GetCounter());

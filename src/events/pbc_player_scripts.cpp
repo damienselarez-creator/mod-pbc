@@ -73,7 +73,7 @@ static void HandleChatMessage(Player* sender, uint32 type, uint32 lang,
     }
 
     // --- Say / Yell / Group / Raid ---
-    bool senderIsBot = sender->GetSession() && sender->GetSession()->IsBot();
+    bool senderIsBot = sender->GetSession() && sender->GetSession()->IsHeadless();
 
     if (senderIsBot)
         return;

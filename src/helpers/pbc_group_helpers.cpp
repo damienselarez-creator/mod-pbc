@@ -17,14 +17,14 @@ bool PBC_IsActiveSelfbot(Player* player)
     if (!session)
         return false;
     PlayerbotAI* ai = GET_PLAYERBOT_AI(player);
-    return PBC_SelfbotEligible(session->IsBot(), !session->IsSocketClosed(), session->IsLoggingOut(),
+    return PBC_SelfbotEligible(session->IsHeadless(), !session->IsSocketClosed(), session->IsLoggingOut(),
         ai && IsSelfBot(ai->GetBot()));
 }
 
 bool PBC_IsDialogueBot(Player* player)
 {
     return player && player->IsInWorld() && player->GetSession()
-        && (player->GetSession()->IsBot() || PBC_IsActiveSelfbot(player));
+        && (player->GetSession()->IsHeadless() || PBC_IsActiveSelfbot(player));
 }
 
 // ---------------------------------------------------------------------------
@@ -71,7 +71,7 @@ std::vector<Player*> PBC_FindRealPlayersInGroup(Player* player)
         if (!member->IsInWorld()) continue;
         WorldSession* sess = member->GetSession();
         if (!PBC_PTR_VALID(sess)) continue;
-        if (sess->IsBot()) continue;
+        if (sess->IsHeadless()) continue;
         realPlayers.push_back(member);
     }
     return realPlayers;
@@ -96,7 +96,7 @@ std::vector<Player*> PBC_FindRealPlayersInSubGroup(Player* player)
         if (!PBC_PTR_VALID(member) || member == player) continue;
         if (!member->IsInWorld()) continue;
         WorldSession* sess = member->GetSession();
-        if (!PBC_PTR_VALID(sess) || sess->IsBot()) continue;
+        if (!PBC_PTR_VALID(sess) || sess->IsHeadless()) continue;
         if (grp->GetMemberGroup(member->GetGUID()) != mySubGroup) continue;
         realPlayers.push_back(member);
     }
@@ -199,7 +199,7 @@ bool PBC_BotIsGroupedWithRealPlayer(Player* bot)
         if (!PBC_PTR_VALID(member) || !member->IsInWorld()) continue;
         WorldSession* sess = member->GetSession();
         if (!PBC_PTR_VALID(sess)) continue;
-        if (!sess->IsBot()) return true;
+        if (!sess->IsHeadless()) return true;
     }
     return false;
 }

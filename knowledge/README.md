@@ -22,3 +22,43 @@ No SQL migration is required. Historical knowledge does not write to the memory 
 
 
 Deployment 2026-09-20: compagnons-documentaire.json preserves Antanagor (GUID 4, 50 allowed chunks) and adds Elvidia (GUID 5, 131 historical chunks). Every chunk has an explicit character_guids restriction. Elvidia bibliographic and late-WotLK passages remain in the local source archive, outside runtime selection. Knowledge is documentary context, never personal memory. The 181/186 load leaves five pre-existing Antanagor exclusions unchanged.
+
+## Authored biography and psychology (2026-09-29)
+
+The existing `PBC.History*` settings now also support authored personal knowledge. A mixed
+`pbc.corpus.documentaire` / `documentaire` corpus may contain history, socioculture,
+biography and psychology. A standalone personal corpus uses `pbc.corpus.personnage` /
+`personnage`. Version and timeline remain `0.1.0` and
+`debut_wotlk_avant_portail_du_courroux`.
+
+Personal chunks use these exact pairs:
+
+| `pilier` | `nature_memoire` |
+|---|---|
+| `biographie` | `biographie_originale_non_quete_jouee` |
+| `psychologie` | `portrait_psychologique_scenes_illustratives_non_vecues` |
+
+They require `id`, `titre`, `borne_corpus`, `entites`, `themes`, a nonempty
+`personnage` label (up to 128 UTF-8 bytes), and nonempty `texte_diegetique` (up to
+16000 bytes). Unlike legacy collective chunks, personal chunks **must** have
+exactly one numeric GUID in `character_guids`, also present in the global policy.
+The ID allowlist still applies. Missing owners, multiple owners, mismatched pillar/nature,
+played-event scopes and invalid content reject the entire replacement, including its policy.
+Validation includes chunks omitted from the allowlist.
+
+Biography is authored backstory, never proof of a quest played with the current player.
+Psychology scenes describe dispositions, not additional lived events. The typed prompt
+header preserves these distinctions and defers current spells, achievements and relationships
+to the actual game context. Both types remain outside direct memory, relationship and journal
+writes. Dialogue subsequently spoken may enter ordinary conversation history as before.
+
+The Winifred corpus contains 140 chunks scoped to GUID 3, including 22 existing historical
+chunks and 118 extracts from four long-form sources. Scrootch is her designated principal
+companion (GUID 2), not the recipient of her private identity corpus. See
+`SOURCES_ET_INTEGRATION.md` and `piliers-winifred.json` for provenance and deployment state.
+This checkout change does not update a running server binary.
+
+`tests/lore` now runs both historical compatibility/personal-scope checks and an authored
+Winifred corpus check. The latter verifies every complete fragment fits the default retrieval
+budget and remains inaccessible to the other companions. These tests do not call a model or
+write to server databases.

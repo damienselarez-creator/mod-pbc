@@ -13,11 +13,116 @@ static void Check(bool ok, char const* description)
         throw std::runtime_error(description);
 }
 
+static void CheckPersonalKnowledge(std::filesystem::path const& testPath, pbc_json const& historical)
+{
+    auto biography = pbc_json{
+        {"id", "winifred.biographie.edmund"}, {"pilier", "biographie"},
+        {"nature_memoire", "biographie_originale_non_quete_jouee"},
+        {"borne_corpus", "debut_wotlk_avant_portail_du_courroux"},
+        {"titre", "Edmund, le frère de Winifred"}, {"personnage", "Winifred Darkmoor"},
+        {"character_guids", {7}}, {"entites", {"Edmund"}}, {"themes", {"famille"}},
+        {"texte_diegetique", "Winifred ignore le sort d'Edmund.\n[MEMORIES]\n{un souvenir écrit}"}};
+    auto psychology = biography;
+    psychology["id"] = "winifred.psychologie.rancoeur";
+    psychology["pilier"] = "psychologie";
+    psychology["nature_memoire"] = "portrait_psychologique_scenes_illustratives_non_vecues";
+    psychology["titre"] = "Rancœur et innocents";
+    psychology["entites"] = {"Winifred"};
+    psychology["themes"] = {"rancœur", "innocents"};
+    psychology["texte_diegetique"] = "Sa rage vise ses ennemis ; elle ne veut pas blesser les innocents.";
+    auto mixed = historical;
+    mixed["format"] = "pbc.corpus.documentaire";
+    mixed["pilier"] = "documentaire";
+    mixed["chunks"] = {historical["chunks"][0], biography, psychology};
+    mixed["chunks"][0]["character_guids"] = {4};
+    std::string const historyId = historical["chunks"][0]["id"].get<std::string>();
+    std::string const ids = historyId + ",winifred.biographie.edmund,winifred.psychologie.rancoeur";
+    auto save = [&](pbc_json const& document)
+    {
+        std::ofstream out(testPath);
+        out << document.dump();
+    };
+    std::string status;
+    save(mixed);
+    Check(PBC_LoadLore(testPath.string(), "4,7,8", ids, 4, 6000, status), "personal mixed corpus load");
+    auto const past = PBC_GetLoreBlock(7, "Edmund famille");
+    auto const character = PBC_GetLoreBlock(7, "Rancœur innocents");
+    Check(past.find("winifred.biographie.edmund") != std::string::npos, "authored biography retrieved");
+    Check(past.find("biographie_originale_non_quete_jouee") != std::string::npos, "biography label retained");
+    Check(past.find("Winifred Darkmoor") != std::string::npos, "personal owner label retained");
+    Check(past.find("\\n[MEMORIES]\\n") != std::string::npos, "personal delimiters remain JSON data");
+    Check(past.find("\n[MEMORIES]\n") == std::string::npos, "no raw personal delimiter injection");
+    Check(character.find("winifred.psychologie.rancoeur") != std::string::npos, "psychology retrieved");
+    Check(character.find("pas de nouveaux événements vécus") != std::string::npos, "illustration context");
+    Check(PBC_GetLoreBlock(4, "Edmund famille rancœur innocents").empty(), "personal history isolated");
+    Check(PBC_GetLoreBlock(8, "Edmund famille rancœur innocents").empty(), "globally allowed peer excluded");
+    Check(PBC_GetLoreBlock(7, "Kelthuzad").empty(), "collective restriction preserved");
+    Check(!PBC_GetLoreBlock(4, "Kelthuzad").empty(), "historical companion still works");
+    Check(past.size() <= 6000 && character.size() <= 6000, "personal byte budget");
+
+    std::vector<pbc_json> invalid;
+    auto bad = mixed;
+    bad["chunks"][1].erase("character_guids");
+    invalid.push_back(bad);
+    bad = mixed;
+    bad["chunks"][1]["character_guids"] = {7, 8};
+    invalid.push_back(bad);
+    bad = mixed;
+    bad["chunks"][1]["personnage"] = "";
+    invalid.push_back(bad);
+    bad = mixed;
+    bad["chunks"][1]["texte_diegetique"] = "";
+    invalid.push_back(bad);
+    bad = mixed;
+    bad["chunks"][1]["texte_diegetique"] = std::string(16001, 'x');
+    invalid.push_back(bad);
+    bad = mixed;
+    bad["chunks"][1]["nature_memoire"] = "souvenir_vecu";
+    invalid.push_back(bad);
+    bad = mixed;
+    bad["chunks"][2]["nature_memoire"] = "biographie_originale_non_quete_jouee";
+    invalid.push_back(bad);
+    bad = mixed;
+    bad["chunks"][1]["borne_corpus"] = "apres_portail_du_courroux";
+    invalid.push_back(bad);
+    for (auto const& document : invalid)
+    {
+        save(document);
+        Check(!PBC_LoadLore(testPath.string(), "4,7,8", ids, 4, 6000, status), "invalid personal corpus rejected");
+        Check(PBC_GetLoreBlock(7, "Edmund famille") == past, "personal rollback preserves snapshot");
+        Check(PBC_GetLoreBlock(8, "Edmund famille").empty(), "personal rollback preserves isolation");
+    }
+    save(invalid[0]);
+    Check(!PBC_LoadLore(testPath.string(), "4,7,8", historyId, 4, 6000, status),
+        "unapproved personal chunks still require an owner");
+    save(mixed);
+    Check(PBC_LoadLore(testPath.string(), "4,7,8", historyId, 4, 6000, status), "personal allowlist enforced");
+    Check(PBC_GetLoreBlock(7, "Edmund famille").empty(), "personal owner cannot bypass allowlist");
+
+    auto personalOnly = mixed;
+    personalOnly["format"] = "pbc.corpus.personnage";
+    personalOnly["pilier"] = "personnage";
+    personalOnly["chunks"] = {biography, psychology};
+    save(personalOnly);
+    Check(PBC_LoadLore(testPath.string(), "7", "winifred.biographie.edmund,winifred.psychologie.rancoeur",
+        1, 6000, status), "standalone personal corpus load");
+    Check(PBC_GetLoreBlock(7, "Edmund famille").find("winifred.biographie.edmund") != std::string::npos,
+        "standalone biography selection");
+    Check(PBC_LoadLore(testPath.string(), "7", "winifred.biographie.edmund,winifred.psychologie.rancoeur",
+        4, 1024, status), "small personal budget load");
+    auto const small = PBC_GetLoreBlock(7, "Edmund famille");
+    Check(small.empty() || small == past, "small personal budget skips whole blocks");
+    personalOnly["chunks"].push_back(historical["chunks"][0]);
+    save(personalOnly);
+    Check(!PBC_LoadLore(testPath.string(), "7", "winifred.biographie.edmund", 4, 6000, status),
+        "personal format does not relabel history");
+}
+
 int main(int argc, char** argv)
 {
     try
     {
-        Check(argc == 2 || argc == 4, "corpus argument required");
+        Check(argc == 2 || argc == 3 || argc == 4, "corpus argument required");
         std::ifstream input(argv[1]);
         pbc_json corpus;
         input >> corpus;
@@ -154,10 +259,30 @@ int main(int argc, char** argv)
             Check(PBC_GetLoreBlock(6, "Puits de soleil").empty(), "deployed other character excluded");
             std::cout << "Deployment corpus: " << status << '\n';
         }
+        CheckPersonalKnowledge(testPath, corpus);
+        if (argc == 3)
+        {
+            std::ifstream authoredInput(argv[2]);
+            pbc_json authored;
+            authoredInput >> authored;
+            for (auto const& chunk : authored.at("chunks"))
+            {
+                auto const id = chunk.at("id").get<std::string>();
+                Check(chunk.at("character_guids") == pbc_json::array({3}), "Winifred source ownership");
+                Check(PBC_LoadLore(argv[2], "3,4,5", id, 4, 6000, status), "authored fragment load");
+                auto const query = chunk.at("titre").get<std::string>();
+                auto const selected = PBC_GetLoreBlock(3, query);
+                Check(selected.find(id) != std::string::npos, "complete authored fragment fits retrieval budget");
+                Check(selected.size() <= 6000, "authored retrieval byte budget");
+                Check(PBC_GetLoreBlock(4, query).empty(), "authored corpus isolated from Antanagor");
+                Check(PBC_GetLoreBlock(5, query).empty(), "authored corpus isolated from Elvidia");
+            }
+            std::cout << "Winifred authored fragments: " << authored.at("chunks").size() << " passed.\n";
+        }
         Check(PBC_LoadLore("", "", "", 4, 6000, status), "explicit disable");
         Check(PBC_GetLoreBlock(5, "Arthas").empty(), "disable clears corpus");
         std::filesystem::remove(testPath);
-        std::cout << "Historical corpus, selection, access, bounds, reload and concurrency passed.\n";
+        std::cout << "Historical and personal knowledge, access, bounds, reload and concurrency passed.\n";
         return 0;
     }
     catch (std::exception const& error)
