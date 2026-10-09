@@ -105,7 +105,7 @@ std::string PBC_PickTriggerEventLine(uint64_t botGuid, const std::string& charNa
 // and is NOT written to history.
 // Chat type is PARTY if the character is in a group, SAY otherwise.
 // ---------------------------------------------------------------------------
-void PBC_DispatchTriggerEvent(Player* bot);
+void PBC_DispatchTriggerEvent(Player* bot, std::string const& initiative = "");
 
 // ---------------------------------------------------------------------------
 // Dispatch a party/raid chat message event from sender to their group bots.

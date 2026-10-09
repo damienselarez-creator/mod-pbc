@@ -285,6 +285,15 @@ std::string PBC_GetLoreBlock(uint64_t guid, std::string const& event)
     if (query.find("detest") != std::string::npos || query.find(" haine ") != std::string::npos ||
         query.find(" hais ") != std::string::npos)
         query += " haine responsabilite vengeance";
+    for (auto const& [needle, concepts] : std::vector<std::pair<std::string, std::string>>{
+        {" famille ", " parents frere soeur enfance separation "},
+        {" promesse ", " engagement parole loyaute confiance "},
+        {" peur ", " crainte traumatisme perte protection "},
+        {" apprendre ", " apprentissage maitre transmission metiers "},
+        {" pardon ", " faute responsabilite vengeance reparation "},
+        {" ressens ", " psychologie sensibilite emotion "}})
+        if (query.find(needle) != std::string::npos)
+            query += concepts;
     auto words = Words(query);
     std::vector<std::pair<unsigned, LoreChunk const*>> matches;
     for (auto const& chunk : corpus->chunks)

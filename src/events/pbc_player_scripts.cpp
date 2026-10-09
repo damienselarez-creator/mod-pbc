@@ -1,3 +1,4 @@
+#include "pbc_vocation.h"
 #include "pbc_player_scripts.h"
 #include "pbc_config.h"
 #include "pbc_character.h"
@@ -68,6 +69,7 @@ static void HandleChatMessage(Player* sender, uint32 type, uint32 lang,
         if (!PBC_IsDialogueBot(whisperTarget) || whisperTarget == sender)
             return;
 
+        if (PBC_VocationChat(sender, whisperTarget, msg)) return;
         PBC_DispatchWhisperEvent(sender, whisperTarget, msg);
         return;
     }

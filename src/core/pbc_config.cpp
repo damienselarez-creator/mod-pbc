@@ -2,6 +2,7 @@
 #include "pbc_quest_reactions.h"
 #include "pbc_character.h"
 #include "pbc_lore.h"
+#include "pbc_archetype.h"
 #include "pbc_database.h"
 #include "pbc_llm.h"
 #include "pbc_http.h"
@@ -530,6 +531,11 @@ void PBC_LoadConfig(bool /*isStartup*/)
     PBC_LoadQuestReactionConfig();
 
     // Log connection summary
+    std::string archetypeStatus;
+    bool archetypeLoaded = PBC_LoadArchetypes(sConfigMgr->GetOption<std::string>("PBC.ArchetypesPath", ""),
+        archetypeStatus);
+    PBC_Log(archetypeLoaded ? PBC_LogLevel::PBC_DEFAULT : PBC_LogLevel::PBC_ERROR,
+        "Archetypes: {}", archetypeStatus);
     std::string loreStatus;
     bool loreLoaded = PBC_LoadLore(
         sConfigMgr->GetOption<std::string>("PBC.HistoryCorpusPath", ""),

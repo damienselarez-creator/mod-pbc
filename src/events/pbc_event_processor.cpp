@@ -560,6 +560,18 @@ bool ProcessNormal(PBC_EventItem& ev,
             ev.createdAt + std::chrono::seconds(60) - std::chrono::steady_clock::now()).count());
         if (remaining <= 0) break;
         std::string reactionSystem = sysPrompt;
+        if (ev.source.IsChat())
+            reactionSystem += "\n[CONTINUITE DU DIALOGUE] Reponds d'abord a ce qui vient d'etre dit. "
+                "Raccorde les pronoms et les references a l'echange recent fourni ; en cas d'ambiguite reelle, "
+                "pose une seule question precise. Garde tes engagements et avis precedents, "
+                "ou explique leur evolution. "
+                "Un ordre pratique appelle une reponse breve ; un dilemme, une question de culture ou une confidence "
+                "peut recevoir une reponse developpee et au plus une relance liee au sujet. Ne termine pas "
+                "systematiquement par une question. Un merci, un refus ou une cloture n'appelle pas de relance. "
+                "N'invente aucune histoire personnelle, action executee, achat ou competence apprise. "
+                "Les faits observes priment sur tes intentions. Un ordre non reconnu reste une demande a clarifier, "
+                "jamais une execution pretendue. Pendant le danger, reste bref. Ce tour ne t'autorise pas a parler "
+                "a nouveau sans sollicitation ni evenement deja autorise.\n";
         if (!ev.questReactionInstruction.empty())
         {
             reactionSystem += ev.questReactionInstruction;

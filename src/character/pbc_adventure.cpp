@@ -1,6 +1,17 @@
 #include "pbc_adventure.h"
 #include "pbc_group_helpers.h"
 #include "pbc_adventure_store.h"
+#include "pbc_narrative_policy.h"
+#include "pbc_archetype.h"
+#include "pbc_event_dispatch.h"
+#include <ctime>
+#include "CompanionErrands.h"
+#include "Playerbots.h"
+#include "Item.h"
+#include "SpellMgr.h"
+#include "DBCStores.h"
+#include "GossipDef.h"
+#include "WorldSessionMgr.h"
 #include "pbc_character.h"
 #include "pbc_config.h"
 #include "pbc_llm.h"
@@ -41,6 +52,61 @@ bool stopping = false;
 uint64_t working = 0;
 std::set<uint64_t> automaticCharacters;
 std::set<uint64_t> onlineCharacters;
+bool narrativeInitiative = false;
+std::map<uint64_t, uint64_t> initiativeTimes;
+uint64_t initiativeStarted = 0;
+
+void InitiateNarrative()
+{
+    if (!g_PBC_Enable || !narrativeInitiative)
+        return;
+    auto now = static_cast<uint64_t>(std::time(nullptr));
+    if (now < initiativeStarted || now - initiativeStarted < 900)
+        return;
+    std::vector<ObjectGuid> candidates;
+    {
+        std::shared_lock<std::shared_mutex> playersLock(*HashMapHolder<Player>::GetLock());
+        for (auto const& entry : ObjectAccessor::GetPlayers())
+            candidates.push_back(entry.first);
+    }
+    for (auto guid : candidates)
+    {
+        Player* bot = ObjectAccessor::FindPlayer(guid);
+        auto* ai = bot ? GET_PLAYERBOT_AI(bot) : nullptr;
+        Player* master = ai ? ai->GetMaster() : nullptr;
+        if (!bot || !PBC_IsDialogueBot(bot) || !master || master == bot || !master->IsInWorld() ||
+            !master->GetSession() || master->GetSession()->IsHeadless() || master->GetSession()->IsLoggingOut() ||
+            !bot->GetGroup() || bot->GetGroup() != master->GetGroup() || bot->GetMap() != master->GetMap() ||
+            !bot->IsWithinDistInMap(master, 30.0f) || !bot->IsAlive() || !master->IsAlive() ||
+            bot->IsInCombat() || master->IsInCombat() || bot->isMoving() || master->isMoving() ||
+            bot->IsInFlight() || master->IsInFlight() || bot->IsMounted() || master->IsMounted())
+            continue;
+        auto group = bot->GetGroup()->GetGUID().GetCounter();
+        auto previous = initiativeTimes.find(group);
+        if (previous != initiativeTimes.end() && (now < previous->second || now - previous->second < 900))
+            continue;
+        bool quiet = true;
+        {
+            std::lock_guard<std::mutex> historyLock(g_PBC_HistoryMutex);
+            for (auto member : {bot->GetGUID().GetCounter(), master->GetGUID().GetCounter()})
+            {
+                auto last = g_PBC_LastHistoryTime.find(member);
+                if (last != g_PBC_LastHistoryTime.end() && (now < static_cast<uint64_t>(last->second) ||
+                    now - static_cast<uint64_t>(last->second) < 180))
+                    quiet = false;
+            }
+        }
+        if (!quiet)
+            continue;
+        if (initiativeTimes.size() > 4096)
+            initiativeTimes.clear();
+        initiativeTimes[group] = now;
+        PBC_DispatchTriggerEvent(bot, "Un moment calme permet de proposer une preparation utile, "
+            "de poser une question sincere, ou de rappeler un engagement ouvert effectivement source. "
+            "Choisis une seule initiative breve selon ton archetype et tes experiences. "
+            "Aucune action ni confidence deja accomplie inventee. Ne recite pas ta biographie.");
+    }
+}
 
 char const* synthesisPrompt = R"PROMPT(Tu construis le pilier 4 d'un compagnon de World of Warcraft.
 En mode personal, player et companion designent UNE SEULE personne : le personnage character.
@@ -65,6 +131,15 @@ Les choix repetes peuvent nuancer la confiance, sans remplacer l'identite ni don
 Toutes les sources du lot doivent figurer dans source_event_ids ou routine_event_ids. Cite seulement les id
 des events de ce lot ; les anciennes references des chunks actualises sont conservees automatiquement.
 Maximum 12 chunks. Pas besoin de fabriquer un souvenir si tout est banal.
+Les apprentissages, objets, rangs de reputation et rencontres peuvent compter : agrege la pratique ordinaire.
+Un choix de menu indique une interaction, pas l'accomplissement d'une action ni une conviction morale.
+Une declaration explicite kind=engagement_declared doit rester un engagement ouvert sauf preuve de resolution.
+kind=goal_declared est une intention choisie, pas une action accomplie. N'invente pas sa realisation.
+kind=feeling_declared est une emotion declaree a cet instant, pas un trait durable ni une guerison.
+Mettre a jour une relation est facultatif : target_guid doit etre un acteur/locuteur/cible reel des sources
+observees. Donne une attitude cumulative courte, preserve le passe utile dans existing_relationships ;
+pas de points par quete, pas de romance/reconciliation automatique. relationship_updates maximum 8.
+Ajoute si utile "relationship_updates":[{"target_guid":123,"attitude":"...","source_event_ids":["id"]}].
 Format exact : {"chunks":[{"id":"","type":"episode|moment|engagement","titre":"...",
 "resume":"faits et consequences connus, 150 a 300 mots maximum","role_joueur":"...",
 "role_compagnon":"...","regard":"...","relation":"","etat":"ouvert|resolu|interrompu",
@@ -116,6 +191,12 @@ void BeginAutomatic(Player* player)
     if (!store || !g_PBC_Enable || !player || !player->GetSession())
         return;
     uint64_t guid = Guid(player);
+    uint8 points[3] = {};
+    player->GetTalentTreePoints(points);
+    int spec = points[0] || points[1] || points[2] ? player->GetMostPointsTalentTree() : -1;
+    auto focus = store->Focus(guid);
+    SetCompanionNarrativeFocus(player->GetGUID(), focus.empty() ?
+        PBC_ArchetypeFocus(player->getRace(), player->getClass(), spec) : focus);
     automaticCharacters.insert(guid);
     if (store->BeginPersonal(guid, player->GetName(), PBC_GetCharacterCard(player)))
     {
@@ -143,6 +224,7 @@ void EndAutomatic(uint64_t guid)
     }
     onlineCharacters.erase(guid);
     automaticCharacters.erase(guid);
+    SetCompanionNarrativeFocus(ObjectGuid(guid), "normal");
 }
 
 void RunWorker()
@@ -191,6 +273,33 @@ void RunWorker()
                 if (body.size() > 128000)
                     throw std::runtime_error("Oversized synthesis response");
                 auto parsed = pbc_json::parse(body);
+                auto missing = PBC_MissingNarrativeSources(batch, parsed);
+                if (!missing.empty())
+                {
+                    // One bounded repair: never silently classify omitted sources as routine.
+                    pbc_json repair = {{"batch", batch}, {"previous_response", parsed},
+                        {"missing_event_ids", missing}};
+                    auto retry = PBC_CallLLMWithConfig(request, std::string(synthesisPrompt) +
+                        "\nRepare la reponse precedente : classe aussi chaque missing_event_id. "
+                        "Renvoie le JSON COMPLET, conserve les sources deja classees. Aucun id invente.",
+                        repair.dump(), true);
+                    if (!retry.success)
+                        throw std::runtime_error("Narrative repair failed; sources retained");
+                    auto repaired = retry.text;
+                    if (repaired.rfind("```", 0) == 0)
+                    {
+                        auto start = repaired.find('\n');
+                        auto end = repaired.rfind("```");
+                        if (start != std::string::npos && end > start)
+                            repaired = repaired.substr(start + 1, end - start - 1);
+                    }
+                    if (repaired.size() > 128000)
+                        throw std::runtime_error("Oversized narrative repair");
+                    parsed = pbc_json::parse(repaired);
+                    if (!PBC_MissingNarrativeSources(batch, parsed).empty())
+                        throw std::runtime_error("Narrative repair still incomplete; sources retained");
+                    PBC_Log(PBC_LogLevel::PBC_DEFAULT, "Adventure coverage repaired for {}", player);
+                }
                 std::lock_guard<std::mutex> lock(mutex);
                 if (stopping)
                     return;
@@ -213,7 +322,8 @@ void RunWorker()
     }
 }
 
-void Capture(Player* player, pbc_json event, bool requirePresence = true)
+void Capture(Player* player, pbc_json event, bool requirePresence = true,
+    std::string const& milestoneKey = "", uint64_t interval = 0)
 {
     std::lock_guard<std::mutex> lock(mutex);
     if (!g_PBC_Enable || !store || !player)
@@ -242,7 +352,11 @@ void Capture(Player* player, pbc_json event, bool requirePresence = true)
                 (PBC_IsActiveSelfbot(character) ? "selfbot" : "manual");
             observation["zone_id"] = player->GetZoneId();
             observation["area_id"] = player->GetAreaId();
-            store->Record(guid, std::move(observation));
+            if (milestoneKey.empty())
+                store->Record(guid, std::move(observation));
+            else
+                store->RecordMilestone(guid, std::move(observation), milestoneKey + ":" +
+                    std::to_string(Guid(player)), interval);
         }
         // Preserve the explicitly paired, non-automatic workflow for other characters.
         if (automaticCharacters.count(Guid(player)) || !store->Active(Guid(player)))
@@ -254,7 +368,10 @@ void Capture(Player* player, pbc_json event, bool requirePresence = true)
         event["zone_id"] = player->GetZoneId();
         event["area_id"] = player->GetAreaId();
         event["player_name"] = player->GetName();
-        store->Record(Guid(player), std::move(event));
+        if (milestoneKey.empty())
+            store->Record(Guid(player), std::move(event));
+        else
+            store->RecordMilestone(Guid(player), std::move(event), milestoneKey, interval);
     }
     catch (std::exception const& error)
     {
@@ -274,7 +391,15 @@ public:
         PLAYERHOOK_ON_QUEST_ABANDON,
         PLAYERHOOK_ON_UPDATE_ZONE,
         PLAYERHOOK_ON_PLAYER_JUST_DIED,
-        PLAYERHOOK_ON_CREATURE_KILL
+        PLAYERHOOK_ON_CREATURE_KILL,
+        PLAYERHOOK_ON_AFTER_TRAIN_SPELL,
+        PLAYERHOOK_ON_CREATE_ITEM,
+        PLAYERHOOK_ON_AFTER_STORE_OR_EQUIP_NEW_ITEM,
+        PLAYERHOOK_ON_REPUTATION_RANK_CHANGE,
+        PLAYERHOOK_ON_SET_SKILL,
+        PLAYERHOOK_ON_UPDATE_SKILL,
+        PLAYERHOOK_ON_GOSSIP_SELECT,
+        PLAYERHOOK_ON_LEVEL_CHANGED
     }) { }
 
     void OnPlayerLogin(Player* player) override
@@ -338,6 +463,78 @@ public:
         Capture(player, {{"kind", "player_died"}});
     }
 
+    void OnPlayerAfterTrainSpell(Player* player, Creature* trainer, uint32 spellId) override
+    {
+        if (!player || !trainer)
+            return;
+        auto const* spell = sSpellMgr->GetSpellInfo(spellId);
+        bool learned = player->HasSpell(spellId);
+        if (spell)
+            for (auto const& effect : spell->Effects)
+                if (effect.Effect == SPELL_EFFECT_LEARN_SPELL && player->HasSpell(effect.TriggerSpell))
+                    learned = true;
+        if (learned)
+            Capture(player, {{"kind", "training_completed"}, {"spell_id", spellId},
+                {"spell_name", spell ? spell->SpellName[0] : ""}, {"npc_entry", trainer->GetEntry()},
+                {"npc_name", trainer->GetName()}}, true, "training:" + std::to_string(spellId), 3600);
+    }
+
+    void OnPlayerCreateItem(Player* player, Item* item, uint32 count) override
+    {
+        if (item)
+            Capture(player, {{"kind", "item_created"}, {"item_id", item->GetEntry()}, {"count", count},
+                {"item_name", item->GetTemplate()->Name1}}, true, "craft:" + std::to_string(item->GetEntry()), 900);
+    }
+
+    void OnPlayerAfterStoreOrEquipNewItem(Player* player, uint32, Item* item, uint8 count, uint8, uint8,
+        ItemTemplate const*, Creature* vendor, VendorItem const*, bool) override
+    {
+        if (item && vendor)
+            Capture(player, {{"kind", "item_purchased"}, {"item_id", item->GetEntry()}, {"count", count},
+                {"item_name", item->GetTemplate()->Name1}, {"npc_entry", vendor->GetEntry()},
+                {"npc_name", vendor->GetName()}}, true, "purchase:" + std::to_string(item->GetEntry()), 900);
+    }
+
+    void OnPlayerReputationRankChange(Player* player, uint32 factionId, ReputationRank rank,
+        ReputationRank oldRank, bool) override
+    {
+        auto const* faction = sFactionStore.LookupEntry(factionId);
+        Capture(player, {{"kind", "reputation_rank_changed"}, {"faction_id", factionId},
+            {"faction_name", faction ? faction->name[0] : ""}, {"old_rank", oldRank}, {"new_rank", rank}});
+    }
+
+    void OnPlayerLevelChanged(Player* player, uint8 oldLevel) override
+    {
+        Capture(player, {{"kind", "level_changed"}, {"old_level", oldLevel}, {"new_level", player->GetLevel()}});
+    }
+
+    void SkillMilestone(Player* player, uint32 skillId, uint32 oldValue, uint32 newValue)
+    {
+        auto const* skill = sSkillLineStore.LookupEntry(skillId);
+        if (!skill || (skill->categoryId != SKILL_CATEGORY_PROFESSION && skill->categoryId != SKILL_CATEGORY_SECONDARY)
+            || !newValue || (oldValue && oldValue / 25 == newValue / 25))
+            return;
+        Capture(player, {{"kind", "profession_milestone"}, {"skill_id", skillId},
+            {"skill_name", skill->name[0]}, {"old_value", oldValue}, {"new_value", newValue}}, true,
+            "skill:" + std::to_string(skillId) + ":" + std::to_string(newValue / 25), 86400);
+    }
+
+    void OnPlayerSetSkill(Player* player, uint32 skill, uint32 value, uint32, uint32, uint32 newValue) override
+    {
+        SkillMilestone(player, skill, value, newValue);
+    }
+
+    void OnPlayerUpdateSkill(Player* player, uint32 skill, uint32 value, uint32, uint32, uint32 newValue) override
+    {
+        SkillMilestone(player, skill, value, newValue);
+    }
+
+    void OnPlayerGossipSelect(Player* player, uint32 menu, uint32 sender, uint32 action) override
+    {
+        Capture(player, {{"kind", "gossip_option_selected"}, {"menu_id", menu},
+            {"sender", sender}, {"action", action}}, true, "gossip:" + std::to_string(menu), 300);
+    }
+
     void OnPlayerCreatureKill(Player* player, Creature* creature) override
     {
         if (creature && (creature->isWorldBoss() || creature->IsDungeonBoss()))
@@ -355,8 +552,15 @@ public:
     void OnUpdate(uint32 diff) override
     {
         events.Update(diff);
-        if (!events.ExecuteEvent())
+        auto event = events.ExecuteEvent();
+        if (!event)
             return;
+        if (event == 2)
+        {
+            events.ScheduleEvent(2, std::chrono::milliseconds(60000));
+            InitiateNarrative();
+            return;
+        }
         events.ScheduleEvent(1, std::chrono::milliseconds(1000));
         std::lock_guard<std::mutex> lock(mutex);
         if (!store || stopping || !g_PBC_Enable)
@@ -400,6 +604,9 @@ public:
             directory = sConfigMgr->GetOption<std::string>("PBC.AdventurePath", "data/pbc-adventures");
             store = std::make_unique<PBC_AdventureStore>(directory / "journal");
             stopping = false;
+            narrativeInitiative = sConfigMgr->GetOption<bool>("PBC.NarrativeInitiative", false);
+            initiativeStarted = static_cast<uint64_t>(std::time(nullptr));
+            events.ScheduleEvent(2, std::chrono::milliseconds(60000));
             // Every character participates automatically; no per-GUID activation list.
             // Recover all sessions, including characters that do not reconnect after a crash.
             store->CloseAllActive();
@@ -487,6 +694,48 @@ bool Command(ChatHandler* handler, Tail argument)
             wake.notify_one();
             handler->SendSysMessage("[Aventure] Session fermee. Synthese en arriere-plan; .adventure status");
         }
+        else if (command == "archetype")
+        {
+            Player* target = handler->getSelectedPlayer();
+            if (!target)
+                target = player;
+            if (target != player && (!player->GetGroup() || target->GetGroup() != player->GetGroup()))
+                throw std::runtime_error("Selectionne un personnage de ton groupe");
+            uint8 points[3] = {};
+            target->GetTalentTreePoints(points);
+            int spec = points[0] || points[1] || points[2] ? target->GetMostPointsTalentTree() : -1;
+            handler->PSendSysMessage("[Archetype] {}", PBC_ArchetypeCard(target->getRace(), target->getClass(),
+                spec, Guid(target)));
+        }
+        else if (command == "promise" || command == "goal" || command == "feeling" || command == "choice")
+        {
+            if (rest.empty() || rest.size() > 1000 || !store->Active(guid))
+                throw std::runtime_error("Session active et texte de 1 a 1000 octets requis");
+            std::string kind = command == "promise" ? "engagement_declared" :
+                command == "goal" ? "goal_declared" : command == "choice" ? "choice_declared" : "feeling_declared";
+            store->Record(guid, {{"kind", kind}, {"text", rest}, {"author", guid},
+                {"actor_guid", guid}, {"actor_name", player->GetName()}, {"companion_present", true},
+                {"statut", "declaration_explicite_pas_action_accomplie"}});
+            handler->SendSysMessage("[Aventure] Declaration conservee ; aucune action accomplie n'est inventee.");
+        }
+        else if (command == "focus")
+        {
+            auto* target = handler->getSelectedPlayer();
+            auto* ai = target ? GET_PLAYERBOT_AI(target) : nullptr;
+            if (!target || !ai || ai->GetMaster() != player || !player->GetGroup() ||
+                target->GetGroup() != player->GetGroup() || !PBC_IsDialogueBot(target))
+                throw std::runtime_error("Selectionne ton compagnon actif dans ton groupe");
+            if (rest != "normal" && rest != "follow" && rest != "training" && rest != "craft")
+                throw std::runtime_error("focus normal|follow|training|craft");
+            // Persistent in the personal journal; replay on the next automatic login.
+            auto targetGuid = Guid(target);
+            if (!store->Active(targetGuid))
+                throw std::runtime_error("La session du compagnon doit etre active");
+            store->Record(targetGuid, {{"kind", "focus_chosen"}, {"focus", rest}, {"author", guid},
+                {"actor_guid", guid}, {"actor_name", player->GetName()}, {"companion_present", true}});
+            SetCompanionNarrativeFocus(target->GetGUID(), rest);
+            handler->SendSysMessage("[Aventure] Priorite appliquee aux commissions existantes, avec leurs limites habituelles.");
+        }
         else if (command == "retry")
         {
             if (working != guid)
@@ -512,7 +761,7 @@ bool Command(ChatHandler* handler, Tail argument)
         else
         {
             handler->PSendSysMessage("[Aventure] {} | {}", store->Status(guid).dump(), results[guid]);
-            handler->SendSysMessage("[Aventure] begin [nom|self] | end | status | recall [sujet] | export | retry");
+            handler->SendSysMessage("[Aventure] begin [nom|self] | end | status | recall [sujet] | export | retry | promise/goal/feeling/choice <texte> | focus <priorite>");
         }
     }
     catch (std::exception const& error)
@@ -532,6 +781,12 @@ public:
         return table;
     }
 };
+}
+
+void PBC_AdventureEncounter(Player* player, uint32 questId, std::string const& name, std::string const& type)
+{
+    Capture(player, {{"kind", "quest_offer_seen"}, {"quest_id", questId}, {"npc_name", name},
+        {"source_type", type}}, true, "offer:" + std::to_string(questId), 300);
 }
 
 void AddPBCAdventureScripts()

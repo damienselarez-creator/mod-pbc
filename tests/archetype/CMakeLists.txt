@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+project(pbc_archetype_tests LANGUAGES CXX)
+enable_testing()
+add_executable(archetype_test archetype_v2_test.cpp ../../src/character/pbc_archetype.cpp)
+target_compile_features(archetype_test PRIVATE cxx_std_20)
+target_include_directories(archetype_test PRIVATE ../../src/character ../../src/llm ../../deps)
+add_test(NAME archetype_composition COMMAND archetype_test "${CMAKE_CURRENT_SOURCE_DIR}/../../knowledge/archetypes.json")

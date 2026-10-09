@@ -1,4 +1,5 @@
 #include "pbc_adventure_store.h"
+#include "pbc_narrative_policy.h"
 #include <chrono>
 #include <iostream>
 #include <stdexcept>
@@ -42,6 +43,48 @@ int main()
         std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     try
     {
+        {
+            PBC_AdventureStore narrative(root / "narrative");
+            narrative.BeginPersonal(3, "Winifred", "Fiche");
+            pbc_json event = {{"kind", "training_completed"}, {"actor_guid", 2},
+                {"companion_present", true}, {"spell_id", 42}};
+            Check(narrative.RecordMilestone(3, event, "training:42", 3600), "First milestone missing");
+            Check(!narrative.RecordMilestone(3, event, "training:42", 3600), "Routine milestone flooded journal");
+            narrative.Record(3, {{"kind", "focus_chosen"}, {"focus", "craft"}});
+            Check(narrative.Focus(3) == "craft", "Focus not retained");
+            narrative.Close(3);
+            auto batch = narrative.Batch(3);
+            auto reply = Response(batch);
+            reply["chunks"][0]["role_joueur"] = "";
+            auto omitted = reply;
+            omitted["chunks"][0]["source_event_ids"].erase(0);
+            Check(PBC_MissingNarrativeSources(batch, omitted).size() == 1, "Repair lost missing reference");
+            auto invented = reply;
+            invented["routine_event_ids"].push_back("invented");
+            Reject([&] { PBC_MissingNarrativeSources(batch, invented); });
+            reply["relationship_updates"] = pbc_json::array({{{"target_guid", 2},
+                {"attitude", "A observe un apprentissage ; aucune intimite presumee."},
+                {"source_event_ids", pbc_json::array({batch.at("events")[0].at("id")})}}});
+            auto inaccessible = reply;
+            inaccessible["relationship_updates"][0]["target_guid"] = 999;
+            Reject([&] { narrative.Commit(batch, inaccessible); });
+            auto self = reply;
+            self["relationship_updates"][0]["target_guid"] = 3;
+            Reject([&] { narrative.Commit(batch, self); });
+            Check(narrative.Commit(batch, reply), "Narrative commit failed");
+            Check(narrative.Export(3).at("relationships").size() == 1, "Relation absent");
+            Check(narrative.Context(3, "apprentissage").find("RELATIONS EVOLUTIVES") != std::string::npos,
+                "Relation unavailable to dialogue");
+        }
+        {
+            PBC_AdventureStore narrative(root / "narrative");
+            Check(narrative.Focus(3) == "craft", "Focus lost on restart");
+            Check(narrative.Export(3).at("relationships").size() == 1, "Relations lost on replay");
+            Check(narrative.Export(999).at("relationships").empty(), "Other identity sees relations");
+            narrative.BeginPersonal(3, "Winifred", "Fiche");
+            Check(!narrative.RecordMilestone(3, {{"kind", "training_completed"}}, "training:42", 3600),
+                "Milestone dedup lost on replay");
+        }
         {
             PBC_AdventureStore all(root / "all-characters");
             for (uint64_t guid : {3, 17, 999})
@@ -188,9 +231,12 @@ int main()
                 store.Record(10, {{"kind", "location"}, {"zone_id", i}});
             store.Close(10);
             auto batch = store.Batch(10);
-            Check(batch.at("events").size() == 48, "Batch limit not respected");
+            Check(batch.at("events").size() == 24, "Batch limit not respected");
             store.Commit(batch, Response(batch, episode));
-            Check(store.Batch(10).at("events").size() == 2, "Batch overflow events lost");
+            Check(store.Batch(10).at("events").size() == 24, "Batch overflow events lost");
+            auto next = store.Batch(10);
+            store.Commit(next, Response(next, episode));
+            Check(store.Batch(10).at("events").size() == 2, "Last overflow events lost");
             Reject([&] { PBC_AdventureStore concurrent(root); });
         }
         Check(std::filesystem::weakly_canonical(root).parent_path()

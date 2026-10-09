@@ -1,4 +1,5 @@
 #include "pbc_quest_scripts.h"
+#include "pbc_adventure.h"
 #include "pbc_config.h"
 #include "pbc_character.h"
 #include "pbc_database.h"
@@ -26,6 +27,8 @@ static void HandleQuestTaken(Player* player, Quest const* quest,
                               std::string const& questGiver,
                               std::string const& questGiverType)
 {
+    if (player && quest)
+        PBC_AdventureEncounter(player, quest->GetQuestId(), questGiver, questGiverType);
     if (!PBC_QuestEventGuard(player) || !quest) return;
 
     if (!PBC_IsQuestValidForEvent(quest))
@@ -46,7 +49,7 @@ static void HandleQuestTaken(Player* player, Quest const* quest,
     std::string questLogDescription = PBC_StripWowTextCodes(PBC_GetQuestObjectives(quest->GetQuestId()));
     // Acceptance must not reveal completion text before it is reached.
     std::string questCompletionLog;
-    std::string questGiverWithGender = PBC_GetQuestStarterNamesWithGender(quest->GetQuestId());
+    std::string questGiverWithGender = questGiver;
 
     PBC_Log(PBC_LogLevel::PBC_DEBUG, "HandleQuestTaken: leader={} quest='{}' (id={}) giver='{}' type='{}'",
              player->GetName(), questTitle, quest->GetQuestId(), questGiverWithGender, questGiverType);

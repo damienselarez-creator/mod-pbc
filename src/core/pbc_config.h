@@ -124,6 +124,9 @@ struct PBC_CharacterSnapshot
     std::string charGender;
     std::string charRace;
     std::string charClass;
+    uint8_t archetypeRace = 0;
+    uint8_t archetypeClass = 0;
+    int archetypeSpecialization = -1;
     std::string charRole;
     std::string charLevel;
     std::string charGold;

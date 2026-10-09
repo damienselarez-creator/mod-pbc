@@ -338,3 +338,15 @@ PBC.ReplyChanceQuestCompletedElite = 60
 # Raid (including 10/25) and world-boss objectives: acceptance / reward.
 PBC.ReplyChanceQuestTakenRaid = 75
 PBC.ReplyChanceQuestCompletedRaid = 80
+
+# Optional race/class/talent-tree archetypes and scoped collective pillars.
+# Empty path preserves the original per-character card behavior.
+PBC.ArchetypesPath = ""
+
+# Opportunistic text initiative: at most one attempt per group per 15 minutes,
+# only with a nearby active companion and three minutes without conversation.
+# No combat, movement, mount or flight. Uses the existing dialogue connection.
+PBC.NarrativeInitiative = 0
+
+# Agreed companion vocations: opt-in persistent state file; empty disables.
+PBC.VocationsFile = ""

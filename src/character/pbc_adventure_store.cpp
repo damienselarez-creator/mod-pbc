@@ -1,6 +1,8 @@
 #include "pbc_adventure_store.h"
 #include <algorithm>
 #include <cctype>
+#include <ctime>
+#include "pbc_narrative_policy.h"
 #include <sstream>
 #include <stdexcept>
 
@@ -87,7 +89,10 @@ void PBC_AdventureStore::Apply(std::string const& token, pbc_json const& op, uin
         auto event = op.at("event");
         event["id"] = token;
         event["timestamp"] = timestamp;
-        sessions_.at(op.at("session").get<std::string>())["events"].push_back(event);
+        auto& session = sessions_.at(op.at("session").get<std::string>());
+        session["events"].push_back(event);
+        if (event.contains("milestone_key"))
+            milestones_[session.at("player").get<uint64_t>()][event.at("milestone_key").get<std::string>()] = timestamp;
     }
     else if (kind == "close")
     {
@@ -102,6 +107,17 @@ void PBC_AdventureStore::Apply(std::string const& token, pbc_json const& op, uin
         Require(commits_.insert(batchId).second, "Duplicate adventure commit");
         for (auto const& event : op.at("processed"))
             processed_.insert(event.get<std::string>());
+        if (op.contains("relationships"))
+            for (auto relation : op.at("relationships"))
+            {
+                auto owner = op.at("player").get<uint64_t>();
+                auto target = relation.at("target_guid").get<uint64_t>();
+                auto& previous = relationships_[owner][std::to_string(target)];
+                if (!previous.is_null())
+                    MergeArray(relation["source_event_ids"], previous.at("source_event_ids"));
+                relation["updated_at"] = timestamp;
+                previous = std::move(relation);
+            }
         for (auto chunk : op.at("chunks"))
         {
             chunk["updated_at"] = timestamp;
@@ -171,6 +187,37 @@ bool PBC_AdventureStore::Record(uint64_t player, pbc_json event)
     return true;
 }
 
+bool PBC_AdventureStore::RecordMilestone(uint64_t player, pbc_json event,
+    std::string const& key, uint64_t interval)
+{
+    if (!Active(player))
+        return false;
+    auto now = static_cast<uint64_t>(std::time(nullptr));
+    auto found = milestones_.find(player);
+    if (found != milestones_.end())
+    {
+        auto previous = found->second.find(key);
+        if (previous != found->second.end() && (now < previous->second || now - previous->second < interval))
+            return false;
+    }
+    event["milestone_key"] = key;
+    return Record(player, std::move(event));
+}
+
+std::string PBC_AdventureStore::Focus(uint64_t player) const
+{
+    for (auto it = order_.rbegin(); it != order_.rend(); ++it)
+    {
+        auto const& session = sessions_.at(*it);
+        if (session.at("player") != player)
+            continue;
+        for (auto event = session.at("events").rbegin(); event != session.at("events").rend(); ++event)
+            if (event->value("kind", "") == "focus_chosen")
+                return event->at("focus").get<std::string>();
+    }
+    return {};
+}
+
 std::string PBC_AdventureStore::Close(uint64_t player)
 {
     Require(Active(player), "No open session");
@@ -193,7 +240,7 @@ pbc_json PBC_AdventureStore::Batch(uint64_t player) const
             if (processed_.count(event.at("id").get<std::string>()))
                 continue;
             auto size = event.dump().size();
-            if (!events.empty() && (events.size() == 48 || bytes + size > 48000))
+            if (!events.empty() && (events.size() == 24 || bytes + size > 32000))
                 break;
             events.push_back(event);
             bytes += size;
@@ -202,13 +249,31 @@ pbc_json PBC_AdventureStore::Batch(uint64_t player) const
             continue;
         pbc_json previous = pbc_json::array();
         size_t previousBytes = 0;
-        // Keep open arcs first, then recently updated closed arcs, with bounded context.
+        // Match this batch's subjects before falling back to open/recent arcs.
+        auto subjects = Words(events.dump());
+        auto relevance = [&](pbc_json const& chunk)
+        {
+            size_t score = 0;
+            auto tokens = Words(chunk.at("titre").get<std::string>() + " " + chunk.at("themes").dump());
+            for (auto const& word : subjects)
+                if (tokens.count(word))
+                    ++score;
+            for (auto const& event : events)
+                if (event.contains("quest_id") && std::find(chunk.at("quest_ids").begin(),
+                    chunk.at("quest_ids").end(), event.at("quest_id")) != chunk.at("quest_ids").end())
+                    score += 20;
+            return score;
+        };
         std::vector<pbc_json> candidates;
         for (auto const& [chunkId, chunk] : chunks_)
             if (chunk.at("player") == player)
                 candidates.push_back(chunk);
-        std::stable_sort(candidates.begin(), candidates.end(), [](auto const& a, auto const& b)
+        std::stable_sort(candidates.begin(), candidates.end(), [&](auto const& a, auto const& b)
         {
+            auto scoreA = relevance(a);
+            auto scoreB = relevance(b);
+            if (scoreA != scoreB)
+                return scoreA > scoreB;
             bool openA = a.at("etat") == "ouvert";
             bool openB = b.at("etat") == "ouvert";
             return openA != openB ? openA : a.at("updated_at") > b.at("updated_at");
@@ -224,11 +289,22 @@ pbc_json PBC_AdventureStore::Batch(uint64_t player) const
             previous.push_back(chunk);
             previousBytes += size;
         }
+        pbc_json relations = pbc_json::array();
+        auto currentRelations = relationships_.find(player);
+        if (currentRelations != relationships_.end())
+            for (auto const& [target, relation] : currentRelations->second)
+            {
+                auto view = relation;
+                view.erase("source_event_ids");
+                if (relations.size() < 16)
+                    relations.push_back(view);
+            }
         return {{"session", id}, {"batch_id", events.back().at("id")}, {"player", player},
             {"companion", session.at("companion")}, {"player_name", session.at("player_name")},
             {"companion_name", session.at("companion_name")}, {"character", session.at("card")},
             {"mode", player == session.at("companion").get<uint64_t>() ? "personal" : "shared"},
-            {"events", events}, {"existing_chunks", previous}};
+            {"events", events}, {"existing_chunks", previous},
+            {"existing_relationships", relations}};
     }
     return nullptr;
 }
@@ -312,11 +388,51 @@ bool PBC_AdventureStore::Commit(pbc_json const& batch, pbc_json const& response)
         covered.insert(id);
     }
     Require(covered.size() == events.size(), "Some events were not accounted for");
+    for (auto const& [id, event] : events)
+        if (event.value("kind", "") == "engagement_declared")
+        {
+            bool retained = false;
+            for (auto const& chunk : chunks)
+                if (chunk.at("type") == "engagement" && std::find(chunk.at("source_event_ids").begin(),
+                    chunk.at("source_event_ids").end(), id) != chunk.at("source_event_ids").end())
+                    retained = true;
+            Require(retained, "Explicit engagement cannot be discarded as routine");
+        }
+    pbc_json relations = pbc_json::array();
+    if (response.contains("relationship_updates"))
+    {
+        auto const& updates = response.at("relationship_updates");
+        Require(updates.is_array() && updates.size() <= 8, "Too many relationship updates");
+        std::set<uint64_t> targets;
+        for (auto const& update : updates)
+        {
+            auto target = update.at("target_guid").get<uint64_t>();
+            Require(target && target != batch.at("companion").get<uint64_t>() && targets.insert(target).second,
+                "Invalid relationship target");
+            auto const& refs = update.at("source_event_ids");
+            Require(refs.is_array() && !refs.empty() && refs.size() <= 24, "Missing relationship evidence");
+            bool participant = false;
+            for (auto const& ref : refs)
+            {
+                auto id = ref.get<std::string>();
+                Require(events.count(id) != 0, "Invented relationship evidence");
+                auto const& event = events.at(id);
+                bool present = event.value("companion_present", false);
+                participant |= present && (event.value("actor_guid", uint64_t(0)) == target ||
+                    event.value("author", uint64_t(0)) == target ||
+                    event.value("target_guid", uint64_t(0)) == target);
+            }
+            Require(participant, "Relationship target not witnessed in its sources");
+            relations.push_back({{"target_guid", target}, {"attitude", Text(update, "attitude", 1200)},
+                {"source_event_ids", refs}, {"statut", "interpretation_prudente_sourcee_pas_trait_fondateur"}});
+        }
+    }
     pbc_json processed = pbc_json::array();
     for (auto const& [id, event] : events)
         processed.push_back(id);
     Persist({{"op", "commit"}, {"batch_id", batchId}, {"session", batch.at("session")},
-        {"processed", processed}, {"routine_event_ids", routine}, {"chunks", chunks}}, player);
+        {"processed", processed}, {"routine_event_ids", routine}, {"chunks", chunks},
+        {"player", player}, {"relationships", relations}}, player);
     return true;
 }
 
@@ -372,6 +488,11 @@ pbc_json PBC_AdventureStore::Export(uint64_t player) const
     for (auto const& [id, chunk] : chunks_)
         if (chunk.at("player") == player)
             result["chunks"].push_back(chunk);
+    result["relationships"] = pbc_json::array();
+    auto relations = relationships_.find(player);
+    if (relations != relationships_.end())
+        for (auto const& [target, relation] : relations->second)
+            result["relationships"].push_back(relation);
     return result;
 }
 
@@ -399,6 +520,8 @@ std::string PBC_AdventureStore::Context(uint64_t player, std::string const& quer
         candidate.erase("sessions");
         auto tokens = Words(candidate.dump());
         size_t score = chunk.at("etat") == "ouvert" ? 1 : 0;
+        if (chunk.at("type") == "engagement" && chunk.at("etat") == "ouvert")
+            score += 4;
         for (auto const& word : words)
             if (tokens.count(word))
                 score += 3;
@@ -414,6 +537,17 @@ std::string PBC_AdventureStore::Context(uint64_t player, std::string const& quer
     if (Companion(player) == player)
         out += "AVENTURE PERSONNELLE : player et companion sont le meme personnage. "
             "role_compagnon decrit ses propres actes, aucun second protagoniste implicite.\n";
+    out += "RELATIONS EVOLUTIVES : impressions sourcees, sans affection ni redemption automatique.\n";
+    auto relations = relationships_.find(player);
+    if (relations != relationships_.end())
+        for (auto const& [target, relation] : relations->second)
+        {
+            auto view = relation;
+            view.erase("source_event_ids");
+            auto text = view.dump() + "\n";
+            if (out.size() + text.size() < 4000)
+                out += text;
+        }
     size_t count = 0;
     for (auto const& [score, chunk] : matches)
     {

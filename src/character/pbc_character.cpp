@@ -1,6 +1,8 @@
 #include "pbc_group_helpers.h"
+#include "pbc_vocation.h"
 #include "pbc_character.h"
 #include "pbc_lore.h"
+#include "pbc_archetype.h"
 #include "pbc_adventure.h"
 #include "pbc_config.h"
 #include "pbc_database.h"
@@ -136,12 +138,19 @@ std::string PBC_SubstituteVars(const std::string& tmpl, Player* bot, const std::
 
 std::string PBC_GetCharacterCard(Player* bot)
 {
+    uint8 points[3] = {};
+    bot->GetTalentTreePoints(points);
+    int spec = points[0] || points[1] || points[2] ? bot->GetMostPointsTalentTree() : -1;
+    auto archetype = PBC_ArchetypeCard(bot->getRace(), bot->getClass(), spec, bot->GetGUID().GetCounter());
     const std::string& name = bot->GetName();
+
+    if (PBC_UsesCollectiveIdentity(bot->getRace()))
+        return archetype + PBC_SubstituteVars(g_PBC_DefaultCharacterDescription, bot, "", false);
 
     auto it = g_PBC_CharacterCards.find(name);
     if (it != g_PBC_CharacterCards.end())
-        return PBC_SubstituteVars(it->second, bot, "", false);
-    return PBC_SubstituteVars(g_PBC_DefaultCharacterDescription, bot, "", false);
+        return archetype + "\n[FICHE PERSONNELLE PRIORITAIRE]\n" + PBC_SubstituteVars(it->second, bot, "", false);
+    return archetype + PBC_SubstituteVars(g_PBC_DefaultCharacterDescription, bot, "", false);
 }
 
 // Builds the [MEMORIES] block for a character's prompt.
@@ -829,12 +838,17 @@ PBC_CharacterSnapshot PBC_SnapshotCharacter(Player* bot)
     // Pre-render the character card and context once here so the event thread
     // never needs to call into game data.
     snap.characterCard = PBC_GetCharacterCard(bot);
-    snap.context       = PBC_GetCharacterContext(bot);
+    snap.context       = PBC_GetCharacterContext(bot) + PBC_VocationContext(bot);
 
     // Capture raw template variables
     snap.charGender   = PBC_GenderStr(bot->getGender());
     snap.charRace     = PBC_RaceStr(bot->getRace());
     snap.charClass    = PBC_ClassStr(bot->getClass());
+    snap.archetypeRace = bot->getRace();
+    snap.archetypeClass = bot->getClass();
+    uint8 points[3] = {};
+    bot->GetTalentTreePoints(points);
+    snap.archetypeSpecialization = points[0] || points[1] || points[2] ? bot->GetMostPointsTalentTree() : -1;
     snap.charRole     = PBC_RoleStr(bot);
     snap.charLevel    = std::to_string(bot->GetLevel());
     { uint32 m = bot->GetMoney(); snap.charGold = std::to_string(m / 10000) + "g " + std::to_string((m % 10000) / 100) + "s"; }
@@ -987,7 +1001,11 @@ std::string PBC_BuildUserPromptFromSnapshot(const PBC_CharacterSnapshot& snap,
     PBC_CleanUnknownTokens(out);
     // Append after template expansion: documentary braces must remain literal data.
     // Never insert the corpus into condensation, memories or relationship storage.
-    out += PBC_GetLoreBlock(snap.charGuidRaw, eventLine);
+    auto documentary = PBC_UsesCollectiveIdentity(snap.archetypeRace)
+        ? std::string{} : PBC_GetLoreBlock(snap.charGuidRaw, eventLine);
+    out += documentary;
+    out += PBC_ArchetypeKnowledge(snap.archetypeRace, snap.archetypeClass, snap.archetypeSpecialization,
+        eventLine, documentary);
     out += PBC_AdventureContext(snap.charGuidRaw, snap.whisperTargetGuid.GetCounter(),
         snap.adventureGroupPlayers, eventLine);
     return out;

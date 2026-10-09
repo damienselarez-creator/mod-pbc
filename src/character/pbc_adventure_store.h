@@ -18,7 +18,9 @@ public:
     void CloseAllActive();
     std::vector<uint64_t> Owners(uint64_t companion) const;
     bool Record(uint64_t player, pbc_json event);
+    bool RecordMilestone(uint64_t player, pbc_json event, std::string const& key, uint64_t interval);
     std::string Close(uint64_t player);
+    std::string Focus(uint64_t player) const;
     pbc_json Batch(uint64_t player) const;
     bool Commit(pbc_json const& batch, pbc_json const& response);
     pbc_json Status(uint64_t player) const;
@@ -38,6 +40,8 @@ private:
     std::map<std::string, pbc_json> chunks_;
     std::set<std::string> processed_;
     std::set<std::string> commits_;
+    std::map<uint64_t, std::map<std::string, pbc_json>> relationships_;
+    std::map<uint64_t, std::map<std::string, uint64_t>> milestones_;
     std::vector<std::string> order_;
     bool faulted_ = false;
     std::string Persist(pbc_json const& operation, uint64_t player);

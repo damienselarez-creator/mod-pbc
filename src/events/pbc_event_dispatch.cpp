@@ -1,6 +1,7 @@
 #include "pbc_event_dispatch.h"
 #include "pbc_config.h"
 #include "pbc_character.h"
+#include "pbc_vocation.h"
 #include "pbc_database.h"
 #include "pbc_utils.h"
 #include "pbc_locales.h"
@@ -487,7 +488,7 @@ std::string PBC_PickTriggerEventLine(uint64_t botGuid, const std::string& charNa
 // ---------------------------------------------------------------------------
 // PBC_DispatchTriggerEvent
 // ---------------------------------------------------------------------------
-void PBC_DispatchTriggerEvent(Player* bot)
+void PBC_DispatchTriggerEvent(Player* bot, std::string const& initiative)
 {
     if (!PBC_PTR_VALID(bot)) return;
 
@@ -505,7 +506,7 @@ void PBC_DispatchTriggerEvent(Player* bot)
     // happened").
     PBC_MaybeInsertTimeGap(botGuid);
 
-    std::string eventText = PBC_PickTriggerEventLine(botGuid, bot->GetName());
+    std::string eventText = initiative.empty() ? PBC_PickTriggerEventLine(botGuid, bot->GetName()) : initiative;
 
     PBC_EventItem ev;
     ev.type             = PBC_EventType::Normal;
@@ -569,6 +570,9 @@ void PBC_DispatchPartyMessageEvent(Player* sender, const std::string& msg,
                  senderName, chatType, isGroupChat ? "group empty" : "none nearby");
         return;
     }
+
+    if (PBC_VocationConversation(sender, bots, msg))
+        return;
 
     PBC_Log(PBC_LogLevel::PBC_DEBUG, "Chat message event from {} type={} ({} bots): \"{}\"",
              senderName, chatType, bots.size(), msg);

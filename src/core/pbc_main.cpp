@@ -1,3 +1,4 @@
+#include "pbc_vocation.h"
 #include "pbc_config.h"
 #include "pbc_world.h"
 #include "pbc_commands.h"
@@ -19,6 +20,7 @@ void Addmod_pbcScripts()
     new PBC_AllItemQuestScript();
     new PBC_CommandScript();
     AddPBCAdventureScripts();
+    AddPBCVocationScripts();
 }
 
 // Compatibility wrapper for checkouts that still live in the old
